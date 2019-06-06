@@ -7,11 +7,14 @@ import plotly.graph_objs as go
 import plotly.figure_factory as ff 
 import pandas as pd 
 from datetime import timedelta
+import os 
 
 df = pd.read_csv('./src/all.csv', index_col = 0, parse_dates = ['enter', 'exit', 'g-enter', 'g-exit'])
 df2 = pd.read_csv('./src/all2.csv', index_col = 0, parse_dates = ['enter', 'exit', 'date'])
 
 app = dash.Dash(__name__)
+
+server = app.server
 
 app.layout = html.Div([
     html.H1('HOW ABOUT JAPANESE RAINY SEASON？', style={'textAlign': 'center', 'fontSize': '1.5vw'}),
