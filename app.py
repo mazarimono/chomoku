@@ -69,7 +69,7 @@ def area_chart_figure(areaName, slider_val):
         marginal_x = 'violin', marginal_y = 'violin',
         range_x = [df['g-enter'].min() - d , df['g-enter'].max() + d],
         range_y = [df['g-exit'].min() - d, df['g-exit'].max() + d],
-        height = 800),'Rainy season in {} from {} to {}'.format(areaName, slider_num_small, slider_num_big)
+        height = 600),'Rainy season in {} from {} to {}'.format(areaName, slider_num_small, slider_num_big)
 
 @app.callback([Output('area-gantt', 'figure'),
                 Output('gantt-title', 'children'),
