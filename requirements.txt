@@ -4,5 +4,6 @@ dash_html_components
 plotly_express
 plotly 
 pandas 
+pandas_datareader
 gunicorn 
 lxml
