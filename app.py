@@ -87,7 +87,9 @@ tsuyu_page = html.Div([
         dcc.Graph(id = 'bar-polar',  style={'width': '75%', 'margin': '0 auto 0', 'display': 'inline-block'})
         ], style={'width': '75%', 'margin': '0 auto 0'}),
     ]),
-
+    html.Div([
+        dcc.Link('Back to Menu', href = '/', style={'fontSize': 40, })
+    ], style = {'textAlign': 'center'})
 ])
 
 @app.callback([Output('area-chart', 'figure'),
@@ -178,6 +180,9 @@ us_yield = html.Div([
             dcc.Graph(id='spreadGraph'),
         ], style = {'width': '60%', 'margin': '0 auto 0'}),
     ]),
+    html.Div([
+        dcc.Link('Back to Menu', href = '/', style={'fontSize': 40})
+    ], style = {'textAlign': 'center'})
 ])
 
 @app.callback(dash.dependencies.Output('historical-left', 'figure'),
