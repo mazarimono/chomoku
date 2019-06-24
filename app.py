@@ -56,6 +56,11 @@ index_page = html.Div([
     html.Div([
     html.H1('20190614:  ', style = {'display': 'inline-block','marginRight': '1%'}),
     dcc.Link('US Yield Watch', href = '/us-yield', style = {'fontSize': 40})], style={'textAlign': 'center'}),
+    html.Br(),
+    html.Div([
+    html.H1('20190625:  ', style = {'display': 'inline-block','marginRight': '1%'}),
+    dcc.Link('Japanese GDP(YoY %)', href = '/japanese-gdp', style = {'fontSize': 40})], style={'textAlign': 'center'})
+    
 ])
 
 # Contents Tsuyu_page
