@@ -29,6 +29,9 @@ dfyield['30yT'] = dfyield['30yT'].fillna(0)
 yieldOnly = dfyield[['date', 'ffrate', '3mT', '2yT', '5yT', '10yT', '30yT']].dropna()
 spreads = dfyield[['date', 'tedspread', '3m10ySpread', '2y10ySpread', 'baa10ySpread']].dropna()
 
+# JP GDP DATA
+dfgdp = pd.read_csv('./src/japanese-gdp-19552007.csv')
+
 ## APP 
 app = dash.Dash(__name__)
 
@@ -45,6 +48,7 @@ app.layout = html.Div([
 
 # index_page
 index_page = html.Div([
+    html.Title('CHOMOKU DASHBOARD'),
     html.Div([
     html.H1('20190607:  ', style = {'display': 'inline-block','marginRight': '1%'}),
     dcc.Link('Japanese rainy season dashboard', href = '/tsuyu-dash', style = {'fontSize': 40})], style={'textAlign': 'center'}),
@@ -52,6 +56,11 @@ index_page = html.Div([
     html.Div([
     html.H1('20190614:  ', style = {'display': 'inline-block','marginRight': '1%'}),
     dcc.Link('US Yield Watch', href = '/us-yield', style = {'fontSize': 40})], style={'textAlign': 'center'}),
+    html.Br(),
+    html.Div([
+    html.H1('20190625:  ', style = {'display': 'inline-block','marginRight': '1%'}),
+    dcc.Link('Japanese GDP(YoY %)', href = '/japanese-gdp', style = {'fontSize': 40})], style={'textAlign': 'center'})
+    
 ])
 
 # Contents Tsuyu_page
@@ -258,6 +267,16 @@ def spreadGraph(selectedvalue):
         ]
     }
 
+japanese_gdp = html.Div([
+    html.H1('日本の実質GDP成長率（前年比%）', style={'textAlign':'center'}),
+    html.Div([dcc.Graph(figure={
+        'data':[go.Bar(
+            x = dfgdp['暦年'],
+            y = dfgdp['GDP実質前年比（％）']
+        )]
+    })])
+])
+
 # Page-Router
 @app.callback(dash.dependencies.Output('page-content', 'children'),
             [dash.dependencies.Input('url', 'pathname')])
@@ -266,6 +285,8 @@ def display_page(pathname):
         return tsuyu_page
     elif pathname == '/us-yield':
         return us_yield
+    elif pathname == '/japanese-gdp':
+        return japanese_gdp
     else:
         return index_page
 
