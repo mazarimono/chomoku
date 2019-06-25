@@ -274,7 +274,10 @@ japanese_gdp = html.Div([
             x = dfgdp['暦年'],
             y = dfgdp['GDP実質前年比（％）']
         )]
-    })])
+    })]),
+    html.Div([
+        dcc.Link('Back to Menu', href = '/', style={'fontSize': 40, })
+    ], style = {'textAlign': 'center'})
 ])
 
 # Page-Router
