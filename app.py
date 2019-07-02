@@ -32,6 +32,9 @@ spreads = dfyield[['date', 'tedspread', '3m10ySpread', '2y10ySpread', 'baa10ySpr
 # JP GDP DATA
 dfgdp = pd.read_csv('./src/japanese-gdp-19552007.csv')
 
+# RUSMUSSEN TRUMP INDEX
+trump_data = pd.read_html('http://www.rasmussenreports.com/public_content/politics/trump_administration/trump_approval_index_history', parse_dates=['Date'])[0]
+
 ## APP 
 app = dash.Dash(__name__)
 
@@ -59,7 +62,11 @@ index_page = html.Div([
     html.Br(),
     html.Div([
     html.H1('20190625:  ', style = {'display': 'inline-block','marginRight': '1%'}),
-    dcc.Link('Japanese GDP(YoY %)', href = '/japanese-gdp', style = {'fontSize': 40})], style={'textAlign': 'center'})
+    dcc.Link('Japanese GDP(YoY %)', href = '/japanese-gdp', style = {'fontSize': 40})], style={'textAlign': 'center'}),
+    html.Br(),
+    html.Div([
+    html.H1('20190625:  ', style = {'display': 'inline-block','marginRight': '1%'}),
+    dcc.Link('Trump Administration Approval Index Data from Rasmussen Report', href = '/trump-index', style = {'fontSize': 40})], style={'textAlign': 'center'}),
     
 ])
 
@@ -280,6 +287,42 @@ japanese_gdp = html.Div([
     ], style = {'textAlign': 'center'})
 ])
 
+# TRUMP INDEX
+t_index = html.Div([
+    html.Div([
+    html.H1('Trump Administration Approval Index'),
+    html.H1('Data from RASMUSSEN REPORTS'),
+    html.Div(['URL : ', html.A('http://www.rasmussenreports.com/public_content/politics/trump_administration/trump_approval_index_history')]),
+    html.H3(children=['Update: {}'.format(str(trump_data['Date'].max())[:10])]),
+    ], style={'textAlign': 'center'}),
+    html.Div([
+        dcc.Graph(figure=px.line(trump_data, x='Date', y='Approval Index', title='Trump Administration Approval Index(Rasmssen)'))
+    ], style={'width': '60%', 'height':500, 'margin': '5% auto 5%'}),
+    
+    html.Div([
+        html.Div([
+            dcc.Graph(figure=px.line(trump_data, x='Date', y='Strongly Approve', title='Strongly Approve'))
+        ],style={'width': '50%', 'display': 'inline-block'}),
+        html.Div([
+            dcc.Graph(figure=px.line(trump_data, x='Date', y='Strongly Disapprove', title='Strongly Disapprove'))
+        ],style={'width': '50%', 'display': 'inline-block'}),
+    ], style={'width': '90%', 'height': 500, 'margin': 'auto'}),
+
+    html.Div([
+        html.Div([
+            dcc.Graph(figure=px.line(trump_data, x='Date', y='Strongly Approve', title='Total Approve'))
+        ],style={'width': '50%', 'display': 'inline-block'}),
+        html.Div([
+            dcc.Graph(figure=px.line(trump_data, x='Date', y='Strongly Approve', title='Total Disapprove'))
+        ],style={'width': '50%', 'display': 'inline-block'}),
+    ], style={'width': '90%', 'height': 500, 'margin': 'auto'}),
+    html.Div([
+        dcc.Link('Back to Menu', href = '/', style={'fontSize': 40})
+    ], style = {'textAlign': 'center'})
+])
+
+
+
 # Page-Router
 @app.callback(dash.dependencies.Output('page-content', 'children'),
             [dash.dependencies.Input('url', 'pathname')])
@@ -290,6 +333,8 @@ def display_page(pathname):
         return us_yield
     elif pathname == '/japanese-gdp':
         return japanese_gdp
+    elif pathname == '/trump-index':
+        return t_index
     else:
         return index_page
 
