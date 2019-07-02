@@ -317,8 +317,8 @@ t_index = html.Div([
         ],style={'width': '50%', 'display': 'inline-block'}),
     ], style={'width': '90%', 'height': 500, 'margin': 'auto'}),
     html.Div([
-        dcc.Link('Back to Menu', href = '/', style={'fontSize': 40})
-    ], style = {'textAlign': 'center'})
+        dcc.Link('Back to Menu', href = '/', style={'fontSize': 40, })
+    ], style = {'textAlign': 'center', 'marginTop': 100})
 ])
 
 
