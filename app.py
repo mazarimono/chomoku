@@ -35,7 +35,7 @@ dfgdp = pd.read_csv('./src/japanese-gdp-19552007.csv')
 # RUSMUSSEN TRUMP INDEX
 trump_data = pd.read_html('http://www.rasmussenreports.com/public_content/politics/trump_administration/trump_approval_index_history', parse_dates=['Date'])[0]
 
-## APP 
+# APP 
 app = dash.Dash(__name__)
 
 server = app.server
@@ -294,7 +294,9 @@ t_index = html.Div([
     html.H1('Data from RASMUSSEN REPORTS'),
     html.Div(['URL : ', html.A('http://www.rasmussenreports.com/public_content/politics/trump_administration/trump_approval_index_history')]),
     html.H3(children=['Update: {}'.format(str(trump_data['Date'].max())[:10])]),
+    html.H3('Latest Approval Index: {}'.format(trump_data.iloc[0, 1])),
     ], style={'textAlign': 'center'}),
+
     html.Div([
         dcc.Graph(figure=px.line(trump_data, x='Date', y='Approval Index', title='Trump Administration Approval Index(Rasmssen)'))
     ], style={'width': '60%', 'height':500, 'margin': '5% auto 5%'}),
