@@ -1,9 +1,9 @@
 dash 
 dash_core_components 
 dash_html_components
-plotly_express
 plotly 
 pandas 
+numpy 
 pandas_datareader
 gunicorn 
 lxml
