@@ -1,18 +1,17 @@
+import json
+import os
+from datetime import datetime, timedelta
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
-import plotly.express as px
-import plotly.graph_objs as go
-import plotly.figure_factory as ff
+import numpy as np
 import pandas as pd
 import pandas_datareader.data as web
-import numpy as np 
-from datetime import datetime
-from datetime import timedelta
-import json
-import os
-
+import plotly.express as px
+import plotly.figure_factory as ff
+import plotly.graph_objs as go
+from dash.dependencies import Input, Output
 
 # Tsuyu Data Read
 dftsuyu = pd.read_csv(
