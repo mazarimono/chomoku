@@ -21,63 +21,64 @@ df2tsuyu = pd.read_csv(
     "./src/all2.csv", index_col=0, parse_dates=["enter", "exit", "date"]
 )
 
-# US YIELD DATA
-# Data
-start = datetime(2000, 1, 1)
-today = datetime.today()
+# # US YIELD DATA
+# # Data
+# start = datetime(2000, 1, 1)
+# today = datetime.today()
 
-dfyield = web.DataReader(
-    [
-        "DFF",
-        "DGS3MO",
-        "DGS2",
-        "DGS5",
-        "DGS10",
-        "DGS30",
-        "TEDRATE",
-        "T10YIE",
-        "T10Y3M",
-        "T10Y2Y",
-        "BAA10Y",
-    ],
-    "fred",
-    start,
-    today,
-)
-dfyield["date"] = dfyield.index
-dfyield.columns = [
-    "ffrate",
-    "3mT",
-    "2yT",
-    "5yT",
-    "10yT",
-    "30yT",
-    "tedspread",
-    "breakeven10Y",
-    "3m10ySpread",
-    "2y10ySpread",
-    "baa10ySpread",
-    "date",
-]
-dfyield["30yT"] = dfyield["30yT"].fillna(0)
+# dfyield = web.DataReader(
+#     [
+#         "DFF",
+#         "DGS3MO",
+#         "DGS2",
+#         "DGS5",
+#         "DGS10",
+#         "DGS30",
+#         "TEDRATE",
+#         "T10YIE",
+#         "T10Y3M",
+#         "T10Y2Y",
+#         "BAA10Y",
+#     ],
+#     "fred",
+#     start,
+#     today,
+# )
+# dfyield["date"] = dfyield.index
+# dfyield.columns = [
+#     "ffrate",
+#     "3mT",
+#     "2yT",
+#     "5yT",
+#     "10yT",
+#     "30yT",
+#     "tedspread",
+#     "breakeven10Y",
+#     "3m10ySpread",
+#     "2y10ySpread",
+#     "baa10ySpread",
+#     "date",
+# ]
+# dfyield["30yT"] = dfyield["30yT"].fillna(0)
 
-yieldOnly = dfyield[["date", "ffrate", "3mT", "2yT", "5yT", "10yT", "30yT"]].dropna()
-spreads = dfyield[
-    ["date", "tedspread", "3m10ySpread", "2y10ySpread", "baa10ySpread"]
-].dropna()
+# yieldOnly = dfyield[["date", "ffrate", "3mT", "2yT", "5yT", "10yT", "30yT"]].dropna()
+# spreads = dfyield[
+#     ["date", "tedspread", "3m10ySpread", "2y10ySpread", "baa10ySpread"]
+# ].dropna()
 
 # JP GDP DATA
 dfgdp = pd.read_csv("./src/japanese-gdp-19552007.csv")
 
-# RUSMUSSEN TRUMP INDEX
-trump_data = pd.read_html(
-    "http://www.rasmussenreports.com/public_content/politics/trump_administration/trump_approval_index_history",
-    parse_dates=["Date"],
-)[0]
+# # RUSMUSSEN TRUMP INDEX
+# trump_data = pd.read_html(
+#     "http://www.rasmussenreports.com/public_content/politics/trump_administration/trump_approval_index_history",
+#     parse_dates=["Date"],
+# )[0]
 
 
 # APP
-app = dash.Dash(__name__)
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 server = app.server
 
@@ -120,17 +121,17 @@ index_page = html.Div(
             style={"textAlign": "center"},
         ),
         html.Br(),
-        html.Div(
-            [
-                html.H1(
-                    "20190614:  ",
-                    style={"display": "inline-block", "marginRight": "1%"},
-                ),
-                dcc.Link("US Yield Watch", href="/us-yield", style={"fontSize": 40}),
-            ],
-            style={"textAlign": "center"},
-        ),
-        html.Br(),
+        # html.Div(
+        #     [
+        #         html.H1(
+        #             "20190614:  ",
+        #             style={"display": "inline-block", "marginRight": "1%"},
+        #         ),
+        #         dcc.Link("US Yield Watch", href="/us-yield", style={"fontSize": 40}),
+        #     ],
+        #     style={"textAlign": "center"},
+        # ),
+        # html.Br(),
         html.Div(
             [
                 html.H1(
@@ -144,20 +145,20 @@ index_page = html.Div(
             style={"textAlign": "center"},
         ),
         html.Br(),
-        html.Div(
-            [
-                html.H1(
-                    "20190625:  ",
-                    style={"display": "inline-block", "marginRight": "1%"},
-                ),
-                dcc.Link(
-                    "Trump Administration Approval Index Data from Rasmussen Report",
-                    href="/trump-index",
-                    style={"fontSize": 40},
-                ),
-            ],
-            style={"textAlign": "center"},
-        ),
+        # html.Div(
+        #     [
+        #         html.H1(
+        #             "20190625:  ",
+        #             style={"display": "inline-block", "marginRight": "1%"},
+        #         ),
+        #         dcc.Link(
+        #             "Trump Administration Approval Index Data from Rasmussen Report",
+        #             href="/trump-index",
+        #             style={"fontSize": 40},
+        #         ),
+        #     ],
+        #     style={"textAlign": "center"},
+        # ),
         html.Div(
             [
                 html.H1(
@@ -194,7 +195,8 @@ tsuyu_page = html.Div(
                         {"label": i, "value": i} for i in dftsuyu["area"].unique()
                     ],
                     value="okinawa",
-                    style={"width": "50%", "margin": "1% auto 1%", "fontSize": "1.2vw"},
+                    style={"width": "50%", "margin": "1% auto 1%", "fontSize": "1.2vw",},
+                    labelStyle={"display": "inline-block"}
                 ),
                 html.Div(
                     [
@@ -396,160 +398,160 @@ def gantt(areaName, slider_val, selected_year):
     )
 
 
-## Contents US YIELD CURVE
+# ## Contents US YIELD CURVE
 
-us_yield = html.Div(
-    [
-        html.Div(
-            [
-                html.H1("US Yield Data", style={"textAlign": "center"}),
-                dcc.DatePickerRange(
-                    id="date-picker",
-                    minimum_nights=5,
-                    clearable=True,
-                    start_date=datetime(2000, 1, 1),
-                    style={"display": "block"},
-                ),
-                html.Div(
-                    [
-                        dcc.Graph(
-                            id="historical-left",
-                            hoverData={"points": [{"x": "2008-09-09"}]},
-                        ),
-                        # html.H3('見たい範囲を上の日付ピッカー、もしくはマウスのドラッグで選択できます', style={'textAlign': 'center'}),
-                    ],
-                    style={"width": "49%", "display": "inline-block"},
-                ),
-                html.Div(
-                    [
-                        html.H1(id="test"),
-                        dcc.Graph(id="yield-curve-right"),
-                        # html.H3('左の米国の主要金利のグラフでマウスホバーした地点のイールドカーブが表示できます。', style={'textAlign': 'center'}),
-                    ],
-                    style={"width": "49%", "display": "inline-block"},
-                ),
-            ],
-            style={"height": "1000", "margin": "2%"},
-        ),
-        html.Div(
-            [
-                html.Div(
-                    [html.H1("Major Yeild Spreads")], style={"textAlign": "center"}
-                ),
-                html.Div(
-                    [
-                        dcc.Dropdown(
-                            id="spread-dropdown",
-                            options=[
-                                {"label": i, "value": i} for i in spreads.columns[1:]
-                            ],
-                            value="tedspread",
-                        )
-                    ],
-                    style={"width": "30%", "margin": "2% auto 2%"},
-                ),
-                html.Div(
-                    [dcc.Graph(id="spreadGraph")],
-                    style={"width": "60%", "margin": "0 auto 0"},
-                ),
-            ]
-        ),
-        html.Div(
-            [dcc.Link("Back to Menu", href="/", style={"fontSize": 40})],
-            style={"textAlign": "center"},
-        ),
-    ]
-)
-
-
-@app.callback(
-    dash.dependencies.Output("historical-left", "figure"),
-    [
-        dash.dependencies.Input("date-picker", "start_date"),
-        dash.dependencies.Input("date-picker", "end_date"),
-    ],
-)
-def makeYieldHist(start_date, end_date):
-    histdf = yieldOnly[start_date:end_date]
-    histdf = pd.melt(
-        histdf,
-        id_vars="date",
-        value_vars=["ffrate", "3mT", "2yT", "5yT", "10yT", "30yT"],
-    )
-    return {
-        "data": [
-            go.Scatter(
-                x=histdf[histdf["variable"] == i]["date"],
-                y=histdf[histdf["variable"] == i]["value"],
-                name=i,
-            )
-            for i in histdf["variable"].unique()
-        ],
-        "layout": {"title": "US Yeild"},
-    }
+# us_yield = html.Div(
+#     [
+#         html.Div(
+#             [
+#                 html.H1("US Yield Data", style={"textAlign": "center"}),
+#                 dcc.DatePickerRange(
+#                     id="date-picker",
+#                     minimum_nights=5,
+#                     clearable=True,
+#                     start_date=datetime(2000, 1, 1),
+#                     style={"display": "block"},
+#                 ),
+#                 html.Div(
+#                     [
+#                         dcc.Graph(
+#                             id="historical-left",
+#                             hoverData={"points": [{"x": "2008-09-09"}]},
+#                         ),
+#                         # html.H3('見たい範囲を上の日付ピッカー、もしくはマウスのドラッグで選択できます', style={'textAlign': 'center'}),
+#                     ],
+#                     style={"width": "49%", "display": "inline-block"},
+#                 ),
+#                 html.Div(
+#                     [
+#                         html.H1(id="test"),
+#                         dcc.Graph(id="yield-curve-right"),
+#                         # html.H3('左の米国の主要金利のグラフでマウスホバーした地点のイールドカーブが表示できます。', style={'textAlign': 'center'}),
+#                     ],
+#                     style={"width": "49%", "display": "inline-block"},
+#                 ),
+#             ],
+#             style={"height": "1000", "margin": "2%"},
+#         ),
+#         html.Div(
+#             [
+#                 html.Div(
+#                     [html.H1("Major Yeild Spreads")], style={"textAlign": "center"}
+#                 ),
+#                 html.Div(
+#                     [
+#                         dcc.Dropdown(
+#                             id="spread-dropdown",
+#                             options=[
+#                                 {"label": i, "value": i} for i in spreads.columns[1:]
+#                             ],
+#                             value="tedspread",
+#                         )
+#                     ],
+#                     style={"width": "30%", "margin": "2% auto 2%"},
+#                 ),
+#                 html.Div(
+#                     [dcc.Graph(id="spreadGraph")],
+#                     style={"width": "60%", "margin": "0 auto 0"},
+#                 ),
+#             ]
+#         ),
+#         html.Div(
+#             [dcc.Link("Back to Menu", href="/", style={"fontSize": 40})],
+#             style={"textAlign": "center"},
+#         ),
+#     ]
+# )
 
 
-@app.callback(
-    dash.dependencies.Output("yield-curve-right", "figure"),
-    [dash.dependencies.Input("historical-left", "hoverData")],
-)
-def makeYieldCurve(hoverData):
-
-    try:
-        selectedDate = hoverData["points"][0]["x"]
-    except:
-        selectedDate = datetime(2008, 9, 9)
-
-    selecteddf = yieldOnly[yieldOnly["date"] == selectedDate]
-    return {
-        "data": [
-            go.Parcoords(
-                line=dict(color="blue"),
-                dimensions=list(
-                    [
-                        dict(
-                            range=[0, 7], label="FF Rate", values=selecteddf["ffrate"]
-                        ),
-                        dict(
-                            range=[0, 7], label="3M Treasury", values=selecteddf["3mT"]
-                        ),
-                        dict(
-                            range=[0, 7], label="2Y Treasury", values=selecteddf["2yT"]
-                        ),
-                        dict(
-                            range=[0, 7], label="5Y Treasury", values=selecteddf["5yT"]
-                        ),
-                        dict(
-                            range=[0, 7],
-                            label="10Y Treasury",
-                            values=selecteddf["10yT"],
-                        ),
-                        dict(
-                            range=[0, 7],
-                            label="30Y Treasury",
-                            values=selecteddf["30yT"],
-                        ),
-                    ]
-                ),
-            )
-        ],
-        "layout": {"title": "Yield Curve Date: {}".format(selectedDate)},
-    }
+# @app.callback(
+#     dash.dependencies.Output("historical-left", "figure"),
+#     [
+#         dash.dependencies.Input("date-picker", "start_date"),
+#         dash.dependencies.Input("date-picker", "end_date"),
+#     ],
+# )
+# def makeYieldHist(start_date, end_date):
+#     histdf = yieldOnly[start_date:end_date]
+#     histdf = pd.melt(
+#         histdf,
+#         id_vars="date",
+#         value_vars=["ffrate", "3mT", "2yT", "5yT", "10yT", "30yT"],
+#     )
+#     return {
+#         "data": [
+#             go.Scatter(
+#                 x=histdf[histdf["variable"] == i]["date"],
+#                 y=histdf[histdf["variable"] == i]["value"],
+#                 name=i,
+#             )
+#             for i in histdf["variable"].unique()
+#         ],
+#         "layout": {"title": "US Yeild"},
+#     }
 
 
-@app.callback(
-    dash.dependencies.Output("spreadGraph", "figure"),
-    [dash.dependencies.Input("spread-dropdown", "value")],
-)
-def spreadGraph(selectedvalue):
-    dfspread = spreads[["date", selectedvalue]]
-    return {
-        "data": [
-            go.Scatter(
-                x=dfspread["date"], y=dfspread[selectedvalue], name=selectedvalue
-            )
-        ]
-    }
+# @app.callback(
+#     dash.dependencies.Output("yield-curve-right", "figure"),
+#     [dash.dependencies.Input("historical-left", "hoverData")],
+# )
+# def makeYieldCurve(hoverData):
+
+#     try:
+#         selectedDate = hoverData["points"][0]["x"]
+#     except:
+#         selectedDate = datetime(2008, 9, 9)
+
+#     selecteddf = yieldOnly[yieldOnly["date"] == selectedDate]
+#     return {
+#         "data": [
+#             go.Parcoords(
+#                 line=dict(color="blue"),
+#                 dimensions=list(
+#                     [
+#                         dict(
+#                             range=[0, 7], label="FF Rate", values=selecteddf["ffrate"]
+#                         ),
+#                         dict(
+#                             range=[0, 7], label="3M Treasury", values=selecteddf["3mT"]
+#                         ),
+#                         dict(
+#                             range=[0, 7], label="2Y Treasury", values=selecteddf["2yT"]
+#                         ),
+#                         dict(
+#                             range=[0, 7], label="5Y Treasury", values=selecteddf["5yT"]
+#                         ),
+#                         dict(
+#                             range=[0, 7],
+#                             label="10Y Treasury",
+#                             values=selecteddf["10yT"],
+#                         ),
+#                         dict(
+#                             range=[0, 7],
+#                             label="30Y Treasury",
+#                             values=selecteddf["30yT"],
+#                         ),
+#                     ]
+#                 ),
+#             )
+#         ],
+#         "layout": {"title": "Yield Curve Date: {}".format(selectedDate)},
+#     }
+
+
+# @app.callback(
+#     dash.dependencies.Output("spreadGraph", "figure"),
+#     [dash.dependencies.Input("spread-dropdown", "value")],
+# )
+# def spreadGraph(selectedvalue):
+#     dfspread = spreads[["date", selectedvalue]]
+#     return {
+#         "data": [
+#             go.Scatter(
+#                 x=dfspread["date"], y=dfspread[selectedvalue], name=selectedvalue
+#             )
+#         ]
+#     }
 
 
 japanese_gdp = html.Div(
@@ -569,115 +571,115 @@ japanese_gdp = html.Div(
     ]
 )
 
-# TRUMP INDEX
-t_index = html.Div(
-    [
-        html.Div(
-            [
-                html.H1("Trump Administration Approval Index"),
-                html.H1("Data from RASMUSSEN REPORTS"),
-                html.Div(
-                    [
-                        "URL : ",
-                        html.A(
-                            "http://www.rasmussenreports.com/public_content/politics/trump_administration/trump_approval_index_history"
-                        ),
-                    ]
-                ),
-                html.H3(
-                    children=["Update: {}".format(str(trump_data["Date"].max())[:10])]
-                ),
-                html.H3("Latest Approval Index: {}".format(trump_data.iloc[0, 1])),
-            ],
-            style={"textAlign": "center"},
-        ),
-        html.Div(
-            [
-                dcc.Graph(
-                    figure=px.line(
-                        trump_data,
-                        x="Date",
-                        y="Approval Index",
-                        title="Trump Administration Approval Index(Rasmssen)",
-                    )
-                )
-            ],
-            style={"width": "60%", "height": 500, "margin": "5% auto 5%"},
-        ),
-        html.Div(
-            [
-                html.Div(
-                    [
-                        dcc.Graph(
-                            figure=px.line(
-                                trump_data,
-                                x="Date",
-                                y="Strongly Approve",
-                                title="Strongly Approve",
-                            )
-                        )
-                    ],
-                    style={"width": "50%", "display": "inline-block"},
-                ),
-                html.Div(
-                    [
-                        dcc.Graph(
-                            figure=px.line(
-                                trump_data,
-                                x="Date",
-                                y="Strongly Disapprove",
-                                title="Strongly Disapprove",
-                            )
-                        )
-                    ],
-                    style={"width": "50%", "display": "inline-block"},
-                ),
-            ],
-            style={"width": "90%", "height": 500, "margin": "auto"},
-        ),
-        html.Div(
-            [
-                html.Div(
-                    [
-                        dcc.Graph(
-                            figure=px.line(
-                                trump_data,
-                                x="Date",
-                                y="Strongly Approve",
-                                title="Total Approve",
-                            )
-                        )
-                    ],
-                    style={"width": "50%", "display": "inline-block"},
-                ),
-                html.Div(
-                    [
-                        dcc.Graph(
-                            figure=px.line(
-                                trump_data,
-                                x="Date",
-                                y="Strongly Approve",
-                                title="Total Disapprove",
-                            )
-                        )
-                    ],
-                    style={"width": "50%", "display": "inline-block"},
-                ),
-            ],
-            style={"width": "90%", "height": 500, "margin": "auto"},
-        ),
-        html.Div(
-            [dcc.Link("Back to Menu", href="/", style={"fontSize": 40})],
-            style={"textAlign": "center", "marginTop": 100},
-        ),
-    ]
-)
+# # TRUMP INDEX
+# t_index = html.Div(
+#     [
+#         html.Div(
+#             [
+#                 html.H1("Trump Administration Approval Index"),
+#                 html.H1("Data from RASMUSSEN REPORTS"),
+#                 html.Div(
+#                     [
+#                         "URL : ",
+#                         html.A(
+#                             "http://www.rasmussenreports.com/public_content/politics/trump_administration/trump_approval_index_history"
+#                         ),
+#                     ]
+#                 ),
+#                 html.H3(
+#                     children=["Update: {}".format(str(trump_data["Date"].max())[:10])]
+#                 ),
+#                 html.H3("Latest Approval Index: {}".format(trump_data.iloc[0, 1])),
+#             ],
+#             style={"textAlign": "center"},
+#         ),
+#         html.Div(
+#             [
+#                 dcc.Graph(
+#                     figure=px.line(
+#                         trump_data,
+#                         x="Date",
+#                         y="Approval Index",
+#                         title="Trump Administration Approval Index(Rasmssen)",
+#                     )
+#                 )
+#             ],
+#             style={"width": "60%", "height": 500, "margin": "5% auto 5%"},
+#         ),
+#         html.Div(
+#             [
+#                 html.Div(
+#                     [
+#                         dcc.Graph(
+#                             figure=px.line(
+#                                 trump_data,
+#                                 x="Date",
+#                                 y="Strongly Approve",
+#                                 title="Strongly Approve",
+#                             )
+#                         )
+#                     ],
+#                     style={"width": "50%", "display": "inline-block"},
+#                 ),
+#                 html.Div(
+#                     [
+#                         dcc.Graph(
+#                             figure=px.line(
+#                                 trump_data,
+#                                 x="Date",
+#                                 y="Strongly Disapprove",
+#                                 title="Strongly Disapprove",
+#                             )
+#                         )
+#                     ],
+#                     style={"width": "50%", "display": "inline-block"},
+#                 ),
+#             ],
+#             style={"width": "90%", "height": 500, "margin": "auto"},
+#         ),
+#         html.Div(
+#             [
+#                 html.Div(
+#                     [
+#                         dcc.Graph(
+#                             figure=px.line(
+#                                 trump_data,
+#                                 x="Date",
+#                                 y="Strongly Approve",
+#                                 title="Total Approve",
+#                             )
+#                         )
+#                     ],
+#                     style={"width": "50%", "display": "inline-block"},
+#                 ),
+#                 html.Div(
+#                     [
+#                         dcc.Graph(
+#                             figure=px.line(
+#                                 trump_data,
+#                                 x="Date",
+#                                 y="Strongly Approve",
+#                                 title="Total Disapprove",
+#                             )
+#                         )
+#                     ],
+#                     style={"width": "50%", "display": "inline-block"},
+#                 ),
+#             ],
+#             style={"width": "90%", "height": 500, "margin": "auto"},
+#         ),
+#         html.Div(
+#             [dcc.Link("Back to Menu", href="/", style={"fontSize": 40})],
+#             style={"textAlign": "center", "marginTop": 100},
+#         ),
+#     ]
+# )
 
 
 # tourist in japan
 
 df = pd.read_csv(
-    "https://raw.githubusercontent.com/mazarimono/data-storage/master/after-prepro/jpn_visitor201909.csv",
+    "./src/tourist.csv",
     index_col=0, parse_dates=["date"]
 )
 df = df.sort_values("date")
@@ -712,6 +714,7 @@ tourist_n = html.Div(
                                 i: "{}".format(np.datetime64(tourist_date[i], "M"))
                                 for i in range(0, len(tourist_date), 12)
                             },
+                            pushable=12
                         )
                     ],
                     style={"width": "90%", "margin": "auto"},
@@ -721,7 +724,15 @@ tourist_n = html.Div(
         ),
         html.Div([
             dcc.Graph(id="pie-graph"),
-        ], style={"width": "35%", "display": "inline-block"})
+        ], style={"width": "35%", "display": "inline-block"}),
+        html.Br(),
+        html.Div([
+        html.A("Data From / 日本政府観光局　訪日外国人", href="https://www.jnto.go.jp/jpn/statistics/visitor_trends/",
+        target="_blank")], style={"margin":"5% auto", "textAlign":"center"}),
+        html.Div(
+            [dcc.Link("Back to Menu", href="/", style={"fontSize": 40})],
+            style={"textAlign": "center"},
+        ),
     ]
 )
 
