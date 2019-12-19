@@ -765,12 +765,8 @@ def update_pie(hoverData):
 def display_page(pathname):
     if pathname == "/tsuyu-dash":
         return tsuyu_page
-    elif pathname == "/us-yield":
-        return us_yield
     elif pathname == "/japanese-gdp":
         return japanese_gdp
-    elif pathname == "/trump-index":
-        return t_index
     elif pathname == "/tourist-number":
         return tourist_n
     else:
