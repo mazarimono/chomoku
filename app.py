@@ -1104,10 +1104,10 @@ def display_page(pathname):
         return japanese_gdp
     elif pathname == "/tourist-number":
         return tourist_n
-    elif pathname == "/data-viz1":
-        return data_viz1
-    elif pathname == "/data-viz2":
-        return data_viz2
+    elif pathname == "/alt-viz1":
+        return alt_viz1
+    elif pathname == "/alt-viz2":
+        return alt_viz2
     elif pathname == "/emoji":
         return emoji
     else:
