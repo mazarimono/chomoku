@@ -7,3 +7,9 @@ numpy
 pandas_datareader
 gunicorn 
 lxml
+git+https://github.com/plotly/dash-alternative-viz
+altair
+bokeh
+holoviews
+matplotlib
+seaborn

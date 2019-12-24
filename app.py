@@ -5,12 +5,18 @@ from datetime import datetime, timedelta
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_alternative_viz as dav
 import numpy as np
 import pandas as pd
 import pandas_datareader.data as web
 import plotly.express as px
 import plotly.figure_factory as ff
 import plotly.graph_objs as go
+import altair as alt
+from bokeh.embed import json_item
+import holoviews as hv
+import matplotlib.pyplot as plt
+import seaborn as sns
 from dash.dependencies import Input, Output
 
 # Tsuyu Data Read
@@ -757,6 +763,335 @@ def update_pie(hoverData):
     pie_graph = go.Pie(labels=dff["country"], values=dff["number"])
     return {"data": [pie_graph], "layout": go.Layout(height=600, title=f"{select_d}の国別比率")}
 
+# qiita
+
+hv.extension("bokeh")
+gapminder = px.data.gapminder()
+
+
+td_style = {"width": "50%", "margin": "20px"}
+
+alt_viz1 = html.Div(
+    [
+        html.Div(
+            [
+                dcc.Dropdown(id="year",
+                options=[{"label": i, "value": i} for i in gapminder.country.unique()],
+                value=["Japan", "China", "United States"],
+                multi=True),
+                
+            ],
+            style={
+                "width": "600px",
+                "padding-bottom": "30px",
+                "margin": "5% auto"
+            },
+        ),
+        html.Table(
+            [
+                html.Tr(
+                    [
+                        html.Td([dcc.Graph(id="px")], style=td_style),
+                        html.Td([dav.Svg(id="seaborn")], style=td_style),
+                    ]
+                ),
+                html.Tr(
+                    [
+                        html.Td([dav.VegaLite(id="vega")], style=td_style),
+                        html.Td([dav.BokehJSON(id="bokeh")], style=td_style),
+                    ]
+                ),
+            ],
+            style={"width": "1000px", "margin": "0 auto"},
+        ),
+    ]
+)
+
+
+@app.callback(Output("px", "figure"), [Input("year", "value")])
+def plotly_fig(selected_countries):
+    df = gapminder[gapminder.country.isin(selected_countries)]
+    return px.scatter(
+        df,
+        x="gdpPercap",
+        y="lifeExp",
+        size="pop",
+        size_max=30,
+        color="continent",
+        log_x=True,
+        height=400,
+        width=600,
+        title="Plotly Express",
+        hover_name="country",
+        hover_data=df.columns,
+    ).for_each_trace(lambda t: t.update(name=t.name.replace("continent=", "")))
+
+
+
+@app.callback(Output("vega", "spec"), [Input("year", "value")])
+def altair_fig(selected_countries):
+    df = gapminder[gapminder.country.isin(selected_countries)]
+    return (
+        alt.Chart(df, height=250, width=500)
+        .mark_circle()
+        .encode(
+            alt.X("gdpPercap:Q", scale=alt.Scale(type="log")),
+            alt.Y("lifeExp:Q", scale=alt.Scale(zero=False)),
+            size="pop:Q",
+            color="continent:N",
+            tooltip=list(df.columns),
+        )
+        .interactive()
+        .properties(title="Altair / Vega-Lite")
+        .to_dict()
+    )
+
+
+@app.callback(Output("bokeh", "json"), [Input("year", "value")])
+def bokeh_fig(selected_countries):
+    df = gapminder[gapminder.country.isin(selected_countries)]
+    return json_item(
+        hv.render(
+            hv.Points(df, kdims=["gdpPercap", "lifeExp"]).opts(
+                color="continent",
+                size=hv.dim("pop") ** (0.5) / 800,
+                logx=True,
+                height=330,
+                width=530,
+                cmap="Category10",
+                legend_position="bottom_right",
+                title="HoloViews / Bokeh",
+                tools=["hover"],
+            )
+        )
+    )
+
+
+@app.callback(Output("seaborn", "contents"), [Input("year", "value")])
+def seaborn_fig(selected_countries):
+    df = gapminder[gapminder.country.isin(selected_countries)]
+    fig, ax = plt.subplots()
+    sns.scatterplot(
+        data=df,
+        ax=ax,
+        x="gdpPercap",
+        y="lifeExp",
+        hue="continent",
+        size="pop",
+        sizes=(0, 800),
+    )
+    ax.set_xscale("log")
+    ax.set_title("Seaborn / matplotlib")
+    fig.set_size_inches(5.5, 3.5)
+    fig.tight_layout()
+
+    from io import BytesIO
+
+    b_io = BytesIO()
+    fig.savefig(b_io, format="svg")
+    return b_io.getvalue().decode("utf-8")
+
+
+alt_viz2 = html.Div(
+    [
+        html.Div(
+            [
+                dcc.Slider(
+                    id="year1",
+                    min=1952,
+                    max=2007,
+                    step=5,
+                    marks={x: str(x) for x in range(1952, 2008, 5)},
+                )
+            ],
+            style={
+                "width": "600px",
+                "padding-bottom": "30px",
+                "margin": "0 auto"
+            },
+        ),
+        html.Table(
+            [
+                html.Tr(
+                    [
+                        html.Td([dcc.Graph(id="px1")], style=td_style),
+                        html.Td([dav.Svg(id="seaborn1")], style=td_style),
+                    ]
+                ),
+                html.Tr(
+                    [
+                        html.Td([dav.VegaLite(id="vega1")], style=td_style),
+                        html.Td([dav.BokehJSON(id="bokeh1")], style=td_style),
+                    ]
+                ),
+            ],
+            style={"width": "1000px", "margin": "0 auto"},
+        ),
+    ]
+)
+
+
+@app.callback(Output("px1", "figure"), [Input("year1", "value")])
+def plotly_fig(year):
+    df = gapminder.query("year == %d" % (year or 1952))
+    return px.scatter(
+        df,
+        x="gdpPercap",
+        y="lifeExp",
+        size="pop",
+        size_max=30,
+        color="continent",
+        log_x=True,
+        height=400,
+        width=600,
+        title="Plotly Express",
+        hover_name="country",
+        hover_data=df.columns,
+    ).for_each_trace(lambda t: t.update(name=t.name.replace("continent=", "")))
+
+
+@app.callback(Output("vega1", "spec"), [Input("year1", "value")])
+def altair_fig(year):
+    df = gapminder.query("year == %d" % (year or 1952))
+    return (
+        alt.Chart(df, height=250, width=400)
+        .mark_circle()
+        .encode(
+            alt.X("gdpPercap:Q", scale=alt.Scale(type="log")),
+            alt.Y("lifeExp:Q", scale=alt.Scale(zero=False)),
+            size="pop:Q",
+            color="continent:N",
+            tooltip=list(df.columns),
+        )
+        .interactive()
+        .properties(title="Altair / Vega-Lite")
+        .to_dict()
+    )
+
+
+@app.callback(Output("bokeh1", "json"), [Input("year1", "value")])
+def bokeh_fig(year):
+    df = gapminder.query("year == %d" % (year or 1952))
+    return json_item(
+        hv.render(
+            hv.Points(df, kdims=["gdpPercap", "lifeExp"]).opts(
+                color="continent",
+                size=hv.dim("pop") ** (0.5) / 800,
+                logx=True,
+                height=330,
+                width=530,
+                cmap="Category10",
+                legend_position="bottom_right",
+                title="HoloViews / Bokeh",
+                tools=["hover"],
+            )
+        )
+    )
+
+
+@app.callback(Output("seaborn1", "contents"), [Input("year1", "value")])
+def seaborn_fig(year):
+    df = gapminder.query("year == %d" % (year or 1952))
+    fig, ax = plt.subplots()
+    sns.scatterplot(
+        data=df,
+        ax=ax,
+        x="gdpPercap",
+        y="lifeExp",
+        hue="continent",
+        size="pop",
+        sizes=(0, 800),
+    )
+    ax.set_xscale("log")
+    ax.set_title("Seaborn / matplotlib")
+    fig.set_size_inches(5.5, 3.5)
+    fig.tight_layout()
+
+    from io import BytesIO
+
+    b_io = BytesIO()
+    fig.savefig(b_io, format="svg")
+    return b_io.getvalue().decode("utf-8")
+
+
+source = pd.DataFrame([
+      {'country': 'Great Britain', 'animal': 'gold'},
+      {'country': 'Great Britain', 'animal': 'gold'},
+      {'country': 'Great Britain', 'animal': 'gold'},
+      {'country': 'Great Britain', 'animal': 'silver'},
+      {'country': 'Great Britain', 'animal': 'silver'},
+      {'country': 'Great Britain', 'animal': 'bronze'},
+      {'country': 'Great Britain', 'animal': 'bronze'},
+      {'country': 'Great Britain', 'animal': 'bronze'},
+      {'country': 'Great Britain', 'animal': 'bronze'},
+      {'country': 'Great Britain', 'animal': 'bronze'},
+      {'country': 'Great Britain', 'animal': 'bronze'},
+      {'country': 'Great Britain', 'animal': 'bronze'},
+      {'country': 'Great Britain', 'animal': 'bronze'},
+      {'country': 'Great Britain', 'animal': 'bronze'},
+      {'country': 'Great Britain', 'animal': 'bronze'},
+      {'country': 'United States', 'animal': 'gold'},
+      {'country': 'United States', 'animal': 'gold'},
+      {'country': 'United States', 'animal': 'gold'},
+      {'country': 'United States', 'animal': 'gold'},
+      {'country': 'United States', 'animal': 'gold'},
+      {'country': 'United States', 'animal': 'gold'},
+      {'country': 'United States', 'animal': 'gold'},
+      {'country': 'United States', 'animal': 'gold'},
+      {'country': 'United States', 'animal': 'gold'},
+      {'country': 'United States', 'animal': 'silver'},
+      {'country': 'United States', 'animal': 'silver'},
+      {'country': 'United States', 'animal': 'silver'},
+      {'country': 'United States', 'animal': 'silver'},
+      {'country': 'United States', 'animal': 'silver'},
+      {'country': 'United States', 'animal': 'silver'},
+      {'country': 'United States', 'animal': 'bronze'},
+      {'country': 'United States', 'animal': 'bronze'},
+      {'country': 'United States', 'animal': 'bronze'},
+      {'country': 'United States', 'animal': 'bronze'},
+      {'country': 'United States', 'animal': 'bronze'},
+      {'country': 'United States', 'animal': 'bronze'},
+      {'country': 'United States', 'animal': 'bronze'},
+      {'country': 'Germany', 'animal': 'gold'},
+      {'country': 'Germany', 'animal': 'gold'},
+      {'country': 'Germany', 'animal': 'gold'},
+      {'country': 'Germany', 'animal': 'gold'},
+      {'country': 'Germany', 'animal': 'silver'},
+      {'country': 'Germany', 'animal': 'silver'},
+      {'country': 'Germany', 'animal': 'silver'},
+      {'country': 'Germany', 'animal': 'silver'},
+      {'country': 'Germany', 'animal': 'silver'},
+      {'country': 'Germany', 'animal': 'silver'},
+      {'country': 'Germany', 'animal': 'bronze'},
+      {'country': 'Germany', 'animal': 'bronze'},
+      {'country': 'Germany', 'animal': 'bronze'},
+      {'country': 'Germany', 'animal': 'bronze'},
+      {'country': 'Germany', 'animal': 'bronze'},
+      {'country': 'Germany', 'animal': 'bronze'},
+      {'country': 'Germany', 'animal': 'bronze'}
+    ])
+
+emoji = html.Div([
+    html.H1("各国のメダル獲得数"),
+    dav.VegaLite(spec=alt.Chart(source).mark_text(size=45, baseline='middle').encode(
+    alt.X('x:O', axis=None),
+    alt.Y('animal:O', axis=None),
+    alt.Row('country:N', header=alt.Header(title='')),
+    alt.Text('emoji:N')
+).transform_calculate(
+    emoji="{'gold': '🥇', 'silver': '🥈', 'bronze': '🥉'}[datum.animal]"
+).transform_window(
+    x='rank()',
+    groupby=['country', 'animal']
+).properties(width=700, height=200).to_dict())
+])
+
+
+
+
+
+
+
 # Page-Router
 @app.callback(
     dash.dependencies.Output("page-content", "children"),
@@ -769,6 +1104,12 @@ def display_page(pathname):
         return japanese_gdp
     elif pathname == "/tourist-number":
         return tourist_n
+    elif pathname == "/data-viz1":
+        return data_viz1
+    elif pathname == "/data-viz2":
+        return data_viz2
+    elif pathname == "/emoji":
+        return emoji
     else:
         return index_page
 
