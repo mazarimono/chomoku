@@ -1117,14 +1117,14 @@ olym_medal = html.Div([
         dcc.Dropdown(id="olymedal-graph-type",
             options=[{"value": i, "label": i} for i in ["treemap", "line"]],
             value="treemap",
-            style={"width":"80%", "textAlign":"center", "margin":"auto"}
+            style={"width":"80%", "textAlign":"center", "margin":"auto", "color":"black"}
         ),
 
         html.H3("メダル種類選択"),
         dcc.Dropdown(id="medal-type",
             options=[{"value": i, "label": i} for i in ["gold", "silver", "bronze", "sum"]],
             value="sum",
-            style={"width":"80%", "textAlign":"center", "margin":"auto"}
+            style={"width":"80%", "textAlign":"center", "margin":"auto", "color":"black"}
         ),
         dcc.Markdown(
             """
@@ -1137,9 +1137,9 @@ olym_medal = html.Div([
 
     html.Div([
     dcc.Graph(id="olymedal-graph",
-    style={"width":"90%", "height": 600, "margin":"auto"}),
+    style={"width":"90%", "height": 500, "margin":"auto"}),
 
-    ], style={"height":650, "width":"70%", "display":"inline-block", "borderRaddius":50}),
+    ], style={"height":550, "width":"70%", "display":"inline-block", "borderRaddius":50}),
 
     html.Div([
         dcc.RangeSlider(
