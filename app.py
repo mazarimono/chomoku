@@ -178,6 +178,20 @@ index_page = html.Div(
             ],
             style={"textAlign": "center"},
         ),
+        html.Br(),
+        html.Div(
+            [
+                html.H1(
+                    "20200110: ", style={"display": "inline-block", "marginRight": "1%"}
+                ),
+                dcc.Link(
+                    "Olympic Medals",
+                    href="/medal",
+                    style={"fontSize": 40},
+                ),
+            ],
+            style={"textAlign": "center"},
+        ),
     ]
 )
 
@@ -1087,7 +1101,118 @@ emoji = html.Div([
 ])
 
 
+# Olympic Medal Data
 
+medal_data = pd.read_csv("src/olympic_summer_medalist.csv", index_col=0)
+term_min = medal_data["Year"].min()
+term_max = medal_data["Year"].max()
+
+olym_medal = html.Div([
+
+    html.H1(id="olymedal-title"),
+
+    html.Div([
+        
+        html.H3("表示グラフ選択"),
+        dcc.Dropdown(id="olymedal-graph-type",
+            options=[{"value": i, "label": i} for i in ["treemap", "line"]],
+            value="treemap",
+            style={"width":"80%", "textAlign":"center", "margin":"auto"}
+        ),
+
+        html.H3("メダル種類選択"),
+        dcc.Dropdown(id="medal-type",
+            options=[{"value": i, "label": i} for i in ["gold", "silver", "bronze", "sum"]],
+            value="sum",
+            style={"width":"80%", "textAlign":"center", "margin":"auto"}
+        ),
+        dcc.Markdown(
+            """
+            メダル種類選択の「sum」は金、銀、銅メダルの合計数です。スライダで表示年を選択できます。
+            """,
+            style={"fontSize": "2rem", "width":"80%","margin":"5% auto", "textAlign":"left"}
+        )
+
+    ], style={"width":"30%", "display":"inline-block", "verticalAlign":"top", "backgroundColor":"#FF9349","borderRadius":50}),
+
+    html.Div([
+    dcc.Graph(id="olymedal-graph",
+    style={"width":"90%", "height": 600, "margin":"auto"}),
+
+    ], style={"height":650, "width":"70%", "display":"inline-block", "borderRaddius":50}),
+
+    html.Div([
+        dcc.RangeSlider(
+            id="olympic-year-range",
+            min = term_min,
+            max = term_max,
+            value= [term_min, term_max],
+            marks= {i: f"{i}" for i in range(term_min, term_max) if i % 20 == 0}
+        )
+    ], style={"width":"80%", "margin":"2% auto"}),
+
+
+    html.Div([
+        html.H3("表示国選択"),
+        dcc.Dropdown(
+        id="medalcountry-select",
+        options=[{"value": c, "label": c} for c in medal_data.Country.unique()],
+        multi=True,
+        value=medal_data.Country.unique()
+        )
+    ], style={"width":"80%", "margin":"5% auto", "backgroundColor":"#FF9349", "padding":"3%",
+            "borderRadius":50}),
+    html.Div([
+        dcc.Markdown("""
+        
+            本アプリケーションは[kaggleのオリンピックデータ](https://www.kaggle.com/heesoo37/120-years-of-olympic-history-athletes-and-results/data#){:target="_blank"}を用い、夏のオリンピックのメダル獲得数を可視化しました。
+
+        """,
+        style={"fontSize": "2rem", "width":"80%","margin":"5% auto", "textAlign":"left"}
+        )
+    ], style={"width":"80%", "margin":"5% auto", "backgroundColor":"#FF9349", "padding":"3%",
+            "borderRadius":50}),
+    html.Div(
+            [dcc.Link("Back to Menu", href="/", style={"fontSize": 40})],
+            style={"textAlign": "center"},
+        ),
+
+], style={"textAlign": "center", "padding":"2%", "backgroundColor":"#ff7315", "color":"white",
+        "borderRadius":30})
+
+@app.callback(
+    [Output("olymedal-graph", "figure"),
+    Output("olymedal-title", "children")],
+    [Input("olymedal-graph-type", "value"), 
+    Input("medal-type", "value"),
+    Input("olympic-year-range", "value"),
+    Input("medalcountry-select", "value"),
+    ])
+def update_graph(graph_type, medal_type, year_range, selected_country):
+    min_year = min(year_range)
+    max_year = max(year_range)
+
+    title_show = f"夏のオリンピックメダルデータ（{min_year}年～{max_year}年）"
+
+    dff = medal_data[medal_data["Year"] >= min_year]
+    dff = dff[dff["Year"] <= max_year]
+    dff = dff[dff["Country"].isin(selected_country)]
+    coun_gold = dff[dff["Medal"]=="Gold"]
+    coun_gold = coun_gold.groupby("Country").count()
+    coun_silver = dff[dff["Medal"]=="Silver"]
+    coun_silver = coun_silver.groupby("Country").count()
+    coun_bronze = dff[dff["Medal"]=="Bronze"]
+    coun_bronze = coun_bronze.groupby("Country").count()
+    cont_medal = pd.concat([coun_gold["ID"], coun_silver["ID"], coun_bronze["ID"]], axis=1, sort=True)
+    cont_medal.columns = ["gold", "silver", "bronze"]
+    cont_medal["sum"] = cont_medal.sum(axis=1)
+    cont_medal["parents"] = ""
+    cont_medal["index"] = cont_medal.index 
+    cont_medal.sort_values(medal_type)
+    if graph_type == "treemap":
+        return px.treemap(cont_medal, values=medal_type, parents="parents", names="index"), title_show
+
+    return px.bar(cont_medal, x="index", y=medal_type),title_show
 
 
 
@@ -1110,6 +1235,8 @@ def display_page(pathname):
         return alt_viz2
     elif pathname == "/emoji":
         return emoji
+    elif pathname == "/medal":
+        return olym_medal
     else:
         return index_page
 
