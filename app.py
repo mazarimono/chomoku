@@ -1165,7 +1165,7 @@ olym_medal = html.Div([
     html.Div([
         dcc.Markdown("""
         
-            本アプリケーションは[kaggleのオリンピックデータ](https://www.kaggle.com/heesoo37/120-years-of-olympic-history-athletes-and-results/data#){:target="_blank"}を用い、夏のオリンピックのメダル獲得数を可視化しました。
+            本アプリケーションは[kaggleのオリンピックデータ](https://www.kaggle.com/heesoo37/120-years-of-olympic-history-athletes-and-results/data#)を用い、夏のオリンピックのメダル獲得数を可視化しました。
 
         """,
         style={"fontSize": "2rem", "width":"80%","margin":"5% auto", "textAlign":"left"}
