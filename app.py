@@ -1115,7 +1115,7 @@ olym_medal = html.Div([
         
         html.H3("表示グラフ選択"),
         dcc.Dropdown(id="olymedal-graph-type",
-            options=[{"value": i, "label": i} for i in ["treemap", "line"]],
+            options=[{"value": i, "label": i} for i in ["treemap", "bar"]],
             value="treemap",
             style={"width":"80%", "textAlign":"center", "margin":"auto", "color":"black"}
         ),
@@ -1128,7 +1128,7 @@ olym_medal = html.Div([
         ),
         dcc.Markdown(
             """
-            メダル種類選択の「sum」は金、銀、銅メダルの合計数です。スライダで表示年を選択できます。
+            メダル種類選択の「sum」は金、銀、銅メダルを受け取ったメダリストの人数です。スライダで表示年を選択できます。
             """,
             style={"fontSize": "2rem", "width":"80%","margin":"5% auto", "textAlign":"left"}
         )
@@ -1192,7 +1192,7 @@ def update_graph(graph_type, medal_type, year_range, selected_country):
     min_year = min(year_range)
     max_year = max(year_range)
 
-    title_show = f"夏のオリンピックメダルデータ（{min_year}年～{max_year}年）"
+    title_show = f"夏のオリンピック / メダリストデータ（{min_year}年～{max_year}年）"
 
     dff = medal_data[medal_data["Year"] >= min_year]
     dff = dff[dff["Year"] <= max_year]
