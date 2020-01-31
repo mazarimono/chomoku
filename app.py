@@ -13,11 +13,11 @@ import pandas_datareader.data as web
 import plotly.express as px
 import plotly.figure_factory as ff
 import plotly.graph_objs as go
-import altair as alt
-from bokeh.embed import json_item
-import holoviews as hv
-import matplotlib.pyplot as plt
-import seaborn as sns
+# import altair as alt
+# from bokeh.embed import json_item
+# import holoviews as hv
+# import matplotlib.pyplot as plt
+# import seaborn as sns
 from dash.dependencies import Input, Output
 
 # # Tsuyu Data Read
@@ -167,35 +167,35 @@ index_page = html.Div(
         #     ],
         #     style={"textAlign": "center"},
         # ),
-        html.Br(),
+        # html.Br(),
 
-        html.Div(
-            [
-                html.H1(
-                    "20191118: ", style={"display": "inline-block", "marginRight": "1%"}
-                ),
-                dcc.Link(
-                    "Foreigner Tourist Number in Japan",
-                    href="/tourist-number",
-                    style={"fontSize": 40},
-                ),
-            ],
-            style={"textAlign": "center"},
-        ),
-        html.Br(),
-        html.Div(
-            [
-                html.H1(
-                    "20200110: ", style={"display": "inline-block", "marginRight": "1%"}
-                ),
-                dcc.Link(
-                    "Olympic Medals",
-                    href="/medal",
-                    style={"fontSize": 40},
-                ),
-            ],
-            style={"textAlign": "center"},
-        ),
+        # html.Div(
+        #     [
+        #         html.H1(
+        #             "20191118: ", style={"display": "inline-block", "marginRight": "1%"}
+        #         ),
+        #         dcc.Link(
+        #             "Foreigner Tourist Number in Japan",
+        #             href="/tourist-number",
+        #             style={"fontSize": 40},
+        #         ),
+        #     ],
+        #     style={"textAlign": "center"},
+        # ),
+        # html.Br(),
+        # html.Div(
+        #     [
+        #         html.H1(
+        #             "20200110: ", style={"display": "inline-block", "marginRight": "1%"}
+        #         ),
+        #         dcc.Link(
+        #             "Olympic Medals",
+        #             href="/medal",
+        #             style={"fontSize": 40},
+        #         ),
+        #     ],
+        #     style={"textAlign": "center"},
+        # ),
         html.Br(),
         html.Div(
             [
@@ -714,523 +714,523 @@ index_page = html.Div(
 # )
 
 
-# tourist in japan
+# # tourist in japan
 
-df = pd.read_csv(
-    "./src/tourist.csv",
-    index_col=0, parse_dates=["date"]
-)
-df = df.sort_values("date")
-delist = ["総数", "アジア計", "ヨーロッパ計", "アフリカ計", "北アメリカ計", "南アメリカ計", "オセアニア計"]
-df = df[~df["country"].isin(delist)]
-df_number = df[df["type"] == "actual_number"]
-df_number = df_number.dropna()
-df_percent = df[df["type"] == "percentage"]
-df_percent = df_percent.dropna()
+# df = pd.read_csv(
+#     "./src/tourist.csv",
+#     index_col=0, parse_dates=["date"]
+# )
+# df = df.sort_values("date")
+# delist = ["総数", "アジア計", "ヨーロッパ計", "アフリカ計", "北アメリカ計", "南アメリカ計", "オセアニア計"]
+# df = df[~df["country"].isin(delist)]
+# df_number = df[df["type"] == "actual_number"]
+# df_number = df_number.dropna()
+# df_percent = df[df["type"] == "percentage"]
+# df_percent = df_percent.dropna()
 
-tourist_date = list(df_number["date"].unique())
-tourist_date.sort()
+# tourist_date = list(df_number["date"].unique())
+# tourist_date.sort()
 
-tourist_n = html.Div(
-    [
-        html.H1("訪日外国人動向", style={"textAlign": "center"}),
-        html.Div(
-            [
-                dcc.Graph(
-                    id="tourist_bar",
-                    figure=px.bar(df_number, x="date", y="number", color="country"),
-                    hoverData = {"points": [{"x": np.datetime64(tourist_date[-1], "D")}]}
-                ),
-                html.Div(
-                    [
-                        dcc.RangeSlider(
-                            id="tourist_rangeslider",
-                            max=len(tourist_date),
-                            min=0,
-                            value=[0, len(tourist_date)],
-                            marks={
-                                i: "{}".format(np.datetime64(tourist_date[i], "M"))
-                                for i in range(0, len(tourist_date), 12)
-                            },
-                            pushable=12
-                        )
-                    ],
-                    style={"width": "90%", "margin": "auto"},
-                ),
-            ],
-            style={"width": "65%", "float": "left"},
-        ),
-        html.Div([
-            dcc.Graph(id="pie-graph"),
-        ], style={"width": "35%", "display": "inline-block"}),
-        html.Br(),
-        html.Div([
-        html.A("Data From / 日本政府観光局　訪日外国人", href="https://www.jnto.go.jp/jpn/statistics/visitor_trends/",
-        target="_blank")], style={"margin":"5% auto", "textAlign":"center"}),
-        html.Div(
-            [dcc.Link("Back to Menu", href="/", style={"fontSize": 40})],
-            style={"textAlign": "center"},
-        ),
-    ]
-)
-
-
-@app.callback(Output("tourist_bar", "figure"), [Input("tourist_rangeslider", "value")])
-def update_graph(values):
-    min_d = values[0]
-    min_date = tourist_date[min_d]
-    min_date_d = np.datetime64(min_date, "M")
-    max_d = values[1]
-    max_date = tourist_date[max_d-1]
-    max_date_d = np.datetime64(max_date, "M")
-    dff = df_number[df_number["date"] >= min_date]
-    dff = dff[dff["date"] <= max_date]
-    return px.bar(dff, x="date", y="number", color="country", title=f"{min_date_d}から{max_date_d}の訪日外国人数（月別）")
-
-@app.callback(Output("pie-graph", "figure"), [Input("tourist_bar", "hoverData")])
-def update_pie(hoverData):
-    hoverdate = hoverData["points"][0]["x"]
-    select_d = np.datetime64(hoverdate, "M")
-    dff = df_number[df_number["date"] == hoverdate]
-    pie_graph = go.Pie(labels=dff["country"], values=dff["number"])
-    return {"data": [pie_graph], "layout": go.Layout(height=600, title=f"{select_d}の国別比率")}
-
-# qiita
-
-hv.extension("bokeh")
-gapminder = px.data.gapminder()
+# tourist_n = html.Div(
+#     [
+#         html.H1("訪日外国人動向", style={"textAlign": "center"}),
+#         html.Div(
+#             [
+#                 dcc.Graph(
+#                     id="tourist_bar",
+#                     figure=px.bar(df_number, x="date", y="number", color="country"),
+#                     hoverData = {"points": [{"x": np.datetime64(tourist_date[-1], "D")}]}
+#                 ),
+#                 html.Div(
+#                     [
+#                         dcc.RangeSlider(
+#                             id="tourist_rangeslider",
+#                             max=len(tourist_date),
+#                             min=0,
+#                             value=[0, len(tourist_date)],
+#                             marks={
+#                                 i: "{}".format(np.datetime64(tourist_date[i], "M"))
+#                                 for i in range(0, len(tourist_date), 12)
+#                             },
+#                             pushable=12
+#                         )
+#                     ],
+#                     style={"width": "90%", "margin": "auto"},
+#                 ),
+#             ],
+#             style={"width": "65%", "float": "left"},
+#         ),
+#         html.Div([
+#             dcc.Graph(id="pie-graph"),
+#         ], style={"width": "35%", "display": "inline-block"}),
+#         html.Br(),
+#         html.Div([
+#         html.A("Data From / 日本政府観光局　訪日外国人", href="https://www.jnto.go.jp/jpn/statistics/visitor_trends/",
+#         target="_blank")], style={"margin":"5% auto", "textAlign":"center"}),
+#         html.Div(
+#             [dcc.Link("Back to Menu", href="/", style={"fontSize": 40})],
+#             style={"textAlign": "center"},
+#         ),
+#     ]
+# )
 
 
-td_style = {"width": "50%", "margin": "20px"}
+# @app.callback(Output("tourist_bar", "figure"), [Input("tourist_rangeslider", "value")])
+# def update_graph(values):
+#     min_d = values[0]
+#     min_date = tourist_date[min_d]
+#     min_date_d = np.datetime64(min_date, "M")
+#     max_d = values[1]
+#     max_date = tourist_date[max_d-1]
+#     max_date_d = np.datetime64(max_date, "M")
+#     dff = df_number[df_number["date"] >= min_date]
+#     dff = dff[dff["date"] <= max_date]
+#     return px.bar(dff, x="date", y="number", color="country", title=f"{min_date_d}から{max_date_d}の訪日外国人数（月別）")
 
-alt_viz1 = html.Div(
-    [
-        html.Div(
-            [
-                dcc.Dropdown(id="year",
-                options=[{"label": i, "value": i} for i in gapminder.country.unique()],
-                value=["Japan", "China", "United States"],
-                multi=True),
+# @app.callback(Output("pie-graph", "figure"), [Input("tourist_bar", "hoverData")])
+# def update_pie(hoverData):
+#     hoverdate = hoverData["points"][0]["x"]
+#     select_d = np.datetime64(hoverdate, "M")
+#     dff = df_number[df_number["date"] == hoverdate]
+#     pie_graph = go.Pie(labels=dff["country"], values=dff["number"])
+#     return {"data": [pie_graph], "layout": go.Layout(height=600, title=f"{select_d}の国別比率")}
+
+# # qiita
+
+# hv.extension("bokeh")
+# gapminder = px.data.gapminder()
+
+
+# td_style = {"width": "50%", "margin": "20px"}
+
+# alt_viz1 = html.Div(
+#     [
+#         html.Div(
+#             [
+#                 dcc.Dropdown(id="year",
+#                 options=[{"label": i, "value": i} for i in gapminder.country.unique()],
+#                 value=["Japan", "China", "United States"],
+#                 multi=True),
                 
-            ],
-            style={
-                "width": "600px",
-                "padding-bottom": "30px",
-                "margin": "5% auto"
-            },
-        ),
-        html.Table(
-            [
-                html.Tr(
-                    [
-                        html.Td([dcc.Graph(id="px")], style=td_style),
-                        html.Td([dav.Svg(id="seaborn")], style=td_style),
-                    ]
-                ),
-                html.Tr(
-                    [
-                        html.Td([dav.VegaLite(id="vega")], style=td_style),
-                        html.Td([dav.BokehJSON(id="bokeh")], style=td_style),
-                    ]
-                ),
-            ],
-            style={"width": "1000px", "margin": "0 auto"},
-        ),
-    ]
-)
+#             ],
+#             style={
+#                 "width": "600px",
+#                 "padding-bottom": "30px",
+#                 "margin": "5% auto"
+#             },
+#         ),
+#         html.Table(
+#             [
+#                 html.Tr(
+#                     [
+#                         html.Td([dcc.Graph(id="px")], style=td_style),
+#                         html.Td([dav.Svg(id="seaborn")], style=td_style),
+#                     ]
+#                 ),
+#                 html.Tr(
+#                     [
+#                         html.Td([dav.VegaLite(id="vega")], style=td_style),
+#                         html.Td([dav.BokehJSON(id="bokeh")], style=td_style),
+#                     ]
+#                 ),
+#             ],
+#             style={"width": "1000px", "margin": "0 auto"},
+#         ),
+#     ]
+# )
 
 
-@app.callback(Output("px", "figure"), [Input("year", "value")])
-def plotly_fig(selected_countries):
-    df = gapminder[gapminder.country.isin(selected_countries)]
-    return px.scatter(
-        df,
-        x="gdpPercap",
-        y="lifeExp",
-        size="pop",
-        size_max=30,
-        color="continent",
-        log_x=True,
-        height=400,
-        width=600,
-        title="Plotly Express",
-        hover_name="country",
-        hover_data=df.columns,
-    ).for_each_trace(lambda t: t.update(name=t.name.replace("continent=", "")))
+# @app.callback(Output("px", "figure"), [Input("year", "value")])
+# def plotly_fig(selected_countries):
+#     df = gapminder[gapminder.country.isin(selected_countries)]
+#     return px.scatter(
+#         df,
+#         x="gdpPercap",
+#         y="lifeExp",
+#         size="pop",
+#         size_max=30,
+#         color="continent",
+#         log_x=True,
+#         height=400,
+#         width=600,
+#         title="Plotly Express",
+#         hover_name="country",
+#         hover_data=df.columns,
+#     ).for_each_trace(lambda t: t.update(name=t.name.replace("continent=", "")))
 
 
 
-@app.callback(Output("vega", "spec"), [Input("year", "value")])
-def altair_fig(selected_countries):
-    df = gapminder[gapminder.country.isin(selected_countries)]
-    return (
-        alt.Chart(df, height=250, width=500)
-        .mark_circle()
-        .encode(
-            alt.X("gdpPercap:Q", scale=alt.Scale(type="log")),
-            alt.Y("lifeExp:Q", scale=alt.Scale(zero=False)),
-            size="pop:Q",
-            color="continent:N",
-            tooltip=list(df.columns),
-        )
-        .interactive()
-        .properties(title="Altair / Vega-Lite")
-        .to_dict()
-    )
+# @app.callback(Output("vega", "spec"), [Input("year", "value")])
+# def altair_fig(selected_countries):
+#     df = gapminder[gapminder.country.isin(selected_countries)]
+#     return (
+#         alt.Chart(df, height=250, width=500)
+#         .mark_circle()
+#         .encode(
+#             alt.X("gdpPercap:Q", scale=alt.Scale(type="log")),
+#             alt.Y("lifeExp:Q", scale=alt.Scale(zero=False)),
+#             size="pop:Q",
+#             color="continent:N",
+#             tooltip=list(df.columns),
+#         )
+#         .interactive()
+#         .properties(title="Altair / Vega-Lite")
+#         .to_dict()
+#     )
 
 
-@app.callback(Output("bokeh", "json"), [Input("year", "value")])
-def bokeh_fig(selected_countries):
-    df = gapminder[gapminder.country.isin(selected_countries)]
-    return json_item(
-        hv.render(
-            hv.Points(df, kdims=["gdpPercap", "lifeExp"]).opts(
-                color="continent",
-                size=hv.dim("pop") ** (0.5) / 800,
-                logx=True,
-                height=330,
-                width=530,
-                cmap="Category10",
-                legend_position="bottom_right",
-                title="HoloViews / Bokeh",
-                tools=["hover"],
-            )
-        )
-    )
+# @app.callback(Output("bokeh", "json"), [Input("year", "value")])
+# def bokeh_fig(selected_countries):
+#     df = gapminder[gapminder.country.isin(selected_countries)]
+#     return json_item(
+#         hv.render(
+#             hv.Points(df, kdims=["gdpPercap", "lifeExp"]).opts(
+#                 color="continent",
+#                 size=hv.dim("pop") ** (0.5) / 800,
+#                 logx=True,
+#                 height=330,
+#                 width=530,
+#                 cmap="Category10",
+#                 legend_position="bottom_right",
+#                 title="HoloViews / Bokeh",
+#                 tools=["hover"],
+#             )
+#         )
+#     )
 
 
-@app.callback(Output("seaborn", "contents"), [Input("year", "value")])
-def seaborn_fig(selected_countries):
-    df = gapminder[gapminder.country.isin(selected_countries)]
-    fig, ax = plt.subplots()
-    sns.scatterplot(
-        data=df,
-        ax=ax,
-        x="gdpPercap",
-        y="lifeExp",
-        hue="continent",
-        size="pop",
-        sizes=(0, 800),
-    )
-    ax.set_xscale("log")
-    ax.set_title("Seaborn / matplotlib")
-    fig.set_size_inches(5.5, 3.5)
-    fig.tight_layout()
+# @app.callback(Output("seaborn", "contents"), [Input("year", "value")])
+# def seaborn_fig(selected_countries):
+#     df = gapminder[gapminder.country.isin(selected_countries)]
+#     fig, ax = plt.subplots()
+#     sns.scatterplot(
+#         data=df,
+#         ax=ax,
+#         x="gdpPercap",
+#         y="lifeExp",
+#         hue="continent",
+#         size="pop",
+#         sizes=(0, 800),
+#     )
+#     ax.set_xscale("log")
+#     ax.set_title("Seaborn / matplotlib")
+#     fig.set_size_inches(5.5, 3.5)
+#     fig.tight_layout()
 
-    from io import BytesIO
+#     from io import BytesIO
 
-    b_io = BytesIO()
-    fig.savefig(b_io, format="svg")
-    return b_io.getvalue().decode("utf-8")
-
-
-alt_viz2 = html.Div(
-    [
-        html.Div(
-            [
-                dcc.Slider(
-                    id="year1",
-                    min=1952,
-                    max=2007,
-                    step=5,
-                    marks={x: str(x) for x in range(1952, 2008, 5)},
-                )
-            ],
-            style={
-                "width": "600px",
-                "padding-bottom": "30px",
-                "margin": "0 auto"
-            },
-        ),
-        html.Table(
-            [
-                html.Tr(
-                    [
-                        html.Td([dcc.Graph(id="px1")], style=td_style),
-                        html.Td([dav.Svg(id="seaborn1")], style=td_style),
-                    ]
-                ),
-                html.Tr(
-                    [
-                        html.Td([dav.VegaLite(id="vega1")], style=td_style),
-                        html.Td([dav.BokehJSON(id="bokeh1")], style=td_style),
-                    ]
-                ),
-            ],
-            style={"width": "1000px", "margin": "0 auto"},
-        ),
-    ]
-)
+#     b_io = BytesIO()
+#     fig.savefig(b_io, format="svg")
+#     return b_io.getvalue().decode("utf-8")
 
 
-@app.callback(Output("px1", "figure"), [Input("year1", "value")])
-def plotly_fig(year):
-    df = gapminder.query("year == %d" % (year or 1952))
-    return px.scatter(
-        df,
-        x="gdpPercap",
-        y="lifeExp",
-        size="pop",
-        size_max=30,
-        color="continent",
-        log_x=True,
-        height=400,
-        width=600,
-        title="Plotly Express",
-        hover_name="country",
-        hover_data=df.columns,
-    ).for_each_trace(lambda t: t.update(name=t.name.replace("continent=", "")))
+# alt_viz2 = html.Div(
+#     [
+#         html.Div(
+#             [
+#                 dcc.Slider(
+#                     id="year1",
+#                     min=1952,
+#                     max=2007,
+#                     step=5,
+#                     marks={x: str(x) for x in range(1952, 2008, 5)},
+#                 )
+#             ],
+#             style={
+#                 "width": "600px",
+#                 "padding-bottom": "30px",
+#                 "margin": "0 auto"
+#             },
+#         ),
+#         html.Table(
+#             [
+#                 html.Tr(
+#                     [
+#                         html.Td([dcc.Graph(id="px1")], style=td_style),
+#                         html.Td([dav.Svg(id="seaborn1")], style=td_style),
+#                     ]
+#                 ),
+#                 html.Tr(
+#                     [
+#                         html.Td([dav.VegaLite(id="vega1")], style=td_style),
+#                         html.Td([dav.BokehJSON(id="bokeh1")], style=td_style),
+#                     ]
+#                 ),
+#             ],
+#             style={"width": "1000px", "margin": "0 auto"},
+#         ),
+#     ]
+# )
 
 
-@app.callback(Output("vega1", "spec"), [Input("year1", "value")])
-def altair_fig(year):
-    df = gapminder.query("year == %d" % (year or 1952))
-    return (
-        alt.Chart(df, height=250, width=400)
-        .mark_circle()
-        .encode(
-            alt.X("gdpPercap:Q", scale=alt.Scale(type="log")),
-            alt.Y("lifeExp:Q", scale=alt.Scale(zero=False)),
-            size="pop:Q",
-            color="continent:N",
-            tooltip=list(df.columns),
-        )
-        .interactive()
-        .properties(title="Altair / Vega-Lite")
-        .to_dict()
-    )
+# @app.callback(Output("px1", "figure"), [Input("year1", "value")])
+# def plotly_fig(year):
+#     df = gapminder.query("year == %d" % (year or 1952))
+#     return px.scatter(
+#         df,
+#         x="gdpPercap",
+#         y="lifeExp",
+#         size="pop",
+#         size_max=30,
+#         color="continent",
+#         log_x=True,
+#         height=400,
+#         width=600,
+#         title="Plotly Express",
+#         hover_name="country",
+#         hover_data=df.columns,
+#     ).for_each_trace(lambda t: t.update(name=t.name.replace("continent=", "")))
 
 
-@app.callback(Output("bokeh1", "json"), [Input("year1", "value")])
-def bokeh_fig(year):
-    df = gapminder.query("year == %d" % (year or 1952))
-    return json_item(
-        hv.render(
-            hv.Points(df, kdims=["gdpPercap", "lifeExp"]).opts(
-                color="continent",
-                size=hv.dim("pop") ** (0.5) / 800,
-                logx=True,
-                height=330,
-                width=530,
-                cmap="Category10",
-                legend_position="bottom_right",
-                title="HoloViews / Bokeh",
-                tools=["hover"],
-            )
-        )
-    )
+# @app.callback(Output("vega1", "spec"), [Input("year1", "value")])
+# def altair_fig(year):
+#     df = gapminder.query("year == %d" % (year or 1952))
+#     return (
+#         alt.Chart(df, height=250, width=400)
+#         .mark_circle()
+#         .encode(
+#             alt.X("gdpPercap:Q", scale=alt.Scale(type="log")),
+#             alt.Y("lifeExp:Q", scale=alt.Scale(zero=False)),
+#             size="pop:Q",
+#             color="continent:N",
+#             tooltip=list(df.columns),
+#         )
+#         .interactive()
+#         .properties(title="Altair / Vega-Lite")
+#         .to_dict()
+#     )
 
 
-@app.callback(Output("seaborn1", "contents"), [Input("year1", "value")])
-def seaborn_fig(year):
-    df = gapminder.query("year == %d" % (year or 1952))
-    fig, ax = plt.subplots()
-    sns.scatterplot(
-        data=df,
-        ax=ax,
-        x="gdpPercap",
-        y="lifeExp",
-        hue="continent",
-        size="pop",
-        sizes=(0, 800),
-    )
-    ax.set_xscale("log")
-    ax.set_title("Seaborn / matplotlib")
-    fig.set_size_inches(5.5, 3.5)
-    fig.tight_layout()
-
-    from io import BytesIO
-
-    b_io = BytesIO()
-    fig.savefig(b_io, format="svg")
-    return b_io.getvalue().decode("utf-8")
+# @app.callback(Output("bokeh1", "json"), [Input("year1", "value")])
+# def bokeh_fig(year):
+#     df = gapminder.query("year == %d" % (year or 1952))
+#     return json_item(
+#         hv.render(
+#             hv.Points(df, kdims=["gdpPercap", "lifeExp"]).opts(
+#                 color="continent",
+#                 size=hv.dim("pop") ** (0.5) / 800,
+#                 logx=True,
+#                 height=330,
+#                 width=530,
+#                 cmap="Category10",
+#                 legend_position="bottom_right",
+#                 title="HoloViews / Bokeh",
+#                 tools=["hover"],
+#             )
+#         )
+#     )
 
 
-source = pd.DataFrame([
-      {'country': 'Great Britain', 'animal': 'gold'},
-      {'country': 'Great Britain', 'animal': 'gold'},
-      {'country': 'Great Britain', 'animal': 'gold'},
-      {'country': 'Great Britain', 'animal': 'silver'},
-      {'country': 'Great Britain', 'animal': 'silver'},
-      {'country': 'Great Britain', 'animal': 'bronze'},
-      {'country': 'Great Britain', 'animal': 'bronze'},
-      {'country': 'Great Britain', 'animal': 'bronze'},
-      {'country': 'Great Britain', 'animal': 'bronze'},
-      {'country': 'Great Britain', 'animal': 'bronze'},
-      {'country': 'Great Britain', 'animal': 'bronze'},
-      {'country': 'Great Britain', 'animal': 'bronze'},
-      {'country': 'Great Britain', 'animal': 'bronze'},
-      {'country': 'Great Britain', 'animal': 'bronze'},
-      {'country': 'Great Britain', 'animal': 'bronze'},
-      {'country': 'United States', 'animal': 'gold'},
-      {'country': 'United States', 'animal': 'gold'},
-      {'country': 'United States', 'animal': 'gold'},
-      {'country': 'United States', 'animal': 'gold'},
-      {'country': 'United States', 'animal': 'gold'},
-      {'country': 'United States', 'animal': 'gold'},
-      {'country': 'United States', 'animal': 'gold'},
-      {'country': 'United States', 'animal': 'gold'},
-      {'country': 'United States', 'animal': 'gold'},
-      {'country': 'United States', 'animal': 'silver'},
-      {'country': 'United States', 'animal': 'silver'},
-      {'country': 'United States', 'animal': 'silver'},
-      {'country': 'United States', 'animal': 'silver'},
-      {'country': 'United States', 'animal': 'silver'},
-      {'country': 'United States', 'animal': 'silver'},
-      {'country': 'United States', 'animal': 'bronze'},
-      {'country': 'United States', 'animal': 'bronze'},
-      {'country': 'United States', 'animal': 'bronze'},
-      {'country': 'United States', 'animal': 'bronze'},
-      {'country': 'United States', 'animal': 'bronze'},
-      {'country': 'United States', 'animal': 'bronze'},
-      {'country': 'United States', 'animal': 'bronze'},
-      {'country': 'Germany', 'animal': 'gold'},
-      {'country': 'Germany', 'animal': 'gold'},
-      {'country': 'Germany', 'animal': 'gold'},
-      {'country': 'Germany', 'animal': 'gold'},
-      {'country': 'Germany', 'animal': 'silver'},
-      {'country': 'Germany', 'animal': 'silver'},
-      {'country': 'Germany', 'animal': 'silver'},
-      {'country': 'Germany', 'animal': 'silver'},
-      {'country': 'Germany', 'animal': 'silver'},
-      {'country': 'Germany', 'animal': 'silver'},
-      {'country': 'Germany', 'animal': 'bronze'},
-      {'country': 'Germany', 'animal': 'bronze'},
-      {'country': 'Germany', 'animal': 'bronze'},
-      {'country': 'Germany', 'animal': 'bronze'},
-      {'country': 'Germany', 'animal': 'bronze'},
-      {'country': 'Germany', 'animal': 'bronze'},
-      {'country': 'Germany', 'animal': 'bronze'}
-    ])
+# @app.callback(Output("seaborn1", "contents"), [Input("year1", "value")])
+# def seaborn_fig(year):
+#     df = gapminder.query("year == %d" % (year or 1952))
+#     fig, ax = plt.subplots()
+#     sns.scatterplot(
+#         data=df,
+#         ax=ax,
+#         x="gdpPercap",
+#         y="lifeExp",
+#         hue="continent",
+#         size="pop",
+#         sizes=(0, 800),
+#     )
+#     ax.set_xscale("log")
+#     ax.set_title("Seaborn / matplotlib")
+#     fig.set_size_inches(5.5, 3.5)
+#     fig.tight_layout()
 
-emoji = html.Div([
-    html.H1("各国のメダル獲得数"),
-    dav.VegaLite(spec=alt.Chart(source).mark_text(size=45, baseline='middle').encode(
-    alt.X('x:O', axis=None),
-    alt.Y('animal:O', axis=None),
-    alt.Row('country:N', header=alt.Header(title='')),
-    alt.Text('emoji:N')
-).transform_calculate(
-    emoji="{'gold': '🥇', 'silver': '🥈', 'bronze': '🥉'}[datum.animal]"
-).transform_window(
-    x='rank()',
-    groupby=['country', 'animal']
-).properties(width=700, height=200).to_dict())
-])
+#     from io import BytesIO
+
+#     b_io = BytesIO()
+#     fig.savefig(b_io, format="svg")
+#     return b_io.getvalue().decode("utf-8")
 
 
-# Olympic Medal Data
+# source = pd.DataFrame([
+#       {'country': 'Great Britain', 'animal': 'gold'},
+#       {'country': 'Great Britain', 'animal': 'gold'},
+#       {'country': 'Great Britain', 'animal': 'gold'},
+#       {'country': 'Great Britain', 'animal': 'silver'},
+#       {'country': 'Great Britain', 'animal': 'silver'},
+#       {'country': 'Great Britain', 'animal': 'bronze'},
+#       {'country': 'Great Britain', 'animal': 'bronze'},
+#       {'country': 'Great Britain', 'animal': 'bronze'},
+#       {'country': 'Great Britain', 'animal': 'bronze'},
+#       {'country': 'Great Britain', 'animal': 'bronze'},
+#       {'country': 'Great Britain', 'animal': 'bronze'},
+#       {'country': 'Great Britain', 'animal': 'bronze'},
+#       {'country': 'Great Britain', 'animal': 'bronze'},
+#       {'country': 'Great Britain', 'animal': 'bronze'},
+#       {'country': 'Great Britain', 'animal': 'bronze'},
+#       {'country': 'United States', 'animal': 'gold'},
+#       {'country': 'United States', 'animal': 'gold'},
+#       {'country': 'United States', 'animal': 'gold'},
+#       {'country': 'United States', 'animal': 'gold'},
+#       {'country': 'United States', 'animal': 'gold'},
+#       {'country': 'United States', 'animal': 'gold'},
+#       {'country': 'United States', 'animal': 'gold'},
+#       {'country': 'United States', 'animal': 'gold'},
+#       {'country': 'United States', 'animal': 'gold'},
+#       {'country': 'United States', 'animal': 'silver'},
+#       {'country': 'United States', 'animal': 'silver'},
+#       {'country': 'United States', 'animal': 'silver'},
+#       {'country': 'United States', 'animal': 'silver'},
+#       {'country': 'United States', 'animal': 'silver'},
+#       {'country': 'United States', 'animal': 'silver'},
+#       {'country': 'United States', 'animal': 'bronze'},
+#       {'country': 'United States', 'animal': 'bronze'},
+#       {'country': 'United States', 'animal': 'bronze'},
+#       {'country': 'United States', 'animal': 'bronze'},
+#       {'country': 'United States', 'animal': 'bronze'},
+#       {'country': 'United States', 'animal': 'bronze'},
+#       {'country': 'United States', 'animal': 'bronze'},
+#       {'country': 'Germany', 'animal': 'gold'},
+#       {'country': 'Germany', 'animal': 'gold'},
+#       {'country': 'Germany', 'animal': 'gold'},
+#       {'country': 'Germany', 'animal': 'gold'},
+#       {'country': 'Germany', 'animal': 'silver'},
+#       {'country': 'Germany', 'animal': 'silver'},
+#       {'country': 'Germany', 'animal': 'silver'},
+#       {'country': 'Germany', 'animal': 'silver'},
+#       {'country': 'Germany', 'animal': 'silver'},
+#       {'country': 'Germany', 'animal': 'silver'},
+#       {'country': 'Germany', 'animal': 'bronze'},
+#       {'country': 'Germany', 'animal': 'bronze'},
+#       {'country': 'Germany', 'animal': 'bronze'},
+#       {'country': 'Germany', 'animal': 'bronze'},
+#       {'country': 'Germany', 'animal': 'bronze'},
+#       {'country': 'Germany', 'animal': 'bronze'},
+#       {'country': 'Germany', 'animal': 'bronze'}
+#     ])
 
-medal_data = pd.read_csv("src/olympic_summer_medalist.csv", index_col=0)
-term_min = medal_data["Year"].min()
-term_max = medal_data["Year"].max()
+# emoji = html.Div([
+#     html.H1("各国のメダル獲得数"),
+#     dav.VegaLite(spec=alt.Chart(source).mark_text(size=45, baseline='middle').encode(
+#     alt.X('x:O', axis=None),
+#     alt.Y('animal:O', axis=None),
+#     alt.Row('country:N', header=alt.Header(title='')),
+#     alt.Text('emoji:N')
+# ).transform_calculate(
+#     emoji="{'gold': '🥇', 'silver': '🥈', 'bronze': '🥉'}[datum.animal]"
+# ).transform_window(
+#     x='rank()',
+#     groupby=['country', 'animal']
+# ).properties(width=700, height=200).to_dict())
+# ])
 
-olym_medal = html.Div([
 
-    html.H1(id="olymedal-title"),
+# # Olympic Medal Data
 
-    html.Div([
+# medal_data = pd.read_csv("src/olympic_summer_medalist.csv", index_col=0)
+# term_min = medal_data["Year"].min()
+# term_max = medal_data["Year"].max()
+
+# olym_medal = html.Div([
+
+#     html.H1(id="olymedal-title"),
+
+#     html.Div([
         
-        html.H3("表示グラフ選択"),
-        dcc.Dropdown(id="olymedal-graph-type",
-            options=[{"value": i, "label": i} for i in ["treemap", "bar"]],
-            value="treemap",
-            style={"width":"80%", "textAlign":"center", "margin":"auto", "color":"black"}
-        ),
+#         html.H3("表示グラフ選択"),
+#         dcc.Dropdown(id="olymedal-graph-type",
+#             options=[{"value": i, "label": i} for i in ["treemap", "bar"]],
+#             value="treemap",
+#             style={"width":"80%", "textAlign":"center", "margin":"auto", "color":"black"}
+#         ),
 
-        html.H3("メダル種類選択"),
-        dcc.Dropdown(id="medal-type",
-            options=[{"value": i, "label": i} for i in ["gold", "silver", "bronze", "sum"]],
-            value="sum",
-            style={"width":"80%", "textAlign":"center", "margin":"auto", "color":"black"}
-        ),
-        dcc.Markdown(
-            """
-            メダル種類選択の「sum」は金、銀、銅メダルを受け取ったメダリストの人数です。スライダで表示年を選択できます。
-            """,
-            style={"fontSize": "2rem", "width":"80%","margin":"5% auto", "textAlign":"left"}
-        )
+#         html.H3("メダル種類選択"),
+#         dcc.Dropdown(id="medal-type",
+#             options=[{"value": i, "label": i} for i in ["gold", "silver", "bronze", "sum"]],
+#             value="sum",
+#             style={"width":"80%", "textAlign":"center", "margin":"auto", "color":"black"}
+#         ),
+#         dcc.Markdown(
+#             """
+#             メダル種類選択の「sum」は金、銀、銅メダルを受け取ったメダリストの人数です。スライダで表示年を選択できます。
+#             """,
+#             style={"fontSize": "2rem", "width":"80%","margin":"5% auto", "textAlign":"left"}
+#         )
 
-    ], style={"width":"30%", "display":"inline-block", "verticalAlign":"top", "backgroundColor":"#FF9349","borderRadius":50}),
+#     ], style={"width":"30%", "display":"inline-block", "verticalAlign":"top", "backgroundColor":"#FF9349","borderRadius":50}),
 
-    html.Div([
-    dcc.Graph(id="olymedal-graph",
-    style={"width":"90%", "height": 500, "margin":"auto"}),
+#     html.Div([
+#     dcc.Graph(id="olymedal-graph",
+#     style={"width":"90%", "height": 500, "margin":"auto"}),
 
-    ], style={"height":550, "width":"70%", "display":"inline-block", "borderRaddius":50}),
+#     ], style={"height":550, "width":"70%", "display":"inline-block", "borderRaddius":50}),
 
-    html.Div([
-        dcc.RangeSlider(
-            id="olympic-year-range",
-            min = term_min,
-            max = term_max,
-            value= [term_min, term_max],
-            marks= {i: f"{i}" for i in range(term_min, term_max) if i % 20 == 0}
-        )
-    ], style={"width":"80%", "margin":"2% auto"}),
+#     html.Div([
+#         dcc.RangeSlider(
+#             id="olympic-year-range",
+#             min = term_min,
+#             max = term_max,
+#             value= [term_min, term_max],
+#             marks= {i: f"{i}" for i in range(term_min, term_max) if i % 20 == 0}
+#         )
+#     ], style={"width":"80%", "margin":"2% auto"}),
 
 
-    html.Div([
-        html.H3("表示国選択"),
-        dcc.Dropdown(
-        id="medalcountry-select",
-        options=[{"value": c, "label": c} for c in medal_data.Country.unique()],
-        multi=True,
-        value=medal_data.Country.unique()
-        )
-    ], style={"width":"80%", "margin":"5% auto", "backgroundColor":"#FF9349", "padding":"3%",
-            "borderRadius":50}),
-    html.Div([
-        dcc.Markdown("""
+#     html.Div([
+#         html.H3("表示国選択"),
+#         dcc.Dropdown(
+#         id="medalcountry-select",
+#         options=[{"value": c, "label": c} for c in medal_data.Country.unique()],
+#         multi=True,
+#         value=medal_data.Country.unique()
+#         )
+#     ], style={"width":"80%", "margin":"5% auto", "backgroundColor":"#FF9349", "padding":"3%",
+#             "borderRadius":50}),
+#     html.Div([
+#         dcc.Markdown("""
         
-            本アプリケーションは[kaggleのオリンピックデータ](https://www.kaggle.com/heesoo37/120-years-of-olympic-history-athletes-and-results/data#)を用い、夏のオリンピックのメダル獲得数を可視化しました。
+#             本アプリケーションは[kaggleのオリンピックデータ](https://www.kaggle.com/heesoo37/120-years-of-olympic-history-athletes-and-results/data#)を用い、夏のオリンピックのメダル獲得数を可視化しました。
 
-        """,
-        style={"fontSize": "2rem", "width":"80%","margin":"5% auto", "textAlign":"left"}
-        )
-    ], style={"width":"80%", "margin":"5% auto", "backgroundColor":"#FF9349", "padding":"3%",
-            "borderRadius":50}),
-    html.Div(
-            [dcc.Link("Back to Menu", href="/", style={"fontSize": 40})],
-            style={"textAlign": "center"},
-        ),
+#         """,
+#         style={"fontSize": "2rem", "width":"80%","margin":"5% auto", "textAlign":"left"}
+#         )
+#     ], style={"width":"80%", "margin":"5% auto", "backgroundColor":"#FF9349", "padding":"3%",
+#             "borderRadius":50}),
+#     html.Div(
+#             [dcc.Link("Back to Menu", href="/", style={"fontSize": 40})],
+#             style={"textAlign": "center"},
+#         ),
 
-], style={"textAlign": "center", "padding":"2%", "backgroundColor":"#ff7315", "color":"white",
-        "borderRadius":30})
+# ], style={"textAlign": "center", "padding":"2%", "backgroundColor":"#ff7315", "color":"white",
+#         "borderRadius":30})
 
-@app.callback(
-    [Output("olymedal-graph", "figure"),
-    Output("olymedal-title", "children")],
-    [Input("olymedal-graph-type", "value"), 
-    Input("medal-type", "value"),
-    Input("olympic-year-range", "value"),
-    Input("medalcountry-select", "value"),
-    ])
-def update_graph(graph_type, medal_type, year_range, selected_country):
-    min_year = min(year_range)
-    max_year = max(year_range)
+# @app.callback(
+#     [Output("olymedal-graph", "figure"),
+#     Output("olymedal-title", "children")],
+#     [Input("olymedal-graph-type", "value"), 
+#     Input("medal-type", "value"),
+#     Input("olympic-year-range", "value"),
+#     Input("medalcountry-select", "value"),
+#     ])
+# def update_graph(graph_type, medal_type, year_range, selected_country):
+#     min_year = min(year_range)
+#     max_year = max(year_range)
 
-    title_show = f"夏のオリンピック / メダリストデータ（{min_year}年～{max_year}年）"
+#     title_show = f"夏のオリンピック / メダリストデータ（{min_year}年～{max_year}年）"
 
-    dff = medal_data[medal_data["Year"] >= min_year]
-    dff = dff[dff["Year"] <= max_year]
-    dff = dff[dff["Country"].isin(selected_country)]
-    coun_gold = dff[dff["Medal"]=="Gold"]
-    coun_gold = coun_gold.groupby("Country").count()
-    coun_silver = dff[dff["Medal"]=="Silver"]
-    coun_silver = coun_silver.groupby("Country").count()
-    coun_bronze = dff[dff["Medal"]=="Bronze"]
-    coun_bronze = coun_bronze.groupby("Country").count()
-    cont_medal = pd.concat([coun_gold["ID"], coun_silver["ID"], coun_bronze["ID"]], axis=1, sort=True)
-    cont_medal.columns = ["gold", "silver", "bronze"]
-    cont_medal["sum"] = cont_medal.sum(axis=1)
-    cont_medal["parents"] = ""
-    cont_medal["index"] = cont_medal.index 
-    cont_medal.sort_values(medal_type)
-    if graph_type == "treemap":
-        return px.treemap(cont_medal, values=medal_type, parents="parents", names="index"), title_show
+#     dff = medal_data[medal_data["Year"] >= min_year]
+#     dff = dff[dff["Year"] <= max_year]
+#     dff = dff[dff["Country"].isin(selected_country)]
+#     coun_gold = dff[dff["Medal"]=="Gold"]
+#     coun_gold = coun_gold.groupby("Country").count()
+#     coun_silver = dff[dff["Medal"]=="Silver"]
+#     coun_silver = coun_silver.groupby("Country").count()
+#     coun_bronze = dff[dff["Medal"]=="Bronze"]
+#     coun_bronze = coun_bronze.groupby("Country").count()
+#     cont_medal = pd.concat([coun_gold["ID"], coun_silver["ID"], coun_bronze["ID"]], axis=1, sort=True)
+#     cont_medal.columns = ["gold", "silver", "bronze"]
+#     cont_medal["sum"] = cont_medal.sum(axis=1)
+#     cont_medal["parents"] = ""
+#     cont_medal["index"] = cont_medal.index 
+#     cont_medal.sort_values(medal_type)
+#     if graph_type == "treemap":
+#         return px.treemap(cont_medal, values=medal_type, parents="parents", names="index"), title_show
 
-    return px.bar(cont_medal, x="index", y=medal_type),title_show
+#     return px.bar(cont_medal, x="index", y=medal_type),title_show
 
 # kyoto-bus
 
