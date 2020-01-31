@@ -1240,8 +1240,6 @@ index_df = pd.read_csv("src/kyoto-bus-index-long.csv", index_col=0)
 keito_df = pd.read_csv("src/kyoto-bus-keito.csv", index_col=0)
 bus_detail_df = pd.read_csv("src/bus_detail.csv", index_col=0)
 kyoto_spot_df = pd.read_csv("src/kyoto_spot_central.csv", index_col=0)
-# kyoto_spot_df = kyoto_spot_df[["lon", "lat","place"]]
-# kyoto_spot_df.columns = ["lon", "lat", "name"]
 bottom10_bus = index_df[index_df["variable"] == 2017].sort_values("value")[:10]
 
 
@@ -1266,42 +1264,42 @@ tab_selected_style = {
 
 # グラフの作成
 # 基礎情報のグラフ
-bus_income = dcc.Graph(
-    figure=go.Figure(
-        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常収益"])],
-        layout=go.Layout(title="経常収益"),
-    )
-)
-bus_spending = dcc.Graph(
-    figure=go.Figure(
-        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常支出"])],
-        layout=go.Layout(title="経常支出"),
-    )
-)
-bus_pl = dcc.Graph(
-    figure=go.Figure(
-        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常損益"])],
-        layout=go.Layout(title="経常損益"),
-    )
-)
-bus_loss = dcc.Graph(
-    figure=go.Figure(
-        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["累積欠損金"])],
-        layout=go.Layout(title="累計欠損金"),
-    )
-)
-bus_pas = dcc.Graph(
-    figure=go.Figure(
-        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["旅客数"])],
-        layout=go.Layout(title="旅客数（1日当たり）"),
-    )
-)
-bus_num = dcc.Graph(
-    figure=go.Figure(
-        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["職員数"])],
-        layout=go.Layout(title="職員数"),
-    )
-)
+# bus_income = dcc.Graph(
+#     figure=go.Figure(
+#         data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常収益"])],
+#         layout=go.Layout(title="経常収益"),
+#     )
+# )
+# bus_spending = dcc.Graph(
+#     figure=go.Figure(
+#         data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常支出"])],
+#         layout=go.Layout(title="経常支出"),
+#     )
+# )
+# bus_pl = dcc.Graph(
+#     figure=go.Figure(
+#         data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常損益"])],
+#         layout=go.Layout(title="経常損益"),
+#     )
+# )
+# bus_loss = dcc.Graph(
+#     figure=go.Figure(
+#         data=[go.Bar(x=fundata_df["年度"], y=fundata_df["累積欠損金"])],
+#         layout=go.Layout(title="累計欠損金"),
+#     )
+# )
+# bus_pas = dcc.Graph(
+#     figure=go.Figure(
+#         data=[go.Bar(x=fundata_df["年度"], y=fundata_df["旅客数"])],
+#         layout=go.Layout(title="旅客数（1日当たり）"),
+#     )
+# )
+# bus_num = dcc.Graph(
+#     figure=go.Figure(
+#         data=[go.Bar(x=fundata_df["年度"], y=fundata_df["職員数"])],
+#         layout=go.Layout(title="職員数"),
+#     )
+# )
 
 kyoto_bus = html.Div(
     [
@@ -1355,27 +1353,57 @@ kyoto_bus = html.Div(
                                                 html.Tr(
                                                     [
                                                         html.Td(
-                                                            [bus_income], style=td_style
+                                                            [dcc.Graph(
+    figure=go.Figure(
+        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常収益"])],
+        layout=go.Layout(title="経常収益"),
+    )
+)], style=td_style
                                                         ),
                                                         html.Td(
-                                                            [bus_spending],
+                                                            [dcc.Graph(
+    figure=go.Figure(
+        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常支出"])],
+        layout=go.Layout(title="経常支出"),
+    )
+)],
                                                             style=td_style,
                                                         ),
                                                         html.Td(
-                                                            [bus_pl], style=td_style
+                                                            [dcc.Graph(
+    figure=go.Figure(
+        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常損益"])],
+        layout=go.Layout(title="経常損益"),
+    )
+)], style=td_style
                                                         ),
                                                     ]
                                                 ),
                                                 html.Tr(
                                                     [
                                                         html.Td(
-                                                            [bus_loss], style=td_style
+                                                            [dcc.Graph(
+    figure=go.Figure(
+        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["累積欠損金"])],
+        layout=go.Layout(title="累計欠損金"),
+    )
+)], style=td_style
                                                         ),
                                                         html.Td(
-                                                            [bus_pas], style=td_style
+                                                            [dcc.Graph(
+    figure=go.Figure(
+        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["旅客数"])],
+        layout=go.Layout(title="旅客数（1日当たり）"),
+    )
+)], style=td_style
                                                         ),
                                                         html.Td(
-                                                            [bus_num], style=td_style
+                                                            [dcc.Graph(
+    figure=go.Figure(
+        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["職員数"])],
+        layout=go.Layout(title="職員数"),
+    )
+)], style=td_style
                                                         ),
                                                     ]
                                                 ),
