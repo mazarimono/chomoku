@@ -1673,7 +1673,7 @@ def update_map(selectedData, spot_switch):
 
     bus_index_b10 = index_df[index_df["bus_line"].isin(bottom10_bus["bus_line"])]
     bus10_df = keito_df[keito_df["name"].isin(bottom10_bus["bus_line"])]
-    bus_mean = bus10_df.mean()
+
 
     # 営業係数の線グラフ
     kyoto_bus_line_g = go.Figure(
@@ -1766,21 +1766,7 @@ def update_map(selectedData, spot_switch):
     [dash.dependencies.Input("url", "pathname")],
 )
 def display_page(pathname):
-    if pathname == "/tsuyu-dash":
-        return tsuyu_page
-    elif pathname == "/japanese-gdp":
-        return japanese_gdp
-    elif pathname == "/tourist-number":
-        return tourist_n
-    elif pathname == "/alt-viz1":
-        return alt_viz1
-    elif pathname == "/alt-viz2":
-        return alt_viz2
-    elif pathname == "/emoji":
-        return emoji
-    elif pathname == "/medal":
-        return olym_medal
-    elif pathname == "/kyoto-bus":
+    if pathname == "/kyoto-bus":
         return kyoto_bus
     else:
         return index_page

@@ -3,7 +3,7 @@ dash_core_components
 dash_html_components
 dash_daq
 plotly
-pandas 
+pandas==1.0.0 
 numpy 
 gunicorn 
 lxml
