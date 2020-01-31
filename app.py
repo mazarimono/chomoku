@@ -20,13 +20,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from dash.dependencies import Input, Output
 
-# Tsuyu Data Read
-dftsuyu = pd.read_csv(
-    "./src/all.csv", index_col=0, parse_dates=["enter", "exit", "g-enter", "g-exit"]
-)
-df2tsuyu = pd.read_csv(
-    "./src/all2.csv", index_col=0, parse_dates=["enter", "exit", "date"]
-)
+# # Tsuyu Data Read
+# dftsuyu = pd.read_csv(
+#     "./src/all.csv", index_col=0, parse_dates=["enter", "exit", "g-enter", "g-exit"]
+# )
+# df2tsuyu = pd.read_csv(
+#     "./src/all2.csv", index_col=0, parse_dates=["enter", "exit", "date"]
+# )
 
 # # US YIELD DATA
 # # Data
@@ -73,8 +73,8 @@ df2tsuyu = pd.read_csv(
 #     ["date", "tedspread", "3m10ySpread", "2y10ySpread", "baa10ySpread"]
 # ].dropna()
 
-# JP GDP DATA
-dfgdp = pd.read_csv("./src/japanese-gdp-19552007.csv")
+# # JP GDP DATA
+# dfgdp = pd.read_csv("./src/japanese-gdp-19552007.csv")
 
 # # RUSMUSSEN TRUMP INDEX
 # trump_data = pd.read_html(
@@ -139,34 +139,34 @@ app.layout = html.Div(
 index_page = html.Div(
     [
         html.Title("CHOMOKU DASHBOARD"),
-        html.Div(
-            [
-                html.H1(
-                    "20190607:  ",
-                    style={"display": "inline-block", "marginRight": "1%"},
-                ),
-                dcc.Link(
-                    "Japanese rainy season dashboard",
-                    href="/tsuyu-dash",
-                    style={"fontSize": 40},
-                ),
-            ],
-            style={"textAlign": "center"},
-        ),
-        html.Br(),
+        # html.Div(
+        #     [
+        #         html.H1(
+        #             "20190607:  ",
+        #             style={"display": "inline-block", "marginRight": "1%"},
+        #         ),
+        #         dcc.Link(
+        #             "Japanese rainy season dashboard",
+        #             href="/tsuyu-dash",
+        #             style={"fontSize": 40},
+        #         ),
+        #     ],
+        #     style={"textAlign": "center"},
+        # ),
+        # html.Br(),
 
-        html.Div(
-            [
-                html.H1(
-                    "20190625:  ",
-                    style={"display": "inline-block", "marginRight": "1%"},
-                ),
-                dcc.Link(
-                    "Japanese GDP(YoY %)", href="/japanese-gdp", style={"fontSize": 40}
-                ),
-            ],
-            style={"textAlign": "center"},
-        ),
+        # html.Div(
+        #     [
+        #         html.H1(
+        #             "20190625:  ",
+        #             style={"display": "inline-block", "marginRight": "1%"},
+        #         ),
+        #         dcc.Link(
+        #             "Japanese GDP(YoY %)", href="/japanese-gdp", style={"fontSize": 40}
+        #         ),
+        #     ],
+        #     style={"textAlign": "center"},
+        # ),
         html.Br(),
 
         html.Div(
@@ -213,227 +213,227 @@ index_page = html.Div(
     ]
 )
 
-# Contents Tsuyu_page
-tsuyu_page = html.Div(
-    [
-        html.H1(
-            "HOW ABOUT JAPANESE RAINY SEASON？",
-            style={"textAlign": "center", "fontSize": "1.5vw"},
-        ),
-        html.Div(
-            [
-                html.H2(id="sub-title", style={"textAlign": "center"}),
-                html.H2(
-                    "x-axis: begine date ; y-axis: end date, bubble-size: precipitation",
-                    style={"textAlign": "center"},
-                ),
-                dcc.RadioItems(
-                    id="area-select-dropdown",
-                    options=[
-                        {"label": i, "value": i} for i in dftsuyu["area"].unique()
-                    ],
-                    value="okinawa",
-                    style={"width": "50%", "margin": "1% auto 1%", "fontSize": "1.2vw",},
-                    labelStyle={"display": "inline-block"}
-                ),
-                html.Div(
-                    [
-                        dcc.RangeSlider(
-                            id="area-range-slider",
-                            min=dftsuyu["year"].min(),
-                            max=dftsuyu["year"].max(),
-                            value=[dftsuyu["year"].min(), dftsuyu["year"].max()],
-                            marks={
-                                i: "{}".format(i)
-                                for i in range(
-                                    dftsuyu["year"].min(), dftsuyu["year"].max()
-                                )
-                                if i % 10 == 0
-                            },
-                        )
-                    ],
-                    style={
-                        "textAlign": "center",
-                        "width": "60%",
-                        "margin": "1% auto 3%",
-                    },
-                ),
-                dcc.Graph(
-                    id="area-chart", style={"width": "75%", "margin": "0 auto 0"}
-                ),
-                html.P(
-                    "selection-area ; kyusyu-s: Kyusyu-South, kyusyu-n: Kyusyu-North, tohoku-n: Tohoku-North,tohoku-s: Tohoku-South",
-                    style={"width": "60%", "margin": "1% auto", "fontSize": "1vw"},
-                ),
-            ]
-        ),
-        html.Div(
-            [
-                html.H2(
-                    id="gantt-title",
-                    style={
-                        "width": "70%",
-                        "textAlign": "center",
-                        "fontSize": "1.5vw",
-                        "margin": "0 auto",
-                    },
-                ),
-                dcc.Graph(
-                    id="area-gantt", style={"width": "75%", "margin": "0 auto 0"}
-                ),
-                html.H2(
-                    id="scatter-title",
-                    style={
-                        "width": "70%",
-                        "textAlign": "center",
-                        "fontSize": "1.5vw",
-                        "margin": "0 auto",
-                    },
-                ),
-                dcc.Graph(
-                    id="scatter-rain", style={"width": "75%", "margin": "0 auto 0"}
-                ),
-                html.Div(
-                    [
-                        html.P("Please choose the year!"),
-                        dcc.Dropdown(
-                            id="polar-dropdown",
-                            options=[
-                                {"label": i, "value": i}
-                                for i in dftsuyu["year"].unique()
-                            ],
-                            value=1951,
-                            style={
-                                "width": "50%",
-                                "float": "left",
-                                "display": "inline-block",
-                            },
-                        ),
-                        dcc.Graph(
-                            id="bar-polar",
-                            style={
-                                "width": "75%",
-                                "margin": "0 auto 0",
-                                "display": "inline-block",
-                            },
-                        ),
-                    ],
-                    style={"width": "75%", "margin": "0 auto 0"},
-                ),
-            ]
-        ),
-        html.Div(
-            [dcc.Link("Back to Menu", href="/", style={"fontSize": 40})],
-            style={"textAlign": "center"},
-        ),
-    ]
-)
+# # Contents Tsuyu_page
+# tsuyu_page = html.Div(
+#     [
+#         html.H1(
+#             "HOW ABOUT JAPANESE RAINY SEASON？",
+#             style={"textAlign": "center", "fontSize": "1.5vw"},
+#         ),
+#         html.Div(
+#             [
+#                 html.H2(id="sub-title", style={"textAlign": "center"}),
+#                 html.H2(
+#                     "x-axis: begine date ; y-axis: end date, bubble-size: precipitation",
+#                     style={"textAlign": "center"},
+#                 ),
+#                 dcc.RadioItems(
+#                     id="area-select-dropdown",
+#                     options=[
+#                         {"label": i, "value": i} for i in dftsuyu["area"].unique()
+#                     ],
+#                     value="okinawa",
+#                     style={"width": "50%", "margin": "1% auto 1%", "fontSize": "1.2vw",},
+#                     labelStyle={"display": "inline-block"}
+#                 ),
+#                 html.Div(
+#                     [
+#                         dcc.RangeSlider(
+#                             id="area-range-slider",
+#                             min=dftsuyu["year"].min(),
+#                             max=dftsuyu["year"].max(),
+#                             value=[dftsuyu["year"].min(), dftsuyu["year"].max()],
+#                             marks={
+#                                 i: "{}".format(i)
+#                                 for i in range(
+#                                     dftsuyu["year"].min(), dftsuyu["year"].max()
+#                                 )
+#                                 if i % 10 == 0
+#                             },
+#                         )
+#                     ],
+#                     style={
+#                         "textAlign": "center",
+#                         "width": "60%",
+#                         "margin": "1% auto 3%",
+#                     },
+#                 ),
+#                 dcc.Graph(
+#                     id="area-chart", style={"width": "75%", "margin": "0 auto 0"}
+#                 ),
+#                 html.P(
+#                     "selection-area ; kyusyu-s: Kyusyu-South, kyusyu-n: Kyusyu-North, tohoku-n: Tohoku-North,tohoku-s: Tohoku-South",
+#                     style={"width": "60%", "margin": "1% auto", "fontSize": "1vw"},
+#                 ),
+#             ]
+#         ),
+#         html.Div(
+#             [
+#                 html.H2(
+#                     id="gantt-title",
+#                     style={
+#                         "width": "70%",
+#                         "textAlign": "center",
+#                         "fontSize": "1.5vw",
+#                         "margin": "0 auto",
+#                     },
+#                 ),
+#                 dcc.Graph(
+#                     id="area-gantt", style={"width": "75%", "margin": "0 auto 0"}
+#                 ),
+#                 html.H2(
+#                     id="scatter-title",
+#                     style={
+#                         "width": "70%",
+#                         "textAlign": "center",
+#                         "fontSize": "1.5vw",
+#                         "margin": "0 auto",
+#                     },
+#                 ),
+#                 dcc.Graph(
+#                     id="scatter-rain", style={"width": "75%", "margin": "0 auto 0"}
+#                 ),
+#                 html.Div(
+#                     [
+#                         html.P("Please choose the year!"),
+#                         dcc.Dropdown(
+#                             id="polar-dropdown",
+#                             options=[
+#                                 {"label": i, "value": i}
+#                                 for i in dftsuyu["year"].unique()
+#                             ],
+#                             value=1951,
+#                             style={
+#                                 "width": "50%",
+#                                 "float": "left",
+#                                 "display": "inline-block",
+#                             },
+#                         ),
+#                         dcc.Graph(
+#                             id="bar-polar",
+#                             style={
+#                                 "width": "75%",
+#                                 "margin": "0 auto 0",
+#                                 "display": "inline-block",
+#                             },
+#                         ),
+#                     ],
+#                     style={"width": "75%", "margin": "0 auto 0"},
+#                 ),
+#             ]
+#         ),
+#         html.Div(
+#             [dcc.Link("Back to Menu", href="/", style={"fontSize": 40})],
+#             style={"textAlign": "center"},
+#         ),
+#     ]
+# )
 
 
-@app.callback(
-    [Output("area-chart", "figure"), Output("sub-title", "children")],
-    [Input("area-select-dropdown", "value"), Input("area-range-slider", "value")],
-)
-def area_chart_figure(areaName, slider_val):
-    slider_num_small = slider_val[0]
-    slider_num_big = slider_val[1]
-    dfftsuyu = dftsuyu[dftsuyu["area"] == areaName]
-    dfftsuyu = dfftsuyu[dfftsuyu["year"] >= slider_num_small]
-    dfftsuyu = dfftsuyu[dfftsuyu["year"] <= slider_num_big]
+# @app.callback(
+#     [Output("area-chart", "figure"), Output("sub-title", "children")],
+#     [Input("area-select-dropdown", "value"), Input("area-range-slider", "value")],
+# )
+# def area_chart_figure(areaName, slider_val):
+#     slider_num_small = slider_val[0]
+#     slider_num_big = slider_val[1]
+#     dfftsuyu = dftsuyu[dftsuyu["area"] == areaName]
+#     dfftsuyu = dfftsuyu[dfftsuyu["year"] >= slider_num_small]
+#     dfftsuyu = dfftsuyu[dfftsuyu["year"] <= slider_num_big]
 
-    d = timedelta(10)
+#     d = timedelta(10)
 
-    return (
-        px.scatter(
-            dfftsuyu,
-            x="g-enter",
-            y="g-exit",
-            size="p-amount",
-            color="year",
-            marginal_x="violin",
-            marginal_y="violin",
-            range_x=[dftsuyu["g-enter"].min() - d, dftsuyu["g-enter"].max() + d],
-            range_y=[dftsuyu["g-exit"].min() - d, dftsuyu["g-exit"].max() + d],
-            height=600,
-        ),
-        "Rainy season in {} from {} to {}".format(
-            areaName, slider_num_small, slider_num_big
-        ),
-    )
+#     return (
+#         px.scatter(
+#             dfftsuyu,
+#             x="g-enter",
+#             y="g-exit",
+#             size="p-amount",
+#             color="year",
+#             marginal_x="violin",
+#             marginal_y="violin",
+#             range_x=[dftsuyu["g-enter"].min() - d, dftsuyu["g-enter"].max() + d],
+#             range_y=[dftsuyu["g-exit"].min() - d, dftsuyu["g-exit"].max() + d],
+#             height=600,
+#         ),
+#         "Rainy season in {} from {} to {}".format(
+#             areaName, slider_num_small, slider_num_big
+#         ),
+#     )
 
 
-@app.callback(
-    [
-        Output("area-gantt", "figure"),
-        Output("gantt-title", "children"),
-        Output("scatter-rain", "figure"),
-        Output("bar-polar", "figure"),
-        Output("scatter-title", "children"),
-    ],
-    [
-        Input("area-select-dropdown", "value"),
-        Input("area-range-slider", "value"),
-        Input("polar-dropdown", "value"),
-    ],
-)
-def gantt(areaName, slider_val, selected_year):
-    slider_num_small = slider_val[0]
-    slider_num_big = slider_val[1]
-    df1tsuyu = dftsuyu[dftsuyu["area"] == areaName]
-    df1tsuyu = df1tsuyu[df1tsuyu["year"] >= slider_num_small]
-    df1tsuyu = df1tsuyu[df1tsuyu["year"] <= slider_num_big]
-    dfftsuyu = df2tsuyu[df2tsuyu["area"] == areaName]
-    dfftsuyu = dfftsuyu[dfftsuyu["year"] >= slider_num_small]
-    dfftsuyu = dfftsuyu[dfftsuyu["year"] <= slider_num_big]
-    dff2suyu = dfftsuyu[dfftsuyu["variable"] == "g-enter"]
-    d = timedelta(10)
-    df_gannt = dftsuyu[dftsuyu["year"] == selected_year]
+# @app.callback(
+#     [
+#         Output("area-gantt", "figure"),
+#         Output("gantt-title", "children"),
+#         Output("scatter-rain", "figure"),
+#         Output("bar-polar", "figure"),
+#         Output("scatter-title", "children"),
+#     ],
+#     [
+#         Input("area-select-dropdown", "value"),
+#         Input("area-range-slider", "value"),
+#         Input("polar-dropdown", "value"),
+#     ],
+# )
+# def gantt(areaName, slider_val, selected_year):
+#     slider_num_small = slider_val[0]
+#     slider_num_big = slider_val[1]
+#     df1tsuyu = dftsuyu[dftsuyu["area"] == areaName]
+#     df1tsuyu = df1tsuyu[df1tsuyu["year"] >= slider_num_small]
+#     df1tsuyu = df1tsuyu[df1tsuyu["year"] <= slider_num_big]
+#     dfftsuyu = df2tsuyu[df2tsuyu["area"] == areaName]
+#     dfftsuyu = dfftsuyu[dfftsuyu["year"] >= slider_num_small]
+#     dfftsuyu = dfftsuyu[dfftsuyu["year"] <= slider_num_big]
+#     dff2suyu = dfftsuyu[dfftsuyu["variable"] == "g-enter"]
+#     d = timedelta(10)
+#     df_gannt = dftsuyu[dftsuyu["year"] == selected_year]
 
-    gannt_data = list()
+#     gannt_data = list()
 
-    for i in range(len(df_gannt)):
-        gannt_data.append(
-            dict(
-                Task=df_gannt.iloc[i, 2],
-                Start=df_gannt.iloc[i, 3],
-                Finish=df_gannt.iloc[i, 4],
-            )
-        )
+#     for i in range(len(df_gannt)):
+#         gannt_data.append(
+#             dict(
+#                 Task=df_gannt.iloc[i, 2],
+#                 Start=df_gannt.iloc[i, 3],
+#                 Finish=df_gannt.iloc[i, 4],
+#             )
+#         )
 
-    return (
-        px.box(
-            dfftsuyu,
-            x="year",
-            y="date",
-            range_y=[dftsuyu["g-enter"].min() - d, dftsuyu["g-exit"].max() + d],
-        ),
-        "Historical tsuyu enter-data and exit-date Chart: {} ".format(areaName),
-        {
-            "data": [
-                go.Scatter(
-                    x=df1tsuyu[df1tsuyu["year"] == i]["days"],
-                    y=dff2suyu[dff2suyu["year"] == i]["p-amount"],
-                    mode="markers",
-                    marker={"size": 15},
-                    text=str(i),
-                    name=str(i),
-                )
-                for i in df1tsuyu["year"].unique()
-            ],
-            "layout": go.Layout(
-                xaxis={"title": "days"},
-                yaxis={"title": "precipatation amount"},
-                height=600,
-                hovermode="closest",
-            ),
-        },
-        ff.create_gantt(
-            gannt_data, title="Difference of Area; Year {}".format(selected_year)
-        ),
-        "Scatter plot: {} xaxis: length of rainy season, yaxis: precipitational amount(average value: 100)".format(
-            areaName
-        ),
-    )
+#     return (
+#         px.box(
+#             dfftsuyu,
+#             x="year",
+#             y="date",
+#             range_y=[dftsuyu["g-enter"].min() - d, dftsuyu["g-exit"].max() + d],
+#         ),
+#         "Historical tsuyu enter-data and exit-date Chart: {} ".format(areaName),
+#         {
+#             "data": [
+#                 go.Scatter(
+#                     x=df1tsuyu[df1tsuyu["year"] == i]["days"],
+#                     y=dff2suyu[dff2suyu["year"] == i]["p-amount"],
+#                     mode="markers",
+#                     marker={"size": 15},
+#                     text=str(i),
+#                     name=str(i),
+#                 )
+#                 for i in df1tsuyu["year"].unique()
+#             ],
+#             "layout": go.Layout(
+#                 xaxis={"title": "days"},
+#                 yaxis={"title": "precipatation amount"},
+#                 height=600,
+#                 hovermode="closest",
+#             ),
+#         },
+#         ff.create_gantt(
+#             gannt_data, title="Difference of Area; Year {}".format(selected_year)
+#         ),
+#         "Scatter plot: {} xaxis: length of rainy season, yaxis: precipitational amount(average value: 100)".format(
+#             areaName
+#         ),
+#     )
 
 
 # ## Contents US YIELD CURVE
@@ -592,22 +592,22 @@ def gantt(areaName, slider_val, selected_year):
 #     }
 
 
-japanese_gdp = html.Div(
-    [
-        html.H1("日本の実質GDP成長率（前年比%）", style={"textAlign": "center"}),
-        html.Div(
-            [
-                dcc.Graph(
-                    figure={"data": [go.Bar(x=dfgdp["暦年"], y=dfgdp["GDP実質前年比（％）"])]}
-                )
-            ]
-        ),
-        html.Div(
-            [dcc.Link("Back to Menu", href="/", style={"fontSize": 40})],
-            style={"textAlign": "center"},
-        ),
-    ]
-)
+# japanese_gdp = html.Div(
+#     [
+#         html.H1("日本の実質GDP成長率（前年比%）", style={"textAlign": "center"}),
+#         html.Div(
+#             [
+#                 dcc.Graph(
+#                     figure={"data": [go.Bar(x=dfgdp["暦年"], y=dfgdp["GDP実質前年比（％）"])]}
+#                 )
+#             ]
+#         ),
+#         html.Div(
+#             [dcc.Link("Back to Menu", href="/", style={"fontSize": 40})],
+#             style={"textAlign": "center"},
+#         ),
+#     ]
+# )
 
 # # TRUMP INDEX
 # t_index = html.Div(
