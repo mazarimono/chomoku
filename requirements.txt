@@ -2,15 +2,9 @@ dash
 dash_core_components 
 dash_html_components
 dash_daq
-plotly == 4.4.1
+plotly
 pandas 
 numpy 
-pandas_datareader
 gunicorn 
 lxml
-git+https://github.com/plotly/dash-alternative-viz
-altair
-bokeh
-holoviews
-matplotlib
-seaborn
+

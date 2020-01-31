@@ -5,14 +5,15 @@ from datetime import datetime, timedelta
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_alternative_viz as dav
-import dash_daq as daq 
+# import dash_alternative_viz as dav
+import dash_daq as daq
 import numpy as np
 import pandas as pd
 import pandas_datareader.data as web
 import plotly.express as px
 import plotly.figure_factory as ff
 import plotly.graph_objs as go
+
 # import altair as alt
 # from bokeh.embed import json_item
 # import holoviews as hv
@@ -84,11 +85,11 @@ from dash.dependencies import Input, Output
 
 
 # APP
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 
-app.index_string = '''
+app.index_string = """
 <!DOCTYPE html>
 <html>
     <head>
@@ -107,10 +108,7 @@ app.index_string = '''
         <div></div>
     </body>
 </html>
-'''
-
-
-
+"""
 
 
 server = app.server
@@ -154,7 +152,6 @@ index_page = html.Div(
         #     style={"textAlign": "center"},
         # ),
         # html.Br(),
-
         # html.Div(
         #     [
         #         html.H1(
@@ -168,7 +165,6 @@ index_page = html.Div(
         #     style={"textAlign": "center"},
         # ),
         # html.Br(),
-
         # html.Div(
         #     [
         #         html.H1(
@@ -202,11 +198,7 @@ index_page = html.Div(
                 html.H1(
                     "20200131: ", style={"display": "inline-block", "marginRight": "1%"}
                 ),
-                dcc.Link(
-                    "Kyoto Bus",
-                    href="/kyoto-bus",
-                    style={"fontSize": 40},
-                ),
+                dcc.Link("Kyoto Bus", href="/kyoto-bus", style={"fontSize": 40}),
             ],
             style={"textAlign": "center"},
         ),
@@ -811,7 +803,7 @@ index_page = html.Div(
 #                 options=[{"label": i, "value": i} for i in gapminder.country.unique()],
 #                 value=["Japan", "China", "United States"],
 #                 multi=True),
-                
+
 #             ],
 #             style={
 #                 "width": "600px",
@@ -857,7 +849,6 @@ index_page = html.Div(
 #         hover_name="country",
 #         hover_data=df.columns,
 #     ).for_each_trace(lambda t: t.update(name=t.name.replace("continent=", "")))
-
 
 
 # @app.callback(Output("vega", "spec"), [Input("year", "value")])
@@ -1130,7 +1121,7 @@ index_page = html.Div(
 #     html.H1(id="olymedal-title"),
 
 #     html.Div([
-        
+
 #         html.H3("表示グラフ選択"),
 #         dcc.Dropdown(id="olymedal-graph-type",
 #             options=[{"value": i, "label": i} for i in ["treemap", "bar"]],
@@ -1182,7 +1173,7 @@ index_page = html.Div(
 #             "borderRadius":50}),
 #     html.Div([
 #         dcc.Markdown("""
-        
+
 #             本アプリケーションは[kaggleのオリンピックデータ](https://www.kaggle.com/heesoo37/120-years-of-olympic-history-athletes-and-results/data#)を用い、夏のオリンピックのメダル獲得数を可視化しました。
 
 #         """,
@@ -1201,7 +1192,7 @@ index_page = html.Div(
 # @app.callback(
 #     [Output("olymedal-graph", "figure"),
 #     Output("olymedal-title", "children")],
-#     [Input("olymedal-graph-type", "value"), 
+#     [Input("olymedal-graph-type", "value"),
 #     Input("medal-type", "value"),
 #     Input("olympic-year-range", "value"),
 #     Input("medalcountry-select", "value"),
@@ -1225,7 +1216,7 @@ index_page = html.Div(
 #     cont_medal.columns = ["gold", "silver", "bronze"]
 #     cont_medal["sum"] = cont_medal.sum(axis=1)
 #     cont_medal["parents"] = ""
-#     cont_medal["index"] = cont_medal.index 
+#     cont_medal["index"] = cont_medal.index
 #     cont_medal.sort_values(medal_type)
 #     if graph_type == "treemap":
 #         return px.treemap(cont_medal, values=medal_type, parents="parents", names="index"), title_show
@@ -1244,7 +1235,7 @@ bottom10_bus = index_df[index_df["variable"] == 2017].sort_values("value")[:10]
 
 
 td_style = {"width": "33%", "margin": "20px"}
-two_style = {"width": "50%", "display":"inline-block"}
+two_style = {"width": "50%", "display": "inline-block"}
 
 
 tabs_styles = {"height": "44px"}
@@ -1305,7 +1296,7 @@ kyoto_bus = html.Div(
     [
         html.Div(
             [
-                html.Div([html.H1("すごい！京都の市バス経営"),], style={"color": "#232323"}),
+                html.Div([html.H1("すごい！京都の市バス経営")], style={"color": "#232323"}),
                 html.Div(
                     [
                         dcc.Markdown(
@@ -1353,57 +1344,140 @@ kyoto_bus = html.Div(
                                                 html.Tr(
                                                     [
                                                         html.Td(
-                                                            [dcc.Graph(
-    figure=go.Figure(
-        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常収益"])],
-        layout=go.Layout(title="経常収益"),
-    )
-)], style=td_style
-                                                        ),
-                                                        html.Td(
-                                                            [dcc.Graph(
-    figure=go.Figure(
-        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常支出"])],
-        layout=go.Layout(title="経常支出"),
-    )
-)],
+                                                            [
+                                                                dcc.Graph(
+                                                                    figure=go.Figure(
+                                                                        data=[
+                                                                            go.Bar(
+                                                                                x=fundata_df[
+                                                                                    "年度"
+                                                                                ],
+                                                                                y=fundata_df[
+                                                                                    "経常収益"
+                                                                                ],
+                                                                            )
+                                                                        ],
+                                                                        layout=go.Layout(
+                                                                            title="経常収益"
+                                                                        ),
+                                                                    )
+                                                                )
+                                                            ],
                                                             style=td_style,
                                                         ),
                                                         html.Td(
-                                                            [dcc.Graph(
-    figure=go.Figure(
-        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常損益"])],
-        layout=go.Layout(title="経常損益"),
-    )
-)], style=td_style
+                                                            [
+                                                                dcc.Graph(
+                                                                    figure=go.Figure(
+                                                                        data=[
+                                                                            go.Bar(
+                                                                                x=fundata_df[
+                                                                                    "年度"
+                                                                                ],
+                                                                                y=fundata_df[
+                                                                                    "経常支出"
+                                                                                ],
+                                                                            )
+                                                                        ],
+                                                                        layout=go.Layout(
+                                                                            title="経常支出"
+                                                                        ),
+                                                                    )
+                                                                )
+                                                            ],
+                                                            style=td_style,
+                                                        ),
+                                                        html.Td(
+                                                            [
+                                                                dcc.Graph(
+                                                                    figure=go.Figure(
+                                                                        data=[
+                                                                            go.Bar(
+                                                                                x=fundata_df[
+                                                                                    "年度"
+                                                                                ],
+                                                                                y=fundata_df[
+                                                                                    "経常損益"
+                                                                                ],
+                                                                            )
+                                                                        ],
+                                                                        layout=go.Layout(
+                                                                            title="経常損益"
+                                                                        ),
+                                                                    )
+                                                                )
+                                                            ],
+                                                            style=td_style,
                                                         ),
                                                     ]
                                                 ),
                                                 html.Tr(
                                                     [
                                                         html.Td(
-                                                            [dcc.Graph(
-    figure=go.Figure(
-        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["累積欠損金"])],
-        layout=go.Layout(title="累計欠損金"),
-    )
-)], style=td_style
+                                                            [
+                                                                dcc.Graph(
+                                                                    figure=go.Figure(
+                                                                        data=[
+                                                                            go.Bar(
+                                                                                x=fundata_df[
+                                                                                    "年度"
+                                                                                ],
+                                                                                y=fundata_df[
+                                                                                    "累積欠損金"
+                                                                                ],
+                                                                            )
+                                                                        ],
+                                                                        layout=go.Layout(
+                                                                            title="累計欠損金"
+                                                                        ),
+                                                                    )
+                                                                )
+                                                            ],
+                                                            style=td_style,
                                                         ),
                                                         html.Td(
-                                                            [dcc.Graph(
-    figure=go.Figure(
-        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["旅客数"])],
-        layout=go.Layout(title="旅客数（1日当たり）"),
-    )
-)], style=td_style
+                                                            [
+                                                                dcc.Graph(
+                                                                    figure=go.Figure(
+                                                                        data=[
+                                                                            go.Bar(
+                                                                                x=fundata_df[
+                                                                                    "年度"
+                                                                                ],
+                                                                                y=fundata_df[
+                                                                                    "旅客数"
+                                                                                ],
+                                                                            )
+                                                                        ],
+                                                                        layout=go.Layout(
+                                                                            title="旅客数（1日当たり）"
+                                                                        ),
+                                                                    )
+                                                                )
+                                                            ],
+                                                            style=td_style,
                                                         ),
                                                         html.Td(
-                                                            [dcc.Graph(
-    figure=go.Figure(
-        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["職員数"])],
-        layout=go.Layout(title="職員数"),
-    )
-)], style=td_style
+                                                            [
+                                                                dcc.Graph(
+                                                                    figure=go.Figure(
+                                                                        data=[
+                                                                            go.Bar(
+                                                                                x=fundata_df[
+                                                                                    "年度"
+                                                                                ],
+                                                                                y=fundata_df[
+                                                                                    "職員数"
+                                                                                ],
+                                                                            )
+                                                                        ],
+                                                                        layout=go.Layout(
+                                                                            title="職員数"
+                                                                        ),
+                                                                    )
+                                                                )
+                                                            ],
+                                                            style=td_style,
                                                         ),
                                                     ]
                                                 ),
@@ -1421,25 +1495,50 @@ kyoto_bus = html.Div(
                                     selected_style=tab_selected_style,
                                     children=[
                                         html.H2("市バス詳細情報（2010年～2017年）"),
-                                        html.Div([
-                                            dcc.RadioItems(
-                                                id="passenger_select",
-                                                options=[{"label":"旅客数", "value": "旅客数"},
-                                                    {"label":"旅客収入", "value": "旅客収入"}],
-                                                value="旅客数"
-                                            ),
-                                            dcc.RadioItems(
-                                                id="busdata_select",
-                                                options=[{"label":"１車平均旅客収入（1日）", "value":"１車平均旅客収入（1日）"},
-                                                {"label":"走行1キロ当たり旅客収入", 
-                                                "value": "走行1キロ当たり旅客収入"}],
-                                                value ="１車平均旅客収入（1日）"
-                                            ),
-                                            html.Div([
-                                            dcc.Graph(id="pass_graph", style=two_style),
-                                            dcc.Graph(id="bus_graph", style=two_style)
-                                            ]),
-                                        ]),
+                                        html.Div(
+                                            [
+                                                dcc.RadioItems(
+                                                    id="passenger_select",
+                                                    options=[
+                                                        {
+                                                            "label": "旅客数",
+                                                            "value": "旅客数",
+                                                        },
+                                                        {
+                                                            "label": "旅客収入",
+                                                            "value": "旅客収入",
+                                                        },
+                                                    ],
+                                                    value="旅客数",
+                                                ),
+                                                dcc.RadioItems(
+                                                    id="busdata_select",
+                                                    options=[
+                                                        {
+                                                            "label": "１車平均旅客収入（1日）",
+                                                            "value": "１車平均旅客収入（1日）",
+                                                        },
+                                                        {
+                                                            "label": "走行1キロ当たり旅客収入",
+                                                            "value": "走行1キロ当たり旅客収入",
+                                                        },
+                                                    ],
+                                                    value="１車平均旅客収入（1日）",
+                                                ),
+                                                html.Div(
+                                                    [
+                                                        dcc.Graph(
+                                                            id="pass_graph",
+                                                            style=two_style,
+                                                        ),
+                                                        dcc.Graph(
+                                                            id="bus_graph",
+                                                            style=two_style,
+                                                        ),
+                                                    ]
+                                                ),
+                                            ]
+                                        ),
                                         html.P(
                                             "京都市オープンデータポータルサイト　「市バスの運輸成績について」　（https://data.city.kyoto.lg.jp/）"
                                         ),
@@ -1447,7 +1546,7 @@ kyoto_bus = html.Div(
                                 ),
                             ],
                             style=tabs_styles,
-                        ),
+                        )
                     ],
                     style={
                         "padding": "3%",
@@ -1491,7 +1590,7 @@ kyoto_bus = html.Div(
                                         },
                                         title="各路線の1日乗車数（x軸）と営業係数（y軸）",
                                     ),
-                                ),
+                                )
                             ],
                             style={"width": "70%", "display": "inline-block"},
                         ),
@@ -1503,92 +1602,119 @@ kyoto_bus = html.Div(
                                 "height": 500,
                             },
                         ),
-                        
-                        daq.ToggleSwitch(id="spot_change", label="観光地の表示",color="#9B51E0",style={"height": 100}),
-                        html.Div([html.Div([dcc.Graph(id="bus_line_map"),]),]),
-                        html.P("京都市オープンデータポータルサイト　「市バスの運輸成績について」　（https://data.city.kyoto.lg.jp/）"),
-                        html.P("GISホームページ　国土数値情報　バスルート　（http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N07.html）"),
-                        html.P("GISホームページ　国土数値情報　観光資源データ　（http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P12-v2_2.html）"),
-                        
+                        daq.ToggleSwitch(
+                            id="spot_change",
+                            label="観光地の表示",
+                            color="#9B51E0",
+                            style={"height": 100},
+                        ),
+                        html.Div([html.Div([dcc.Graph(id="bus_line_map")])]),
+                        html.P(
+                            "京都市オープンデータポータルサイト　「市バスの運輸成績について」　（https://data.city.kyoto.lg.jp/）"
+                        ),
+                        html.P(
+                            "GISホームページ　国土数値情報　バスルート　（http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N07.html）"
+                        ),
+                        html.P(
+                            "GISホームページ　国土数値情報　観光資源データ　（http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P12-v2_2.html）"
+                        ),
                     ]
                 ),
             ],
             style={"padding": "5% 10%"},
-        ),
+        )
     ],
     className="shikaku-css",
 )
 
 
-@app.callback(Output("pass_graph", "figure"),[Input("passenger_select","value")])
+@app.callback(Output("pass_graph", "figure"), [Input("passenger_select", "value")])
 def update_passanger_data_graph(pass_value):
     if pass_value == "旅客数":
-        fig = go.Figure(data=[go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["定期外旅客数"],name="定期外旅客数"),
-        go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["定期旅客数"], name="定期旅客数"),
-        go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["敬老旅客数"], name="敬老旅客数")
-        ],
-        layout=go.Layout(barmode="stack", title="各種旅客数（年間　単位：人）"))
+        fig = go.Figure(
+            data=[
+                go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["定期外旅客数"], name="定期外旅客数"),
+                go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["定期旅客数"], name="定期旅客数"),
+                go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["敬老旅客数"], name="敬老旅客数"),
+            ],
+            layout=go.Layout(barmode="stack", title="各種旅客数（年間　単位：人）"),
+        )
         return fig
-    fig=go.Figure(data=[go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["定期外旅客収入"],name="定期外旅客収入"),
-        go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["定期旅客収入"], name="定期旅客収入"),
-        go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["敬老など旅客収入"], name="敬老など旅客収入")
+    fig = go.Figure(
+        data=[
+            go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["定期外旅客収入"], name="定期外旅客収入"),
+            go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["定期旅客収入"], name="定期旅客収入"),
+            go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["敬老など旅客収入"], name="敬老など旅客収入"),
         ],
-        layout=go.Layout(barmode="stack", title="各種旅客収入（年間　単位：円）"))
-    return fig
-
-
-@app.callback(Output("bus_graph", "figure"),  [Input("busdata_select", "value")])
-def update_bus_data_graph(bus_value):
-    fig = go.Figure(data=[go.Bar(x=bus_detail_df["年度"], y=bus_detail_df[bus_value])],
-                    layout=go.Layout(title=f"バス{bus_value}（単位：円）")
+        layout=go.Layout(barmode="stack", title="各種旅客収入（年間　単位：円）"),
     )
-    
     return fig
 
+
+@app.callback(Output("bus_graph", "figure"), [Input("busdata_select", "value")])
+def update_bus_data_graph(bus_value):
+    fig = go.Figure(
+        data=[go.Bar(x=bus_detail_df["年度"], y=bus_detail_df[bus_value])],
+        layout=go.Layout(title=f"バス{bus_value}（単位：円）"),
+    )
+
+    return fig
 
 
 @app.callback(
-    [Output("bus_single_data", "figure"), Output("bus_line_map", "figure"), Output("spot_change", "label")],
+    [
+        Output("bus_single_data", "figure"),
+        Output("bus_line_map", "figure"),
+        Output("spot_change", "label"),
+    ],
     [Input("bus_index_scatter", "selectedData"), Input("spot_change", "value")],
 )
 def update_map(selectedData, spot_switch):
-        
+
     bus_index_b10 = index_df[index_df["bus_line"].isin(bottom10_bus["bus_line"])]
     bus10_df = keito_df[keito_df["name"].isin(bottom10_bus["bus_line"])]
     bus_mean = bus10_df.mean()
 
     # 営業係数の線グラフ
-    kyoto_bus_line_g = go.Figure(data=[
-        go.Scatter(
-            x=bus_index_b10[bus_index_b10["bus_line"] == i]["variable"],
-                        y=bus_index_b10[bus_index_b10["bus_line"] == i]["value"],
-                        name=i,
-        ) for i in bus_index_b10["bus_line"].unique()
-    ])
-
-    kyoto_bus_line_g.update_layout(
-        height=450,
-        title="各路線の営業係数"
+    kyoto_bus_line_g = go.Figure(
+        data=[
+            go.Scatter(
+                x=bus_index_b10[bus_index_b10["bus_line"] == i]["variable"],
+                y=bus_index_b10[bus_index_b10["bus_line"] == i]["value"],
+                name=i,
+            )
+            for i in bus_index_b10["bus_line"].unique()
+        ]
     )
 
+    kyoto_bus_line_g.update_layout(height=450, title="各路線の営業係数")
+
     # 地図グラフ
-    kyoto_spot_map = go.Figure(data=[go.Scattermapbox(
-        mode="lines+markers",
-        lon=bus10_df[bus10_df["name"]==i]["lon"],
-        lat=bus10_df[bus10_df["name"]==i]["lat"],
-        name=i,
-        ) for i in bus10_df["name"].unique()])
+    kyoto_spot_map = go.Figure(
+        data=[
+            go.Scattermapbox(
+                mode="lines+markers",
+                lon=bus10_df[bus10_df["name"] == i]["lon"],
+                lat=bus10_df[bus10_df["name"] == i]["lat"],
+                name=i,
+            )
+            for i in bus10_df["name"].unique()
+        ]
+    )
 
     kyoto_spot_map.update_layout(
-        mapbox={"center":{"lon":keito_df["lon"].mean(), "lat":keito_df["lat"].mean()}, "style":"carto-positron","pitch":90,
-        "zoom":11},
+        mapbox={
+            "center": {"lon": keito_df["lon"].mean(), "lat": keito_df["lat"].mean()},
+            "style": "carto-positron",
+            "pitch": 90,
+            "zoom": 11,
+        },
         height=800,
-        title="選択された路線の経路と京都市近郊の観光地"
-
-        )
+        title="選択された路線の経路と京都市近郊の観光地",
+    )
 
     # スィッチのタイトル
-    switch_title="観光地の表示（オフ）"
+    switch_title = "観光地の表示（オフ）"
 
     if selectedData:
         selected_line = []
@@ -1598,43 +1724,40 @@ def update_map(selectedData, spot_switch):
         selected_line_df = keito_df[keito_df["name"].isin(selected_line)]
 
         for i in selected_line_df["name"].unique():
-            kyoto_spot_map.add_trace(go.Scattermapbox(
-                mode="lines+markers",
-                lon=selected_line_df[selected_line_df["name"]==i]["lon"],
-                lat=selected_line_df[selected_line_df["name"]==i]["lat"],
-                name=i
-            ))
-        
+            kyoto_spot_map.add_trace(
+                go.Scattermapbox(
+                    mode="lines+markers",
+                    lon=selected_line_df[selected_line_df["name"] == i]["lon"],
+                    lat=selected_line_df[selected_line_df["name"] == i]["lat"],
+                    name=i,
+                )
+            )
+
         for i in selected_line:
             kyoto_bus_line_g.add_trace(
-            go.Scatter(
-                x=selected_bus_index[selected_bus_index["bus_line"]==i]["variable"],
-                y=selected_bus_index[selected_bus_index["bus_line"]==i]["value"],
-                name=i,
+                go.Scatter(
+                    x=selected_bus_index[selected_bus_index["bus_line"] == i][
+                        "variable"
+                    ],
+                    y=selected_bus_index[selected_bus_index["bus_line"] == i]["value"],
+                    name=i,
+                )
             )
-        )
 
     if spot_switch:
         for i in kyoto_spot_df["name"].unique():
-            kyoto_spot_map.add_trace(go.Scattermapbox(
-            mode="markers",
-            lon=kyoto_spot_df[kyoto_spot_df["name"]==i]["lon"],
-            lat=kyoto_spot_df[kyoto_spot_df["name"]==i]["lat"],
-            name=i,
-            marker={
-                "size":14
-                }
-            ))
-        switch_title="観光地の表示（オン）"
+            kyoto_spot_map.add_trace(
+                go.Scattermapbox(
+                    mode="markers",
+                    lon=kyoto_spot_df[kyoto_spot_df["name"] == i]["lon"],
+                    lat=kyoto_spot_df[kyoto_spot_df["name"] == i]["lat"],
+                    name=i,
+                    marker={"size": 14},
+                )
+            )
+        switch_title = "観光地の表示（オン）"
 
-    return (
-            kyoto_bus_line_g,
-            kyoto_spot_map,
-            switch_title
-        )
-
-
-
+    return (kyoto_bus_line_g, kyoto_spot_map, switch_title)
 
 
 # Page-Router
