@@ -6,6 +6,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_alternative_viz as dav
+import dash_daq as daq 
 import numpy as np
 import pandas as pd
 import pandas_datareader.data as web
@@ -103,7 +104,7 @@ app.index_string = '''
             {%scripts%}
             {%renderer%}
         </footer>
-        <div>chomoku</div>
+        <div></div>
     </body>
 </html>
 '''
@@ -153,17 +154,7 @@ index_page = html.Div(
             style={"textAlign": "center"},
         ),
         html.Br(),
-        # html.Div(
-        #     [
-        #         html.H1(
-        #             "20190614:  ",
-        #             style={"display": "inline-block", "marginRight": "1%"},
-        #         ),
-        #         dcc.Link("US Yield Watch", href="/us-yield", style={"fontSize": 40}),
-        #     ],
-        #     style={"textAlign": "center"},
-        # ),
-        # html.Br(),
+
         html.Div(
             [
                 html.H1(
@@ -177,20 +168,7 @@ index_page = html.Div(
             style={"textAlign": "center"},
         ),
         html.Br(),
-        # html.Div(
-        #     [
-        #         html.H1(
-        #             "20190625:  ",
-        #             style={"display": "inline-block", "marginRight": "1%"},
-        #         ),
-        #         dcc.Link(
-        #             "Trump Administration Approval Index Data from Rasmussen Report",
-        #             href="/trump-index",
-        #             style={"fontSize": 40},
-        #         ),
-        #     ],
-        #     style={"textAlign": "center"},
-        # ),
+
         html.Div(
             [
                 html.H1(
@@ -213,6 +191,20 @@ index_page = html.Div(
                 dcc.Link(
                     "Olympic Medals",
                     href="/medal",
+                    style={"fontSize": 40},
+                ),
+            ],
+            style={"textAlign": "center"},
+        ),
+        html.Br(),
+        html.Div(
+            [
+                html.H1(
+                    "20200131: ", style={"display": "inline-block", "marginRight": "1%"}
+                ),
+                dcc.Link(
+                    "Kyoto Bus",
+                    href="/kyoto-bus",
                     style={"fontSize": 40},
                 ),
             ],
@@ -1240,6 +1232,380 @@ def update_graph(graph_type, medal_type, year_range, selected_country):
 
     return px.bar(cont_medal, x="index", y=medal_type),title_show
 
+# kyoto-bus
+
+
+fundata_df = pd.read_csv("src/fundata.csv")
+index_df = pd.read_csv("src/kyoto-bus-index-long.csv", index_col=0)
+keito_df = pd.read_csv("src/kyoto-bus-keito.csv", index_col=0)
+bus_detail_df = pd.read_csv("src/bus_detail.csv", index_col=0)
+kyoto_spot_df = pd.read_csv("src/kyoto_spot_central.csv", index_col=0)
+# kyoto_spot_df = kyoto_spot_df[["lon", "lat","place"]]
+# kyoto_spot_df.columns = ["lon", "lat", "name"]
+bottom10_bus = index_df[index_df["variable"] == 2017].sort_values("value")[:10]
+
+
+td_style = {"width": "33%", "margin": "20px"}
+two_style = {"width": "50%", "display":"inline-block"}
+
+
+tabs_styles = {"height": "44px"}
+tab_style = {
+    "borderBottom": "1px solid #d6d6d6",
+    "padding": "6px",
+    "fontWeight": "bold",
+}
+
+tab_selected_style = {
+    "borderTop": "1px solid #d6d6d6",
+    "borderBottom": "1px solid #d6d6d6",
+    "backgroundColor": "lime",
+    "color": "white",
+    "padding": "6px",
+}
+
+# グラフの作成
+# 基礎情報のグラフ
+bus_income = dcc.Graph(
+    figure=go.Figure(
+        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常収益"])],
+        layout=go.Layout(title="経常収益"),
+    )
+)
+bus_spending = dcc.Graph(
+    figure=go.Figure(
+        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常支出"])],
+        layout=go.Layout(title="経常支出"),
+    )
+)
+bus_pl = dcc.Graph(
+    figure=go.Figure(
+        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["経常損益"])],
+        layout=go.Layout(title="経常損益"),
+    )
+)
+bus_loss = dcc.Graph(
+    figure=go.Figure(
+        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["累積欠損金"])],
+        layout=go.Layout(title="累計欠損金"),
+    )
+)
+bus_pas = dcc.Graph(
+    figure=go.Figure(
+        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["旅客数"])],
+        layout=go.Layout(title="旅客数（1日当たり）"),
+    )
+)
+bus_num = dcc.Graph(
+    figure=go.Figure(
+        data=[go.Bar(x=fundata_df["年度"], y=fundata_df["職員数"])],
+        layout=go.Layout(title="職員数"),
+    )
+)
+
+kyoto_bus = html.Div(
+    [
+        html.Div(
+            [
+                html.Div([html.H1("すごい！京都の市バス経営"),], style={"color": "#232323"}),
+                html.Div(
+                    [
+                        dcc.Markdown(
+                            """
+        京都の市バスは、2002年に累積欠損金が-162億円でした。しかしそこから業績が急回復し、2017年の発表数値では累積欠損金は一掃され、+85.12億円となりました。
+
+        本アプリケーションではオープンデータを用い、業績の回復具合を観察した後、営業係数を用いて各路線の営業状況を観察できます。
+
+        """,
+                            style={"fontSize": "2.5rem", "color": "#ff8e3c"},
+                        )
+                    ]
+                ),
+                html.Div(
+                    [
+                        dcc.Tabs(
+                            [
+                                dcc.Tab(
+                                    label="業績情報",
+                                    style=tab_style,
+                                    selected_style=tab_selected_style,
+                                    children=[
+                                        html.H2("京都市バスの累積欠損金の推移（1998年～2017年）"),
+                                        dcc.Graph(
+                                            figure=px.bar(
+                                                fundata_df,
+                                                x="年度",
+                                                y="累積欠損金",
+                                                color="累積欠損金",
+                                            )
+                                        ),
+                                        html.P(
+                                            "京都市　交通局　交通白書（https://www.city.kyoto.lg.jp/kotsu/page/0000073257.html）"
+                                        ),
+                                    ],
+                                ),
+                                dcc.Tab(
+                                    label="基礎情報",
+                                    style=tab_style,
+                                    selected_style=tab_selected_style,
+                                    children=[
+                                        html.H2("市バス基礎情報（1998年～2017年）"),
+                                        html.Table(
+                                            [
+                                                html.Tr(
+                                                    [
+                                                        html.Td(
+                                                            [bus_income], style=td_style
+                                                        ),
+                                                        html.Td(
+                                                            [bus_spending],
+                                                            style=td_style,
+                                                        ),
+                                                        html.Td(
+                                                            [bus_pl], style=td_style
+                                                        ),
+                                                    ]
+                                                ),
+                                                html.Tr(
+                                                    [
+                                                        html.Td(
+                                                            [bus_loss], style=td_style
+                                                        ),
+                                                        html.Td(
+                                                            [bus_pas], style=td_style
+                                                        ),
+                                                        html.Td(
+                                                            [bus_num], style=td_style
+                                                        ),
+                                                    ]
+                                                ),
+                                            ],
+                                            style={"width": "100%"},
+                                        ),
+                                        html.P(
+                                            "京都市　交通局　交通白書（https://www.city.kyoto.lg.jp/kotsu/page/0000073257.html）"
+                                        ),
+                                    ],
+                                ),
+                                dcc.Tab(
+                                    label="詳細情報",
+                                    style=tab_style,
+                                    selected_style=tab_selected_style,
+                                    children=[
+                                        html.H2("市バス詳細情報（2010年～2017年）"),
+                                        html.Div([
+                                            dcc.RadioItems(
+                                                id="passenger_select",
+                                                options=[{"label":"旅客数", "value": "旅客数"},
+                                                    {"label":"旅客収入", "value": "旅客収入"}],
+                                                value="旅客数"
+                                            ),
+                                            dcc.RadioItems(
+                                                id="busdata_select",
+                                                options=[{"label":"１車平均旅客収入（1日）", "value":"１車平均旅客収入（1日）"},
+                                                {"label":"走行1キロ当たり旅客収入", 
+                                                "value": "走行1キロ当たり旅客収入"}],
+                                                value ="１車平均旅客収入（1日）"
+                                            ),
+                                            html.Div([
+                                            dcc.Graph(id="pass_graph", style=two_style),
+                                            dcc.Graph(id="bus_graph", style=two_style)
+                                            ]),
+                                        ]),
+                                        html.P(
+                                            "京都市オープンデータポータルサイト　「市バスの運輸成績について」　（https://data.city.kyoto.lg.jp/）"
+                                        ),
+                                    ],
+                                ),
+                            ],
+                            style=tabs_styles,
+                        ),
+                    ],
+                    style={
+                        "padding": "3%",
+                        "backgroundColor": "white",
+                        "borderRadis": 20,
+                    },
+                ),
+                html.Div(
+                    [
+                        html.H2("路線ごとの現状"),
+                        dcc.Markdown(
+                            """
+            ここでは営業係数を用いて各路線の収益状況を確認できます。営業係数は100を超えるとその路線が赤字であることを示します。
+
+            散布図には、各路線の2017年時点の乗客数と営業係数を示しました。散布図のポイントをシフトを押しながら選択すると（複数選択可）、右の営業係数の線グラフおよび、下の地図にその路線の状態が示されます。
+
+            初期の設定は、収益率が高い路線のトップ10を表示しています。
+            """,
+                            style={"fontSize": "2.5rem", "color": "#ff8e3c"},
+                        ),
+                        html.Div(
+                            [
+                                dcc.Graph(
+                                    id="bus_index_scatter",
+                                    className="shikaku-css",
+                                    figure=px.scatter(
+                                        index_df,
+                                        x="2017_passenger",
+                                        y="value",
+                                        animation_frame="variable",
+                                        log_x=True,
+                                        log_y=True,
+                                        range_y=[30, 330],
+                                        hover_data=["bus_line"],
+                                        color="bus_line",
+                                        height=500,
+                                        trendline="lowess",
+                                        trendline_color_override="black",
+                                        template={
+                                            "layout": {"clickmode": "event+select"}
+                                        },
+                                        title="各路線の1日乗車数（x軸）と営業係数（y軸）",
+                                    ),
+                                ),
+                            ],
+                            style={"width": "70%", "display": "inline-block"},
+                        ),
+                        html.Div(
+                            [dcc.Graph(id="bus_single_data")],
+                            style={
+                                "width": "30%",
+                                "display": "inline-block",
+                                "height": 500,
+                            },
+                        ),
+                        
+                        daq.ToggleSwitch(id="spot_change", label="観光地の表示",color="#9B51E0",style={"height": 100}),
+                        html.Div([html.Div([dcc.Graph(id="bus_line_map"),]),]),
+                        html.P("京都市オープンデータポータルサイト　「市バスの運輸成績について」　（https://data.city.kyoto.lg.jp/）"),
+                        html.P("GISホームページ　国土数値情報　バスルート　（http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N07.html）"),
+                        html.P("GISホームページ　国土数値情報　観光資源データ　（http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P12-v2_2.html）"),
+                        
+                    ]
+                ),
+            ],
+            style={"padding": "5% 10%"},
+        ),
+    ],
+    className="shikaku-css",
+)
+
+
+@app.callback(Output("pass_graph", "figure"),[Input("passenger_select","value")])
+def update_passanger_data_graph(pass_value):
+    if pass_value == "旅客数":
+        fig = go.Figure(data=[go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["定期外旅客数"],name="定期外旅客数"),
+        go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["定期旅客数"], name="定期旅客数"),
+        go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["敬老旅客数"], name="敬老旅客数")
+        ],
+        layout=go.Layout(barmode="stack", title="各種旅客数（年間　単位：人）"))
+        return fig
+    fig=go.Figure(data=[go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["定期外旅客収入"],name="定期外旅客収入"),
+        go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["定期旅客収入"], name="定期旅客収入"),
+        go.Bar(x=bus_detail_df["年度"], y=bus_detail_df["敬老など旅客収入"], name="敬老など旅客収入")
+        ],
+        layout=go.Layout(barmode="stack", title="各種旅客収入（年間　単位：円）"))
+    return fig
+
+
+@app.callback(Output("bus_graph", "figure"),  [Input("busdata_select", "value")])
+def update_bus_data_graph(bus_value):
+    fig = go.Figure(data=[go.Bar(x=bus_detail_df["年度"], y=bus_detail_df[bus_value])],
+                    layout=go.Layout(title=f"バス{bus_value}（単位：円）")
+    )
+    
+    return fig
+
+
+
+@app.callback(
+    [Output("bus_single_data", "figure"), Output("bus_line_map", "figure"), Output("spot_change", "label")],
+    [Input("bus_index_scatter", "selectedData"), Input("spot_change", "value")],
+)
+def update_map(selectedData, spot_switch):
+        
+    bus_index_b10 = index_df[index_df["bus_line"].isin(bottom10_bus["bus_line"])]
+    bus10_df = keito_df[keito_df["name"].isin(bottom10_bus["bus_line"])]
+    bus_mean = bus10_df.mean()
+
+    # 営業係数の線グラフ
+    kyoto_bus_line_g = go.Figure(data=[
+        go.Scatter(
+            x=bus_index_b10[bus_index_b10["bus_line"] == i]["variable"],
+                        y=bus_index_b10[bus_index_b10["bus_line"] == i]["value"],
+                        name=i,
+        ) for i in bus_index_b10["bus_line"].unique()
+    ])
+
+    kyoto_bus_line_g.update_layout(
+        height=450,
+        title="各路線の営業係数"
+    )
+
+    # 地図グラフ
+    kyoto_spot_map = go.Figure(data=[go.Scattermapbox(
+        mode="lines+markers",
+        lon=bus10_df[bus10_df["name"]==i]["lon"],
+        lat=bus10_df[bus10_df["name"]==i]["lat"],
+        name=i,
+        ) for i in bus10_df["name"].unique()])
+
+    kyoto_spot_map.update_layout(
+        mapbox={"center":{"lon":keito_df["lon"].mean(), "lat":keito_df["lat"].mean()}, "style":"carto-positron","pitch":90,
+        "zoom":11},
+        height=800,
+        title="選択された路線の経路と京都市近郊の観光地"
+
+        )
+
+    # スィッチのタイトル
+    switch_title="観光地の表示（オフ）"
+
+    if selectedData:
+        selected_line = []
+        for i in range(len(selectedData["points"])):
+            selected_line.append(selectedData["points"][i]["customdata"][0])
+        selected_bus_index = index_df[index_df["bus_line"].isin(selected_line)]
+        selected_line_df = keito_df[keito_df["name"].isin(selected_line)]
+
+        for i in selected_line_df["name"].unique():
+            kyoto_spot_map.add_trace(go.Scattermapbox(
+                mode="lines+markers",
+                lon=selected_line_df[selected_line_df["name"]==i]["lon"],
+                lat=selected_line_df[selected_line_df["name"]==i]["lat"],
+                name=i
+            ))
+        
+        for i in selected_line:
+            kyoto_bus_line_g.add_trace(
+            go.Scatter(
+                x=selected_bus_index[selected_bus_index["bus_line"]==i]["variable"],
+                y=selected_bus_index[selected_bus_index["bus_line"]==i]["value"],
+                name=i,
+            )
+        )
+
+    if spot_switch:
+        for i in kyoto_spot_df["name"].unique():
+            kyoto_spot_map.add_trace(go.Scattermapbox(
+            mode="markers",
+            lon=kyoto_spot_df[kyoto_spot_df["name"]==i]["lon"],
+            lat=kyoto_spot_df[kyoto_spot_df["name"]==i]["lat"],
+            name=i,
+            marker={
+                "size":14
+                }
+            ))
+        switch_title="観光地の表示（オン）"
+
+    return (
+            kyoto_bus_line_g,
+            kyoto_spot_map,
+            switch_title
+        )
+
+
 
 
 
@@ -1263,6 +1629,8 @@ def display_page(pathname):
         return emoji
     elif pathname == "/medal":
         return olym_medal
+    elif pathname == "/kyoto-bus":
+        return kyoto_bus
     else:
         return index_page
 
