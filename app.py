@@ -9,9 +9,9 @@ import dash_html_components as html
 import dash_daq as daq
 import numpy as np
 import pandas as pd
-import pandas_datareader.data as web
+
 import plotly.express as px
-import plotly.figure_factory as ff
+
 import plotly.graph_objs as go
 
 # import altair as alt
