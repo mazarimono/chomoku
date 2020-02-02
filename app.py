@@ -65,77 +65,77 @@ app.layout = html.Div(
     ]
 )
 
-# # index_page
-# index_page = html.Div(
-#     [
-#         html.Title("CHOMOKU DASHBOARD"),
-#         # html.Div(
-#         #     [
-#         #         html.H1(
-#         #             "20190607:  ",
-#         #             style={"display": "inline-block", "marginRight": "1%"},
-#         #         ),
-#         #         dcc.Link(
-#         #             "Japanese rainy season dashboard",
-#         #             href="/tsuyu-dash",
-#         #             style={"fontSize": 40},
-#         #         ),
-#         #     ],
-#         #     style={"textAlign": "center"},
-#         # ),
-#         # html.Br(),
-#         # html.Div(
-#         #     [
-#         #         html.H1(
-#         #             "20190625:  ",
-#         #             style={"display": "inline-block", "marginRight": "1%"},
-#         #         ),
-#         #         dcc.Link(
-#         #             "Japanese GDP(YoY %)", href="/japanese-gdp", style={"fontSize": 40}
-#         #         ),
-#         #     ],
-#         #     style={"textAlign": "center"},
-#         # ),
-#         # html.Br(),
-#         # html.Div(
-#         #     [
-#         #         html.H1(
-#         #             "20191118: ", style={"display": "inline-block", "marginRight": "1%"}
-#         #         ),
-#         #         dcc.Link(
-#         #             "Foreigner Tourist Number in Japan",
-#         #             href="/tourist-number",
-#         #             style={"fontSize": 40},
-#         #         ),
-#         #     ],
-#         #     style={"textAlign": "center"},
-#         # ),
-#         # html.Br(),
-#         # html.Div(
-#         #     [
-#         #         html.H1(
-#         #             "20200110: ", style={"display": "inline-block", "marginRight": "1%"}
-#         #         ),
-#         #         dcc.Link(
-#         #             "Olympic Medals",
-#         #             href="/medal",
-#         #             style={"fontSize": 40},
-#         #         ),
-#         #     ],
-#         #     style={"textAlign": "center"},
-#         # ),
-#         html.Br(),
-#         html.Div(
-#             [
-#                 html.H1(
-#                     "20200131: ", style={"display": "inline-block", "marginRight": "1%"}
-#                 ),
-#                 dcc.Link("Kyoto Bus", href="/kyoto-bus", style={"fontSize": 40}),
-#             ],
-#             style={"textAlign": "center"},
-#         ),
-#     ]
-# )
+# index_page
+index_page = html.Div(
+    [
+        html.Title("CHOMOKU DASHBOARD"),
+        # html.Div(
+        #     [
+        #         html.H1(
+        #             "20190607:  ",
+        #             style={"display": "inline-block", "marginRight": "1%"},
+        #         ),
+        #         dcc.Link(
+        #             "Japanese rainy season dashboard",
+        #             href="/tsuyu-dash",
+        #             style={"fontSize": 40},
+        #         ),
+        #     ],
+        #     style={"textAlign": "center"},
+        # ),
+        # html.Br(),
+        # html.Div(
+        #     [
+        #         html.H1(
+        #             "20190625:  ",
+        #             style={"display": "inline-block", "marginRight": "1%"},
+        #         ),
+        #         dcc.Link(
+        #             "Japanese GDP(YoY %)", href="/japanese-gdp", style={"fontSize": 40}
+        #         ),
+        #     ],
+        #     style={"textAlign": "center"},
+        # ),
+        # html.Br(),
+        # html.Div(
+        #     [
+        #         html.H1(
+        #             "20191118: ", style={"display": "inline-block", "marginRight": "1%"}
+        #         ),
+        #         dcc.Link(
+        #             "Foreigner Tourist Number in Japan",
+        #             href="/tourist-number",
+        #             style={"fontSize": 40},
+        #         ),
+        #     ],
+        #     style={"textAlign": "center"},
+        # ),
+        # html.Br(),
+        # html.Div(
+        #     [
+        #         html.H1(
+        #             "20200110: ", style={"display": "inline-block", "marginRight": "1%"}
+        #         ),
+        #         dcc.Link(
+        #             "Olympic Medals",
+        #             href="/medal",
+        #             style={"fontSize": 40},
+        #         ),
+        #     ],
+        #     style={"textAlign": "center"},
+        # ),
+        html.Br(),
+        html.Div(
+            [
+                html.H1(
+                    "20200131: ", style={"display": "inline-block", "marginRight": "1%"}
+                ),
+                dcc.Link("Kyoto Bus", href="/kyoto-bus", style={"fontSize": 40}),
+            ],
+            style={"textAlign": "center"},
+        ),
+    ]
+)
 
 # # Contents Tsuyu_page
 # tsuyu_page = html.Div(
@@ -1508,7 +1508,7 @@ kyoto_bus = html.Div(
                                         index_df,
                                         x="2017_passenger",
                                         y="value",
-                                        # animation_frame="variable",
+                                        animation_frame="variable",
                                         log_x=True,
                                         log_y=True,
                                         range_y=[30, 330],
