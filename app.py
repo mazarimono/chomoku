@@ -1160,7 +1160,7 @@ index_page = html.Div(
 
 fundata_df = pd.read_csv("src/fundata.csv", index_col=0)
 index_df = pd.read_csv("src/kyoto-bus-index-long.csv", index_col=0)
-keito_df = pd.read_csv("src/kyoto-bus-keito.csv", index_col=0)[:1000]
+keito_df = pd.read_csv("src/kyoto-bus-keito.csv", index_col=0)
 bus_detail_df = pd.read_csv("src/bus_detail.csv", index_col=0)
 kyoto_spot_df = pd.read_csv("src/kyoto_spot_central.csv", index_col=0)
 bottom10_bus = index_df[index_df["variable"] == 2017].sort_values("value")[:10]
@@ -1625,7 +1625,7 @@ def update_map(selectedData, spot_switch):
     kyoto_spot_map = go.Figure(
         data=[
             go.Scattermapbox(
-                mode="lines+markers",
+                mode="lines",
                 lon=bus10_df[bus10_df["name"] == i]["lon"],
                 lat=bus10_df[bus10_df["name"] == i]["lat"],
                 name=i,
@@ -1658,7 +1658,7 @@ def update_map(selectedData, spot_switch):
         for i in selected_line_df["name"].unique():
             kyoto_spot_map.add_trace(
                 go.Scattermapbox(
-                    mode="lines+markers",
+                    mode="lines",
                     lon=selected_line_df[selected_line_df["name"] == i]["lon"],
                     lat=selected_line_df[selected_line_df["name"] == i]["lat"],
                     name=i,
