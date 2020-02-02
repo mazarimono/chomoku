@@ -368,6 +368,8 @@ app.layout = html.Div(
             散布図には、各路線の2017年時点の乗客数と営業係数を示しました。散布図のポイントをシフトを押しながら選択すると（複数選択可）、右の営業係数の線グラフおよび、下の地図にその路線の状態が示されます。
 
             初期の設定は、収益率が高い路線のトップ10を表示しています。
+
+            注意 / 説明文では、散布図がアニメーションで動いていましたが、アプリケーションが落ちるため、現在はアニメーションをオフにしています。
             """,
                             style={"fontSize": "2.5rem", "color": "#ff8e3c"},
                         ),
@@ -498,6 +500,7 @@ def update_map(selectedData, spot_switch):
                 lon=bus10_df[bus10_df["name"] == i]["lon"],
                 lat=bus10_df[bus10_df["name"] == i]["lat"],
                 name=i,
+                line_width=10
             )
             for i in bus10_df["name"].unique()
         ]
@@ -508,7 +511,7 @@ def update_map(selectedData, spot_switch):
             "center": {"lon": keito_df["lon"].mean(), "lat": keito_df["lat"].mean()},
             "style": "carto-positron",
             "pitch": 90,
-            "zoom": 11,
+            "zoom": 12,
         },
         height=800,
         title="選択された路線の経路と京都市近郊の観光地",
@@ -531,6 +534,7 @@ def update_map(selectedData, spot_switch):
                     lon=selected_line_df[selected_line_df["name"] == i]["lon"],
                     lat=selected_line_df[selected_line_df["name"] == i]["lat"],
                     name=i,
+                    line_width=10
                 )
             )
 
