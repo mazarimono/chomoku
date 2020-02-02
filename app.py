@@ -1470,15 +1470,12 @@ kyoto_bus = html.Div(
                                         index_df,
                                         x="2017_passenger",
                                         y="value",
-                                        animation_frame="variable",
                                         log_x=True,
                                         log_y=True,
                                         range_y=[30, 330],
                                         hover_data=["bus_line"],
                                         color="bus_line",
                                         height=500,
-                                        trendline="lowess",
-                                        trendline_color_override="black",
                                         template={
                                             "layout": {"clickmode": "event+select"}
                                         },
