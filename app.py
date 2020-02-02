@@ -1158,9 +1158,9 @@ app.layout = html.Div(
 # kyoto-bus
 
 
-fundata_df = pd.read_csv("src/fundata.csv")
+fundata_df = pd.read_csv("src/fundata.csv", index_col=0)
 index_df = pd.read_csv("src/kyoto-bus-index-long.csv", index_col=0)
-keito_df = pd.read_csv("src/kyoto-bus-keito.csv", index_col=0)
+keito_df = pd.read_csv("src/kyoto-bus-keito.csv", index_col=0)[:10000]
 bus_detail_df = pd.read_csv("src/bus_detail.csv", index_col=0)
 kyoto_spot_df = pd.read_csv("src/kyoto_spot_central.csv", index_col=0)
 bottom10_bus = index_df[index_df["variable"] == 2017].sort_values("value")[:10]
@@ -1508,7 +1508,7 @@ kyoto_bus = html.Div(
                                         index_df,
                                         x="2017_passenger",
                                         y="value",
-                                        animation_frame="variable",
+                                        # animation_frame="variable",
                                         log_x=True,
                                         log_y=True,
                                         range_y=[30, 330],
