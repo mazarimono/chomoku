@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+
 # import dash_alternative_viz as dav
 import dash_daq as daq
 import numpy as np
@@ -74,6 +75,8 @@ keito_df = pd.read_csv("src/kyoto-bus-keito.csv", index_col=0)
 bus_detail_df = pd.read_csv("src/bus_detail.csv", index_col=0)
 kyoto_spot_df = pd.read_csv("src/kyoto_spot_central.csv", index_col=0)
 bottom10_bus = index_df[index_df["variable"] == 2017].sort_values("value")[:10]
+bus_index_b10 = index_df[index_df["bus_line"].isin(bottom10_bus["bus_line"])]
+bus10_df = keito_df[keito_df["name"].isin(bottom10_bus["bus_line"])]
 
 
 td_style = {"width": "33%", "margin": "20px"}
@@ -96,7 +99,10 @@ tab_selected_style = {
 }
 
 
-app.layout = html.Div(
+app.layout = html.Div([dcc.Location(id="url"), html.Div(id="page-content")])
+
+
+kyoto_bus = html.Div(
     [
         html.Div(
             [
@@ -398,7 +404,26 @@ app.layout = html.Div(
                             style={"width": "70%", "display": "inline-block"},
                         ),
                         html.Div(
-                            [dcc.Graph(id="bus_single_data")],
+                            [
+                                dcc.Graph(
+                                    id="bus_single_data",
+                                    figure=go.Figure(
+                                        data=[
+                                            go.Scatter(
+                                                x=bus_index_b10[
+                                                    bus_index_b10["bus_line"] == i
+                                                ]["variable"],
+                                                y=bus_index_b10[
+                                                    bus_index_b10["bus_line"] == i
+                                                ]["value"],
+                                                name=i,
+                                            )
+                                            for i in bus_index_b10["bus_line"].unique()
+                                        ],
+                                        layout=go.Layout(height=450, title="各路線の営業係数"),
+                                    ),
+                                )
+                            ],
                             style={
                                 "width": "30%",
                                 "display": "inline-block",
@@ -411,7 +436,28 @@ app.layout = html.Div(
                             color="#9B51E0",
                             style={"height": 100},
                         ),
-                        html.Div([html.Div([dcc.Graph(id="bus_line_map")])]),
+                        html.Div([html.Div([dcc.Graph(id="bus_line_map",
+                        figure=go.Figure(
+        data=[
+            go.Scattermapbox(
+                mode="lines",
+                lon=bus10_df[bus10_df["name"] == i]["lon"],
+                lat=bus10_df[bus10_df["name"] == i]["lat"],
+                name=i,
+                line_width=10,
+            )
+            for i in bus10_df["name"].unique()
+        ],
+        layout=go.Layout(mapbox={
+            "center": {"lon": keito_df["lon"].mean(), "lat": keito_df["lat"].mean()},
+            "style": "carto-positron",
+            "pitch": 90,
+            "zoom": 12,
+        },
+        height=800,
+        title="選択された路線の経路と京都市近郊の観光地",)
+    )
+                        )])]),
                         html.P(
                             "京都市オープンデータポータルサイト　「市バスの運輸成績について」　（https://data.city.kyoto.lg.jp/）"
                         ),
@@ -477,7 +523,6 @@ def update_map(selectedData, spot_switch):
     bus_index_b10 = index_df[index_df["bus_line"].isin(bottom10_bus["bus_line"])]
     bus10_df = keito_df[keito_df["name"].isin(bottom10_bus["bus_line"])]
 
-
     # 営業係数の線グラフ
     kyoto_bus_line_g = go.Figure(
         data=[
@@ -500,7 +545,7 @@ def update_map(selectedData, spot_switch):
                 lon=bus10_df[bus10_df["name"] == i]["lon"],
                 lat=bus10_df[bus10_df["name"] == i]["lat"],
                 name=i,
-                line_width=10
+                line_width=10,
             )
             for i in bus10_df["name"].unique()
         ]
@@ -534,7 +579,7 @@ def update_map(selectedData, spot_switch):
                     lon=selected_line_df[selected_line_df["name"] == i]["lon"],
                     lat=selected_line_df[selected_line_df["name"] == i]["lat"],
                     name=i,
-                    line_width=10
+                    line_width=10,
                 )
             )
 
@@ -548,7 +593,6 @@ def update_map(selectedData, spot_switch):
                     name=i,
                 )
             )
-        
 
     if spot_switch:
         for i in kyoto_spot_df["name"].unique():
@@ -566,16 +610,139 @@ def update_map(selectedData, spot_switch):
     return (kyoto_bus_line_g, kyoto_spot_map, switch_title)
 
 
+# TOURIST
+
+total_list = ["総数"]
+conti_list = ["アフリカ計", "北アメリカ計", "南アメリカ計", "アジア計", "オセアニア計", "ヨーロッパ計"]
+
+tourist_df = pd.read_csv(
+    "src/tourist_without_cumsum.csv", index_col=0, parse_dates=["date"]
+)
+conti_df = tourist_df[tourist_df["国名"].isin(conti_list)]
+country_df = tourist_df[~tourist_df["国名"].isin(total_list + conti_list)]
+
+tourist = html.Div(
+    [
+        html.H1("訪日外国人数"),
+        html.Div(
+            [
+                dcc.Tabs(
+                    [
+                        dcc.Tab(
+                            label="訪日外国人数総数",
+                            style=tab_style,
+                            selected_style=tab_selected_style,
+                            children=[
+                                dcc.RadioItems(
+                                    id="total_checkitem",
+                                    options=[
+                                        {"value": "月間", "label": "月間"},
+                                        {"value": "年間", "label": "年間"},
+                                    ],
+                                    value="月間",
+                                ),
+                                html.Div(id="total_number"),
+                            ],
+                        ),
+                        dcc.Tab(
+                            label="大陸別訪日外国人数",
+                            style=tab_style,
+                            selected_style=tab_selected_style,
+                            children=[
+                                dcc.Dropdown(
+                                    id="continent-drop",
+                                    options=[
+                                        {"value": i, "label": i} for i in conti_list
+                                    ],
+                                    multi=True,
+                                    value=conti_list,
+                                ),
+                                html.Div(id="continent-number"),
+                            ],
+                        ),
+                        dcc.Tab(
+                            label="国別訪日外国人数",
+                            style=tab_style,
+                            selected_style=tab_selected_style,
+                            children=[
+                                dcc.Dropdown(
+                                    id="country-drop",
+                                    options=[
+                                        {"value": i, "label": i}
+                                        for i in country_df["国名"].unique()
+                                    ],
+                                    multi=True,
+                                    value=["中国", "韓国", "米国", "台湾", "香港"],
+                                ),
+                                html.Div(id="country-number"),
+                            ],
+                        ),
+                    ]
+                ),
+                html.P("日本政府観光局: 月別年別統計データ（訪日外国人）: https://www.jnto.go.jp/jpn/statistics/visitor_trends/")
+            ],
+            style={"width": "90%", "margin": "auto", "padding": "5% 0"},
+        ),
+    ],
+    style={"backgroundColor": "#FBE251", "padding": "5%", "borderRadius": "5%"},
+)
+
+
+@app.callback(Output("total_number", "children"), [Input("total_checkitem", "value")])
+def update_total_graph(selected_value):
+    total = tourist_df[tourist_df["data_name"] == "tourist_num"]
+    total = total[total["国名"].isin(total_list)]
+    if selected_value == "年間":
+        total_year = total.groupby(pd.Grouper(key="date", freq="Y")).sum().reset_index()
+        return dcc.Graph(
+            figure=px.bar(
+                total_year,
+                x="date",
+                y="value",
+                color="value",
+                title="訪日外国人数（総数: 年間）",
+                log_y=True,
+            )
+        )
+
+    return dcc.Graph(
+        figure=px.bar(
+            total,
+            x="date",
+            y="value",
+            color="value",
+            title="訪日外国人数（総数: 月間）",
+            log_y=True,
+        )
+    )
+
+
+@app.callback(
+    Output("continent-number", "children"), [Input("continent-drop", "value")]
+)
+def update_conti_graph(selected_conti):
+    conti_dff = conti_df[conti_df["data_name"] == "tourist_num"]
+    conti_dff = conti_dff[conti_dff["国名"].isin(selected_conti)]
+    return dcc.Graph(figure=px.line(conti_dff, x="date", y="value", color="国名"))
+
+
+@app.callback(Output("country-number", "children"), [Input("country-drop", "value")])
+def update_country_graph(selected_country):
+    country_dff = country_df[country_df["data_name"] == "tourist_num"]
+    country_dff = country_dff[country_dff["国名"].isin(selected_country)]
+    return dcc.Graph(figure=px.line(country_dff, x="date", y="value", color="国名"))
+
+
 # Page-Router
-# @app.callback(
-#     dash.dependencies.Output("page-content", "children"),
-#     [dash.dependencies.Input("url", "pathname")],
-# )
-# def display_page(pathname):
-#     if pathname == "/kyoto-bus":
-#         return kyoto_bus
-#     else:
-#         return index_page
+@app.callback(
+    dash.dependencies.Output("page-content", "children"),
+    [dash.dependencies.Input("url", "pathname")],
+)
+def display_page(pathname):
+    if pathname == "/foreign-tourist":
+        return tourist
+    else:
+        return kyoto_bus
 
 
 if __name__ == "__main__":
