@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime, timedelta
+from pathlib import Path 
 
 import dash
 import dash_core_components as dcc
@@ -688,6 +689,73 @@ tourist = html.Div(
 )
 
 
+p = Path("./src/stock/")
+p_list = list(p.glob("*.csv"))
+
+def make_data(path):
+    df = pd.read_csv(path, parse_dates=["日付"], encoding="shift-jis").sort_values("日付")
+    df1 = df[["日付", "終値"]]
+    df1.index = range(len(df1))
+    return df1
+
+def add_index(df, date):
+    spot_price = float(df[df["日付"]==date]["終値"].values)
+    df.loc[:, "st"] = df.loc[:, "終値"] / spot_price * 100
+    df.loc[:, "change"] = df.loc[:, "st"].pct_change()
+    df.loc[:, "std20"] = df["change"].rolling(20).std()*np.sqrt(360)
+    df.loc[:, "std60"] = df["change"].rolling(60).std()*np.sqrt(360)
+    return df
+
+def make_stock_data(path, date):
+    df = make_data(path)
+    df = add_index(df, date)
+    return df
+
+jp_equity = html.Div([
+
+    html.H1("日本株指数動向比較"),
+
+    dcc.DatePickerSingle(
+        id="datepicker",
+        date=datetime(2005,1,4),
+        min_date_allowed=datetime(2003,9,16)
+    ),
+
+    dcc.Loading([
+    dcc.Graph(id="index_graph"),
+
+    dcc.Graph(id="std_graph")
+
+    ], type="graph", fullscreen=True)
+])
+
+@app.callback([Output("index_graph", "figure"),
+            Output("std_graph", "figure")],
+            [Input("datepicker", "date")])
+def update_equity(selected_date):
+    if selected_date is None:
+        raise dash.exceptions.PreventUpdate
+    stock_dict = {}
+
+    for i in list(p.glob("*.csv")):
+        name = str(i).split("\\")[-1].split(".")[0]
+        stock_dict[name] = make_stock_data(i, selected_date)
+    
+    fig = go.Figure()
+    for name, df in stock_dict.items():
+        fig.add_trace(go.Scatter(x=df["日付"], y=df["st"], name=name))
+    fig.update_layout(title=f"日本の各種株価指数({selected_date}=100)")
+
+    fig2= go.Figure()
+    for name, df in stock_dict.items():
+        fig2.add_trace(go.Scatter(x=df["日付"], y=df["std60"], name=name))
+    fig2.update_layout(title=f"日本の各種株価指数 標準偏差60日")
+
+    return fig, fig2 
+
+
+
+
 @app.callback(Output("total_number", "children"), [Input("total_checkitem", "value")])
 def update_total_graph(selected_value):
     total = tourist_df[tourist_df["data_name"] == "tourist_num"]
@@ -741,6 +809,8 @@ def update_country_graph(selected_country):
 def display_page(pathname):
     if pathname == "/foreign-tourist":
         return tourist
+    elif pathname == "/jp-equity":
+        return jp_equity
     else:
         return kyoto_bus
 
