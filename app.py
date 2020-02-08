@@ -738,7 +738,7 @@ def update_equity(selected_date):
     stock_dict = {}
 
     for i in list(p.glob("*.csv")):
-        name = str(i).split("\\")[-1].split(".")[0]
+        name = str(i).split("/")[-1].split(".")[0]
         stock_dict[name] = make_stock_data(i, selected_date)
     
     fig = go.Figure()
