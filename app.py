@@ -2,10 +2,13 @@ import json
 import os
 from datetime import datetime, timedelta
 from pathlib import Path 
+import ast 
 
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_cytoscape as cyto 
+import dash_table 
 
 # import dash_alternative_viz as dav
 import dash_daq as daq
@@ -809,6 +812,80 @@ def update_country_graph(selected_country):
     country_dff = country_dff[country_dff["国名"].isin(selected_country)]
     return dcc.Graph(figure=px.line(country_dff, x="date", y="value", color="国名"))
 
+### COVIT
+
+df_covit = pd.read_csv("./src/kosei.csv", index_col=0, parse_dates=["date"])
+
+df_date = df_covit.groupby("date", as_index=False).count()
+df_date = df_date.iloc[:, :2]
+df_date.columns = ["date", "count"]
+df_date["cumsum"] = df_date["count"].cumsum()
+
+df_place = df_covit.groupby("居住地", as_index=False).count()
+df_place = df_place.iloc[:,:2]
+df_place.columns = ["place", "count"]
+df_place = df_place.sort_values("count")
+
+covit_el = []
+
+for i in range(len(df_covit)):
+    covit_el.append({"data":{"id": f"No.{df_covit.iloc[i, 0]}", "label": f"No.{df_covit.iloc[i, 0]}"}})
+    contact_list = []
+    for i2 in ast.literal_eval(df_covit.iloc[i, -2]):
+        if i2.startswith("No."):
+            covit_el.append({"data":{"source": f"No.{df_covit.iloc[i, 0]}", "target": f"{i2}"}})
+
+
+network = html.Div([
+    html.H4("周囲の患者発生のネットワーク図"),
+    cyto.Cytoscape(id="covit_cyto", layout={"name": "cose"},
+    elements=covit_el,
+    style={"width": "100%", "height": "60vh", "backgroundColor": "white", "borderRadius": "10px"}
+    )
+    ], style={"margin": "2%"})
+
+graphs = html.Div([
+    html.Div([
+        dcc.Graph(id="total_graph", figure=px.bar(df_date, x="date", y="cumsum", title="感染者数推移"), className="six columns"),
+        dcc.Graph(id="todofuken", figure=px.bar(df_place, x="count", y="place", orientation="h", title="都道府県別感染者数"), className="six columns"),
+        
+    ], style={"marginBottom": "2%"}),
+    html.Div([
+        dcc.Graph(id="ratio_scatter", figure=px.scatter(df_covit, x="contact_num", y="infection_num", title="接触者数（x軸）と周囲の患者発生（y軸）",hover_data=["新No."]), className="six columns")
+    ], style={"marginTop":"2%"})
+])
+
+table=html.Div([
+    dash_table.DataTable(id="covit_table",
+    columns=[{"name": i, "id": i, "deletable": True} for i in df_covit.columns],
+    data=df_covit.to_dict("records"),
+    fixed_rows={"headers": True, "data": 0},
+    editable=True,
+    filter_action="native",
+    row_deletable=True,
+    sort_action="native",
+    export_format="csv",
+    fill_width=False,
+    virtualization=True
+    )
+])
+
+covit_layout = html.Div([
+    html.Div([
+        html.Div([
+        html.H4("新型コロナウィルス 国内感染状況"),
+        html.H6("厚生省発表のデータを基に国内の感染状況を可視化しました。")
+        ],style={"width": "80%","margin": "auto", "backgroundColor": "#FFFFFA", "padding": "2%", "borderRadius": "10px"}),
+    ]),
+
+    dcc.Tabs(value="graph", children=[
+        dcc.Tab(label="感染者数グラフ", value="graph", style=tab_style, selected_style=tab_selected_style, children=graphs),
+        dcc.Tab(label="ネットワーク図", value="network", style=tab_style, selected_style=tab_selected_style, children=network),
+        dcc.Tab(label="データ", value="table", style=tab_style, selected_style=tab_selected_style, children=table)
+    ], style=tabs_styles),
+],style={"backgroundColor": "#E0E3DA", "padding": "5%"})
+
+
 
 # Page-Router
 @app.callback(
@@ -820,6 +897,8 @@ def display_page(pathname):
         return tourist
     elif pathname == "/jp-equity":
         return jp_equity
+    elif pathname == "/covit-19":
+        return covit_layout
     else:
         return kyoto_bus
 
