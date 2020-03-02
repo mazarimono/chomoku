@@ -852,7 +852,7 @@ network = html.Div([
             columns=[{"name": i, "id": i, "deletable": True} for i in df_cyto_table.columns],
             data=df_cyto_table.to_dict("records"),
             fixed_rows={"headers": True},
-            fixed_columns={"headers": True},
+            fixed_columns={"headers": True, "data": 1},
             style_cell={"minWidth": "30px", }
         )
     ], className="four columns", style={"height": "100vh"}),
