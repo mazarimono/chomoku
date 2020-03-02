@@ -826,10 +826,12 @@ df_place = df_place.iloc[:,:2]
 df_place.columns = ["place", "count"]
 df_place = df_place.sort_values("count")
 
+df_cyto_table=df_covid.iloc[:, [0,2,5,9,10,11]]
+
 covid_el = []
 
 for i in range(len(df_covid)):
-    covid_el.append({"data":{"id": f"No.{df_covid.iloc[i, 0]}", "label": f"No.{df_covid.iloc[i, 0]} / {df_covid.iloc[i, 5]}"}"}})
+    covid_el.append({"data":{"id": f"No.{df_covid.iloc[i, 0]}", "label": f"No.{df_covid.iloc[i, 0]} / {df_covid.iloc[i, 5]}"}})
     contact_list = []
     for i2 in ast.literal_eval(df_covid.iloc[i, -2]):
         if i2.startswith("No."):
@@ -837,11 +839,23 @@ for i in range(len(df_covid)):
 
 
 network = html.Div([
+    html.Div([
     html.H4("周囲の患者発生のネットワーク図"),
     cyto.Cytoscape(id="covid_cyto", layout={"name": "cose"},
     elements=covid_el,
     style={"width": "100%", "height": "60vh", "backgroundColor": "white", "borderRadius": "10px"}
     )
+    ], className="eight columns"),
+    html.Div([
+        html.H4("感染関係データテーブル"),
+        dash_table.DataTable(
+            columns=[{"name": i, "id": i, "deletable": True} for i in df_cyto_table.columns],
+            data=df_cyto_table.to_dict("records"),
+            fixed_rows={"headers": True},
+            fixed_columns={"headers": True},
+            style_cell={"minWidth": "30px", }
+        )
+    ], className="four columns", style={"height": "100vh"}),
     ], style={"margin": "2%"})
 
 graphs = html.Div([
