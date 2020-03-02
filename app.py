@@ -812,34 +812,34 @@ def update_country_graph(selected_country):
     country_dff = country_dff[country_dff["国名"].isin(selected_country)]
     return dcc.Graph(figure=px.line(country_dff, x="date", y="value", color="国名"))
 
-### COVIT
+### COVID
 
-df_covit = pd.read_csv("./src/kosei.csv", index_col=0, parse_dates=["date"])
+df_covid = pd.read_csv("./src/kosei.csv", index_col=0, parse_dates=["date"])
 
-df_date = df_covit.groupby("date", as_index=False).count()
+df_date = df_covid.groupby("date", as_index=False).count()
 df_date = df_date.iloc[:, :2]
 df_date.columns = ["date", "count"]
 df_date["cumsum"] = df_date["count"].cumsum()
 
-df_place = df_covit.groupby("居住地", as_index=False).count()
+df_place = df_covid.groupby("居住地", as_index=False).count()
 df_place = df_place.iloc[:,:2]
 df_place.columns = ["place", "count"]
 df_place = df_place.sort_values("count")
 
-covit_el = []
+covid_el = []
 
-for i in range(len(df_covit)):
-    covit_el.append({"data":{"id": f"No.{df_covit.iloc[i, 0]}", "label": f"No.{df_covit.iloc[i, 0]}"}})
+for i in range(len(df_covid)):
+    covid_el.append({"data":{"id": f"No.{df_covid.iloc[i, 0]}", "label": f"No.{df_covid.iloc[i, 0]}"}})
     contact_list = []
-    for i2 in ast.literal_eval(df_covit.iloc[i, -2]):
+    for i2 in ast.literal_eval(df_covid.iloc[i, -2]):
         if i2.startswith("No."):
-            covit_el.append({"data":{"source": f"No.{df_covit.iloc[i, 0]}", "target": f"{i2}"}})
+            covid_el.append({"data":{"source": f"No.{df_covid.iloc[i, 0]}", "target": f"{i2}"}})
 
 
 network = html.Div([
     html.H4("周囲の患者発生のネットワーク図"),
-    cyto.Cytoscape(id="covit_cyto", layout={"name": "cose"},
-    elements=covit_el,
+    cyto.Cytoscape(id="covid_cyto", layout={"name": "cose"},
+    elements=covid_el,
     style={"width": "100%", "height": "60vh", "backgroundColor": "white", "borderRadius": "10px"}
     )
     ], style={"margin": "2%"})
@@ -851,14 +851,14 @@ graphs = html.Div([
         
     ], style={"marginBottom": "2%"}),
     html.Div([
-        dcc.Graph(id="ratio_scatter", figure=px.scatter(df_covit, x="contact_num", y="infection_num", title="接触者数（x軸）と周囲の患者発生（y軸）",hover_data=["新No."]), className="six columns")
+        dcc.Graph(id="ratio_scatter", figure=px.scatter(df_covid, x="contact_num", y="infection_num", title="接触者数（x軸）と周囲の患者発生（y軸）",hover_data=["新No."]), className="six columns")
     ], style={"marginTop":"2%"})
 ])
 
 table=html.Div([
-    dash_table.DataTable(id="covit_table",
-    columns=[{"name": i, "id": i, "deletable": True} for i in df_covit.columns],
-    data=df_covit.to_dict("records"),
+    dash_table.DataTable(id="covid_table",
+    columns=[{"name": i, "id": i, "deletable": True} for i in df_covid.columns],
+    data=df_covid.to_dict("records"),
     fixed_rows={"headers": True, "data": 0},
     editable=True,
     filter_action="native",
@@ -870,7 +870,7 @@ table=html.Div([
     )
 ])
 
-covit_layout = html.Div([
+covid_layout = html.Div([
     html.Div([
         html.Div([
         html.H4("新型コロナウィルス 国内感染状況"),
@@ -897,8 +897,8 @@ def display_page(pathname):
         return tourist
     elif pathname == "/jp-equity":
         return jp_equity
-    elif pathname == "/covit-19":
-        return covit_layout
+    elif pathname == "/covid-19":
+        return covid_layout
     else:
         return kyoto_bus
 
