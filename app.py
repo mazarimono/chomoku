@@ -843,7 +843,7 @@ network = html.Div([
     html.H4("周囲の患者発生のネットワーク図"),
     cyto.Cytoscape(id="covid_cyto", layout={"name": "cose"},
     elements=covid_el,
-    style={"width": "100%", "height": "60vh", "backgroundColor": "white", "borderRadius": "10px"}
+    style={"width": "100%", "height": "80vh", "backgroundColor": "white", "borderRadius": "10px"}
     )
     ], className="eight columns"),
     html.Div([
