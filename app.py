@@ -889,7 +889,7 @@ covid_layout = html.Div([
         html.Div([
         html.H4("新型コロナウィルス 国内感染状況"),
         html.H6("厚生省発表のデータを基に国内の感染状況を可視化しました。")
-        ],style={"width": "80%","margin": "auto", "backgroundColor": "#FFFFFA", "padding": "2%", "borderRadius": "10px"}),
+        ],style={"width": "80%","margin": "auto", "backgroundColor": "#FFFFFA", "padding": "2%", "borderRadius": "10px", "marginBottom": "30px"}),
     ]),
 
     dcc.Tabs(value="graph", children=[
