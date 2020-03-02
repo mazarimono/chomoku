@@ -829,7 +829,7 @@ df_place = df_place.sort_values("count")
 covid_el = []
 
 for i in range(len(df_covid)):
-    covid_el.append({"data":{"id": f"No.{df_covid.iloc[i, 0]}", "label": f"No.{df_covid.iloc[i, 0]}"}})
+    covid_el.append({"data":{"id": f"No.{df_covid.iloc[i, 0]}", "label": f"No.{df_covid.iloc[i, 0]} / {df_covid.iloc[i, 5]}"}"}})
     contact_list = []
     for i2 in ast.literal_eval(df_covid.iloc[i, -2]):
         if i2.startswith("No."):
