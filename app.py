@@ -991,8 +991,8 @@ graphs = html.Div(
 )
 
 @app.callback(Output("total_graph", "figure"), [Input("total_graph_toggle", "value")])
-def update_total(selected_value):
-    if selected_value:
+def update_total(selected_value_total):
+    if selected_value_total:
         return px.bar(df_date, x="date", y="cumsum", title="感染者数推移（累計）")
     return px.bar(df_date, x="date", y="count", title="感染者数推移（新規）")
 
