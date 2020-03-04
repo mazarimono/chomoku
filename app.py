@@ -826,6 +826,11 @@ df_place = df_place.iloc[:,:2]
 df_place.columns = ["place", "count"]
 df_place = df_place.sort_values("count")
 
+# 男女年代別
+df_gender = df_covid.groupby(["年代", "性別"], as_index=False).count()
+df_gender = df_gender.iloc[:, :3]
+df_gender.columns = ["年代", "性別", "患者数"]
+
 df_cyto_table=df_covid.iloc[:, [0,2,5,9,10,11]]
 
 covid_el = []
@@ -865,7 +870,10 @@ graphs = html.Div([
         
     ], style={"marginBottom": "2%"}),
     html.Div([
-        dcc.Graph(id="ratio_scatter", figure=px.scatter(df_covid, x="contact_num", y="infection_num", title="接触者数（x軸）と周囲の患者発生（y軸）",hover_data=["新No."]), className="six columns")
+        dcc.Graph(id="ratio_scatter", figure=px.scatter(df_covid, x="contact_num", y="infection_num", title="接触者数（x軸）と周囲の患者発生（y軸）",hover_data=["新No."]), className="six columns"),
+        dcc.Graph(id="age-gender", figure=px.bar(df_gender, y="年代", x="患者数", color="性別", barmode="group", orientation= "h", title="年代・性別患者数", category_orders={"年代": 
+    ["10代未満", "10代", "20代", "30代", "40代", "50代", "60代", "70代", "80代", "90代", "確認中", "調査中"],
+    "性別": ["男", "女"]}), className="six columns")
     ], style={"marginTop":"2%"})
 ])
 
@@ -881,7 +889,8 @@ table=html.Div([
     export_format="csv",
     fill_width=False,
     virtualization=True
-    )
+    ),
+    html.Img(src="assets/cc.png")
 ])
 
 covid_layout = html.Div([
