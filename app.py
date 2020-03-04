@@ -919,10 +919,10 @@ graphs = html.Div(
         html.Div(
             [
                 html.Div([
-                daq.ToggleSwitch(id="total_graph_toggle", label=["新規", "累計"], value=False, style={"width": "250px", "backgroundColor": "lime", "margin": "auto", "color": "white"}, color="red"),
+                # daq.ToggleSwitch(id="total_graph_toggle", label=["新規", "累計"], value=False, style={"width": "250px", "backgroundColor": "lime", "margin": "auto", "color": "white"}, color="red"),
                 dcc.Graph(
                     id="total_graph",
-                    
+                    figure=px.bar(df_date, x="date", y="count", title="感染者数推移（新規）")
                 )], className="six columns",style={"height": "55vh"}),
                 html.Div([
                 dcc.Graph(
@@ -990,11 +990,11 @@ graphs = html.Div(
     ]
 )
 
-@app.callback(Output("total_graph", "figure"), [Input("total_graph_toggle", "value")])
-def update_total(selected_value_total):
-    if selected_value_total:
-        return px.bar(df_date, x="date", y="cumsum", title="感染者数推移（累計）")
-    return px.bar(df_date, x="date", y="count", title="感染者数推移（新規）")
+# @app.callback(Output("total_graph", "figure"), [Input("total_graph_toggle", "value")])
+# def update_total(selected_value_total):
+#     if selected_value_total:
+#         return px.bar(df_date, x="date", y="cumsum", title="感染者数推移（累計）")
+#     return px.bar(df_date, x="date", y="count", title="感染者数推移（新規）")
 
 
 table = html.Div(
