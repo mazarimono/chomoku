@@ -918,11 +918,13 @@ graphs = html.Div(
     [
         html.Div(
             [
+                html.Div([
+                daq.ToggleSwitch(id="total_graph_toggle", label=["新規", "累計"], value=False, style={"width": "250px", "backgroundColor": "lime", "margin": "auto", "color": "white"}, color="red"),
                 dcc.Graph(
                     id="total_graph",
-                    figure=px.bar(df_date, x="date", y="cumsum", title="感染者数推移"),
-                    className="six columns",
-                ),
+                    
+                )], className="six columns",style={"height": "55vh"}),
+                html.Div([
                 dcc.Graph(
                     id="todofuken",
                     figure=px.bar(
@@ -931,14 +933,15 @@ graphs = html.Div(
                         y="place",
                         orientation="h",
                         title="都道府県別感染者数",
-                    ),
-                    className="six columns",
-                ),
+                    )
+                )],className="six columns",style={"height": "60vh"})
             ],
             style={"marginBottom": "2%"},
         ),
         html.Div(
             [
+                html.Div([
+
                 dcc.Graph(
                     id="ratio_scatter",
                     figure=px.scatter(
@@ -948,8 +951,10 @@ graphs = html.Div(
                         title="接触者数（x軸）と周囲の患者発生（y軸）",
                         hover_data=["新No."],
                     ),
-                    className="six columns",
+                )],className="six columns",style={"height": "55vh"}
+                    
                 ),
+                html.Div([
                 dcc.Graph(
                     id="age-gender",
                     figure=px.bar(
@@ -978,13 +983,19 @@ graphs = html.Div(
                             "性別": ["男", "女"],
                         },
                     ),
-                    className="six columns",
-                ),
+                ),],className="six columns",style={"height": "55vh"} )
             ],
             style={"marginTop": "2%"},
         ),
     ]
 )
+
+@app.callback(Output("total_graph", "figure"), [Input("total_graph_toggle", "value")])
+def update_total(selected_value):
+    if selected_value:
+        return px.bar(df_date, x="date", y="cumsum", title="感染者数推移（累計）")
+    return px.bar(df_date, x="date", y="count", title="感染者数推移（新規）")
+
 
 table = html.Div(
     [
