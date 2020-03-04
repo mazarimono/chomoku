@@ -1,14 +1,14 @@
 import json
 import os
 from datetime import datetime, timedelta
-from pathlib import Path 
-import ast 
+from pathlib import Path
+import ast
 
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_cytoscape as cyto 
-import dash_table 
+import dash_cytoscape as cyto
+import dash_table
 
 # import dash_alternative_viz as dav
 import dash_daq as daq
@@ -440,28 +440,50 @@ kyoto_bus = html.Div(
                             color="#9B51E0",
                             style={"height": 100},
                         ),
-                        html.Div([html.Div([dcc.Graph(id="bus_line_map",
-                        figure=go.Figure(
-        data=[
-            go.Scattermapbox(
-                mode="lines",
-                lon=bus10_df[bus10_df["name"] == i]["lon"],
-                lat=bus10_df[bus10_df["name"] == i]["lat"],
-                name=i,
-                line_width=10,
-            )
-            for i in bus10_df["name"].unique()
-        ],
-        layout=go.Layout(mapbox={
-            "center": {"lon": keito_df["lon"].mean(), "lat": keito_df["lat"].mean()},
-            "style": "carto-positron",
-            "pitch": 90,
-            "zoom": 12,
-        },
-        height=800,
-        title="選択された路線の経路と京都市近郊の観光地",)
-    )
-                        )])]),
+                        html.Div(
+                            [
+                                html.Div(
+                                    [
+                                        dcc.Graph(
+                                            id="bus_line_map",
+                                            figure=go.Figure(
+                                                data=[
+                                                    go.Scattermapbox(
+                                                        mode="lines",
+                                                        lon=bus10_df[
+                                                            bus10_df["name"] == i
+                                                        ]["lon"],
+                                                        lat=bus10_df[
+                                                            bus10_df["name"] == i
+                                                        ]["lat"],
+                                                        name=i,
+                                                        line_width=10,
+                                                    )
+                                                    for i in bus10_df["name"].unique()
+                                                ],
+                                                layout=go.Layout(
+                                                    mapbox={
+                                                        "center": {
+                                                            "lon": keito_df[
+                                                                "lon"
+                                                            ].mean(),
+                                                            "lat": keito_df[
+                                                                "lat"
+                                                            ].mean(),
+                                                        },
+                                                        "style": "carto-positron",
+                                                        "pitch": 90,
+                                                        "zoom": 12,
+                                                    },
+                                                    height=800,
+                                                    title="選択された路線の経路と京都市近郊の観光地",
+                                                ),
+                                            ),
+                                        )
+                                    ]
+                                )
+                            ]
+                        ),
                         html.P(
                             "京都市オープンデータポータルサイト　「市バスの運輸成績について」　（https://data.city.kyoto.lg.jp/）"
                         ),
@@ -683,7 +705,9 @@ tourist = html.Div(
                         ),
                     ]
                 ),
-                html.P("日本政府観光局: 月別年別統計データ（訪日外国人）: https://www.jnto.go.jp/jpn/statistics/visitor_trends/")
+                html.P(
+                    "日本政府観光局: 月別年別統計データ（訪日外国人）: https://www.jnto.go.jp/jpn/statistics/visitor_trends/"
+                ),
             ],
             style={"width": "90%", "margin": "auto", "padding": "5% 0"},
         ),
@@ -695,77 +719,74 @@ tourist = html.Div(
 p = Path("./src/stock/")
 p_list = list(p.glob("*.csv"))
 
+
 def make_data(path):
     df = pd.read_csv(path, parse_dates=["日付"], encoding="shift-jis").sort_values("日付")
     df1 = df[["日付", "終値"]]
     df1.index = range(len(df1))
     return df1
 
+
 def add_index(df, date):
-    spot_price = float(df[df["日付"]==date]["終値"].values)
-    
+    spot_price = float(df[df["日付"] == date]["終値"].values)
+
     df.loc[:, "st"] = df.loc[:, "終値"] / spot_price * 100
     df.loc[:, "change"] = df.loc[:, "st"].pct_change()
-    df.loc[:, "std20"] = df["change"].rolling(20).std()*np.sqrt(360)
-    df.loc[:, "std60"] = df["change"].rolling(60).std()*np.sqrt(360)
+    df.loc[:, "std20"] = df["change"].rolling(20).std() * np.sqrt(360)
+    df.loc[:, "std60"] = df["change"].rolling(60).std() * np.sqrt(360)
     return df
+
 
 def make_stock_data(path, date):
     df = make_data(path)
     df = add_index(df, date)
     return df
 
-jp_equity = html.Div([
 
-    html.H1("日本株指数動向比較"),
+jp_equity = html.Div(
+    [
+        html.H1("日本株指数動向比較"),
+        dcc.DatePickerSingle(
+            id="datepicker",
+            date=datetime(2005, 1, 4),
+            min_date_allowed=datetime(2003, 9, 16),
+        ),
+        html.Button(id="datepicker-button", children="基準日設定", n_clicks=1),
+        html.P("ボタンを押すと基準日が変更されます"),
+        dcc.Loading(
+            [dcc.Graph(id="index_graph"), dcc.Graph(id="std_graph")],
+            type="graph",
+            fullscreen=True,
+        ),
+    ]
+)
 
-    dcc.DatePickerSingle(
-        id="datepicker",
-        date=datetime(2005,1,4),
-        min_date_allowed=datetime(2003,9,16),
-    ),
-    html.Button(
-        id="datepicker-button",
-        children="基準日設定",
-        n_clicks=1
-    ),
-    html.P("ボタンを押すと基準日が変更されます"),
 
-    dcc.Loading([
-    dcc.Graph(id="index_graph"),
-
-    dcc.Graph(id="std_graph")
-
-    ], type="graph", fullscreen=True)
-])
-
-@app.callback([Output("index_graph", "figure"),
-            Output("std_graph", "figure")],
-            [Input("datepicker-button", "n_clicks")],
-            [State("datepicker", "date")]
-            )
+@app.callback(
+    [Output("index_graph", "figure"), Output("std_graph", "figure")],
+    [Input("datepicker-button", "n_clicks")],
+    [State("datepicker", "date")],
+)
 def update_equity(n_clicks, selected_date):
     if n_clicks:
         stock_dict = {}
-    # 休日が入力されるとエラーが発生する。この時に、営業日を入力してくださいなどの
-    # コメントが出るようにする。
+        # 休日が入力されるとエラーが発生する。この時に、営業日を入力してくださいなどの
+        # コメントが出るようにする。
         for i in list(p.glob("*.csv")):
             name = str(i).split("/")[-1].split(".")[0]
             stock_dict[name] = make_stock_data(i, selected_date)
-    
+
         fig = go.Figure()
         for name, df in stock_dict.items():
             fig.add_trace(go.Scatter(x=df["日付"], y=df["st"], name=name))
         fig.update_layout(title=f"日本の各種株価指数({selected_date}=100)")
 
-        fig2= go.Figure()
+        fig2 = go.Figure()
         for name, df in stock_dict.items():
             fig2.add_trace(go.Scatter(x=df["日付"], y=df["std60"], name=name))
         fig2.update_layout(title=f"日本の各種株価指数 標準偏差60日")
 
-        return fig, fig2 
-
-
+        return fig, fig2
 
 
 @app.callback(Output("total_number", "children"), [Input("total_checkitem", "value")])
@@ -812,6 +833,7 @@ def update_country_graph(selected_country):
     country_dff = country_dff[country_dff["国名"].isin(selected_country)]
     return dcc.Graph(figure=px.line(country_dff, x="date", y="value", color="国名"))
 
+
 ### COVID
 
 df_covid = pd.read_csv("./src/kosei.csv", index_col=0, parse_dates=["date"])
@@ -822,7 +844,7 @@ df_date.columns = ["date", "count"]
 df_date["cumsum"] = df_date["count"].cumsum()
 
 df_place = df_covid.groupby("居住地", as_index=False).count()
-df_place = df_place.iloc[:,:2]
+df_place = df_place.iloc[:, :2]
 df_place.columns = ["place", "count"]
 df_place = df_place.sort_values("count")
 
@@ -831,83 +853,209 @@ df_gender = df_covid.groupby(["年代", "性別"], as_index=False).count()
 df_gender = df_gender.iloc[:, :3]
 df_gender.columns = ["年代", "性別", "患者数"]
 
-df_cyto_table=df_covid.iloc[:, [0,2,5,9,10,11]]
+df_cyto_table = df_covid.iloc[:, [0, 2, 5, 9, 10, 11]]
 
 covid_el = []
 
 for i in range(len(df_covid)):
-    covid_el.append({"data":{"id": f"No.{df_covid.iloc[i, 0]}", "label": f"No.{df_covid.iloc[i, 0]} / {df_covid.iloc[i, 5]}"}})
+    covid_el.append(
+        {
+            "data": {
+                "id": f"No.{df_covid.iloc[i, 0]}",
+                "label": f"No.{df_covid.iloc[i, 0]} / {df_covid.iloc[i, 5]}",
+            }
+        }
+    )
     contact_list = []
     for i2 in ast.literal_eval(df_covid.iloc[i, -2]):
         if i2.startswith("No."):
-            covid_el.append({"data":{"source": f"No.{df_covid.iloc[i, 0]}", "target": f"{i2}"}})
+            covid_el.append(
+                {"data": {"source": f"No.{df_covid.iloc[i, 0]}", "target": f"{i2}"}}
+            )
 
 
-network = html.Div([
-    html.Div([
-    html.H4("周囲の患者発生のネットワーク図"),
-    cyto.Cytoscape(id="covid_cyto", layout={"name": "cose"},
-    elements=covid_el,
-    style={"width": "100%", "height": "80vh", "backgroundColor": "white", "borderRadius": "10px"}
-    )
-    ], className="eight columns"),
-    html.Div([
-        html.H4("感染関係データテーブル"),
+network = html.Div(
+    [
+        html.Div(
+            [
+                html.H4("周囲の患者発生のネットワーク図"),
+                cyto.Cytoscape(
+                    id="covid_cyto",
+                    layout={"name": "cose"},
+                    elements=covid_el,
+                    style={
+                        "width": "100%",
+                        "height": "80vh",
+                        "backgroundColor": "white",
+                        "borderRadius": "10px",
+                    },
+                ),
+            ],
+            className="eight columns",
+        ),
+        html.Div(
+            [
+                html.H4("感染関係データテーブル"),
+                dash_table.DataTable(
+                    columns=[
+                        {"name": i, "id": i, "deletable": True}
+                        for i in df_cyto_table.columns
+                    ],
+                    data=df_cyto_table.to_dict("records"),
+                    fixed_rows={"headers": True},
+                    fixed_columns={"headers": True, "data": 1},
+                    style_cell={"minWidth": "30px", "textAlign": "left"},
+                ),
+            ],
+            className="four columns",
+            style={"height": "100vh"},
+        ),
+    ],
+    style={"margin": "2%"},
+)
+
+graphs = html.Div(
+    [
+        html.Div(
+            [
+                dcc.Graph(
+                    id="total_graph",
+                    figure=px.bar(df_date, x="date", y="cumsum", title="感染者数推移"),
+                    className="six columns",
+                ),
+                dcc.Graph(
+                    id="todofuken",
+                    figure=px.bar(
+                        df_place,
+                        x="count",
+                        y="place",
+                        orientation="h",
+                        title="都道府県別感染者数",
+                    ),
+                    className="six columns",
+                ),
+            ],
+            style={"marginBottom": "2%"},
+        ),
+        html.Div(
+            [
+                dcc.Graph(
+                    id="ratio_scatter",
+                    figure=px.scatter(
+                        df_covid,
+                        x="contact_num",
+                        y="infection_num",
+                        title="接触者数（x軸）と周囲の患者発生（y軸）",
+                        hover_data=["新No."],
+                    ),
+                    className="six columns",
+                ),
+                dcc.Graph(
+                    id="age-gender",
+                    figure=px.bar(
+                        df_gender,
+                        y="年代",
+                        x="患者数",
+                        color="性別",
+                        barmode="group",
+                        orientation="h",
+                        title="年代・性別患者数",
+                        category_orders={
+                            "年代": [
+                                "10代未満",
+                                "10代",
+                                "20代",
+                                "30代",
+                                "40代",
+                                "50代",
+                                "60代",
+                                "70代",
+                                "80代",
+                                "90代",
+                                "確認中",
+                                "調査中",
+                            ],
+                            "性別": ["男", "女"],
+                        },
+                    ),
+                    className="six columns",
+                ),
+            ],
+            style={"marginTop": "2%"},
+        ),
+    ]
+)
+
+table = html.Div(
+    [
         dash_table.DataTable(
-            columns=[{"name": i, "id": i, "deletable": True} for i in df_cyto_table.columns],
-            data=df_cyto_table.to_dict("records"),
-            fixed_rows={"headers": True},
-            fixed_columns={"headers": True, "data": 1},
-            style_cell={"minWidth": "30px", }
-        )
-    ], className="four columns", style={"height": "100vh"}),
-    ], style={"margin": "2%"})
+            id="covid_table",
+            columns=[{"name": i, "id": i, "deletable": True} for i in df_covid.columns],
+            data=df_covid.to_dict("records"),
+            fixed_rows={"headers": True, "data": 0},
+            editable=True,
+            filter_action="native",
+            row_deletable=True,
+            sort_action="native",
+            export_format="csv",
+            fill_width=False,
+            virtualization=True,
+            style_cell={"textAlign": "left"},
+        ),
+        html.Img(src="assets/cc.png"),
+    ]
+)
 
-graphs = html.Div([
-    html.Div([
-        dcc.Graph(id="total_graph", figure=px.bar(df_date, x="date", y="cumsum", title="感染者数推移"), className="six columns"),
-        dcc.Graph(id="todofuken", figure=px.bar(df_place, x="count", y="place", orientation="h", title="都道府県別感染者数"), className="six columns"),
-        
-    ], style={"marginBottom": "2%"}),
-    html.Div([
-        dcc.Graph(id="ratio_scatter", figure=px.scatter(df_covid, x="contact_num", y="infection_num", title="接触者数（x軸）と周囲の患者発生（y軸）",hover_data=["新No."]), className="six columns"),
-        dcc.Graph(id="age-gender", figure=px.bar(df_gender, y="年代", x="患者数", color="性別", barmode="group", orientation= "h", title="年代・性別患者数", category_orders={"年代": 
-    ["10代未満", "10代", "20代", "30代", "40代", "50代", "60代", "70代", "80代", "90代", "確認中", "調査中"],
-    "性別": ["男", "女"]}), className="six columns")
-    ], style={"marginTop":"2%"})
-])
-
-table=html.Div([
-    dash_table.DataTable(id="covid_table",
-    columns=[{"name": i, "id": i, "deletable": True} for i in df_covid.columns],
-    data=df_covid.to_dict("records"),
-    fixed_rows={"headers": True, "data": 0},
-    editable=True,
-    filter_action="native",
-    row_deletable=True,
-    sort_action="native",
-    export_format="csv",
-    fill_width=False,
-    virtualization=True
-    ),
-    html.Img(src="assets/cc.png")
-])
-
-covid_layout = html.Div([
-    html.Div([
-        html.Div([
-        html.H4("新型コロナウィルス 国内感染状況"),
-        html.H6("厚生省発表のデータを基に国内の感染状況を可視化しました。")
-        ],style={"width": "80%","margin": "auto", "backgroundColor": "#FFFFFA", "padding": "2%", "borderRadius": "10px", "marginBottom": "30px"}),
-    ]),
-
-    dcc.Tabs(value="graph", children=[
-        dcc.Tab(label="感染者数グラフ", value="graph", style=tab_style, selected_style=tab_selected_style, children=graphs),
-        dcc.Tab(label="ネットワーク図", value="network", style=tab_style, selected_style=tab_selected_style, children=network),
-        dcc.Tab(label="データ", value="table", style=tab_style, selected_style=tab_selected_style, children=table)
-    ], style=tabs_styles),
-],style={"backgroundColor": "#E0E3DA", "padding": "5%"})
-
+covid_layout = html.Div(
+    [
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.H4("新型コロナウィルス 国内感染状況"),
+                        html.H6("厚生省発表のデータを基に国内の感染状況を可視化しました。"),
+                    ],
+                    style={
+                        "width": "80%",
+                        "margin": "auto",
+                        "backgroundColor": "#FFFFFA",
+                        "padding": "2%",
+                        "borderRadius": "10px",
+                        "marginBottom": "30px",
+                    },
+                )
+            ]
+        ),
+        dcc.Tabs(
+            value="graph",
+            children=[
+                dcc.Tab(
+                    label="感染者数グラフ",
+                    value="graph",
+                    style=tab_style,
+                    selected_style=tab_selected_style,
+                    children=graphs,
+                ),
+                dcc.Tab(
+                    label="ネットワーク図",
+                    value="network",
+                    style=tab_style,
+                    selected_style=tab_selected_style,
+                    children=network,
+                ),
+                dcc.Tab(
+                    label="データ",
+                    value="table",
+                    style=tab_style,
+                    selected_style=tab_selected_style,
+                    children=table,
+                ),
+            ],
+            style=tabs_styles,
+        ),
+    ],
+    style={"backgroundColor": "#E0E3DA", "padding": "5%"},
+)
 
 
 # Page-Router
