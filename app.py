@@ -22,7 +22,8 @@ import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
 
 # APP
-external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
+#external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
+external_stylesheets = ["https://codepen.io/ogawahideyuki/pen/LYVzaae.css"]
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 
@@ -934,7 +935,7 @@ graphs = html.Div(
                         orientation="h",
                         title="都道府県別感染者数",
                     )
-                )],className="six columns",style={"height": "60vh"})
+                )],className="six columns",style={"height": "55vh"})
             ],
             style={"marginBottom": "2%"},
         ),
