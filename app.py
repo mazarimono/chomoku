@@ -906,6 +906,7 @@ network = html.Div(
                     fixed_rows={"headers": True},
                     fixed_columns={"headers": True, "data": 1},
                     style_cell={"minWidth": "30px", "textAlign": "left"},
+                    page_size=1000
                 ),
             ],
             className="four columns",
@@ -1012,6 +1013,7 @@ table = html.Div(
             export_format="csv",
             fill_width=False,
             virtualization=True,
+            page_size=1000,
             style_cell={"textAlign": "left"},
         ),
         html.Img(src="assets/cc.png"),
