@@ -9,4 +9,4 @@ pandas==1.0.0
 numpy 
 gunicorn 
 lxml
-xlrd
+
