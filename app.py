@@ -847,7 +847,9 @@ df_date["cumsum"] = df_date["count"].cumsum()
 df_place = df_covid.groupby("居住地", as_index=False).count()
 df_place = df_place.iloc[:, :2]
 df_place.columns = ["place", "count"]
+df_place["count"] = df_place["count"].astype("int")
 df_place = df_place.sort_values("count")
+df_place = df_place[-15:]
 
 # 男女年代別
 df_gender = df_covid.groupby(["年代", "性別"], as_index=False).count()
