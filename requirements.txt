@@ -5,7 +5,7 @@ dash_table
 dash_cytoscape
 dash_daq
 plotly
-pandas==1.0.0 
+pandas
 numpy 
 gunicorn 
 lxml
