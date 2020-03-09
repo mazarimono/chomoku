@@ -4,6 +4,9 @@ All Notable changes of chomoku will be documented in this file./
 
 ## Released
 
+### 2020/3/1
+Add Covid Visualization
+
 ### 2019/05/30
 Add Blog link
 
