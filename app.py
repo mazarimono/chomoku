@@ -21,6 +21,8 @@ import plotly.graph_objs as go
 
 from dash.dependencies import Input, Output, State
 
+from covid_memo import covid_memo 
+
 # APP
 # external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 external_stylesheets = ["https://codepen.io/ogawahideyuki/pen/LYVzaae.css"]
@@ -883,31 +885,31 @@ for i in range(len(df_covid)):
             )
 
 # 世界
-world = html.Div(
-    [
-        # dcc.RadioItems(id="world_bar_radio", options=[{"value": i, "label": i} for i in ["Log","Linear"]], value="Log"),
-        dcc.Graph(
-            id="world_bar_graph",
-            figure=go.Figure(
-                data=[
-                    go.Bar(
-                        x=df_country["NewConfCases"],
-                        y=df_country["CountryExp"],
-                        orientation="h",
-                        name="感染者数",
-                    ),
-                    go.Bar(
-                        x=df_country["NewDeaths"],
-                        y=df_country["CountryExp"],
-                        orientation="h",
-                        name="死亡者数",
-                    ),
-                ],
-                layout=go.Layout(xaxis={"type": "log"}, title="世界の状況（x軸: ログスケール）"),
-            )
-        )
-    ]
-)
+# world = html.Div(
+#     [
+#         # dcc.RadioItems(id="world_bar_radio", options=[{"value": i, "label": i} for i in ["Log","Linear"]], value="Log"),
+#         dcc.Graph(
+#             id="world_bar_graph",
+#             figure=go.Figure(
+#                 data=[
+#                     go.Bar(
+#                         x=df_country["NewConfCases"],
+#                         y=df_country["CountryExp"],
+#                         orientation="h",
+#                         name="感染者数",
+#                     ),
+#                     go.Bar(
+#                         x=df_country["NewDeaths"],
+#                         y=df_country["CountryExp"],
+#                         orientation="h",
+#                         name="死亡者数",
+#                     ),
+#                 ],
+#                 layout=go.Layout(xaxis={"type": "log"}, title="世界の状況（x軸: ログスケール）"),
+#             )
+#         )
+#     ]
+# )
 
 # ネットワーク図
 network = html.Div(
@@ -1110,13 +1112,13 @@ covid_layout = html.Div(
                     children=network,
                 ),
                 
-                dcc.Tab(
-                    label="世界の状況",
-                    value="world",
-                    style=tab_style,
-                    selected_style=tab_selected_style,
-                    children=world,
-                ),
+                # dcc.Tab(
+                #     label="世界の状況",
+                #     value="world",
+                #     style=tab_style,
+                #     selected_style=tab_selected_style,
+                #     children=world,
+                # ),
 
                 dcc.Tab(
                     label="データ",
@@ -1134,6 +1136,8 @@ covid_layout = html.Div(
             データ元 :      
             [厚生労働省](https://www.mhlw.go.jp/stf/houdou/index.html)      
                        [European Centre for Disease Prevention and Control](https://www.ecdc.europa.eu/en/geographical-distribution-2019-ncov-cases)
+
+            [データ源メモ](https://chomoku.herokuapp.com/covid-memo)
             """
         ),
     ],
@@ -1191,6 +1195,8 @@ def display_page(pathname):
         return jp_equity
     elif pathname == "/covid-19":
         return covid_layout
+    elif pathname == "/covid-memo":
+        return covid_memo
     else:
         return kyoto_bus
 
