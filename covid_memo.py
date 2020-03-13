@@ -14,7 +14,7 @@ covid_memo = html.Div([
     """
     ___
 
-    ## 世界の感染データ
+    ### 世界の感染データ
 
     European Center for Disease prevention and control
 
@@ -24,28 +24,28 @@ covid_memo = html.Div([
 
     ___
 
-    ## 各都道府県の感染データURL
+    ### 各都道府県の感染データURL
 
-    ### 東京都
+    #### 東京都
 
     [オープンデータサイト](https://catalog.data.metro.tokyo.lg.jp/dataset/t000010d0000000068/resource/c2d997db-1450-43fa-8037-ebb11ec28d4c)
 
     ____
 
-    ### 北海道
+    #### 北海道
 
     [HTMLに表データで公表](http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm)
 
 
     ___
 
-    ### 愛知県
+    #### 愛知県
 
     [PDFで公表](https://www.pref.aichi.jp/uploaded/attachment/325314.pdf)
 
     ___
 
-    ### 大阪府
+    #### 大阪府
 
     全てのデータをWordファイルで提供
 
@@ -55,9 +55,14 @@ covid_memo = html.Div([
 
     ___ 
 
+    #### 京都府
+
+    ウェブページ上に発生件数と年齢などの情報を掲載している
+
+    [https://www.pref.kyoto.jp/kentai/news/novelcoronavirus.html](https://www.pref.kyoto.jp/kentai/news/novelcoronavirus.html)
 
     """
-    , style={"fontSize": 24, "padding": "5%", "paddingTop": 0}
+    , style={"fontSize": 20, "padding": "5%", "paddingTop": 0}
 )
 
 ], style=memo_style)
