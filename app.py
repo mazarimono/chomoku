@@ -24,7 +24,7 @@ from dash.dependencies import Input, Output, State
 from covid_memo import covid_memo 
 
 # APP
-# external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
+#external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 external_stylesheets = ["https://codepen.io/ogawahideyuki/pen/LYVzaae.css"]
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
@@ -858,12 +858,6 @@ df_gender = df_covid.groupby(["年代", "性別"], as_index=False).count()
 df_gender = df_gender.iloc[:, :3]
 df_gender.columns = ["年代", "性別", "患者数"]
 
-# ユーロ
-df_world = pd.read_excel("./src/0308covid.xls")
-df_country = df_world.groupby("CountryExp", as_index=False).sum()
-df_country = df_country.sort_values("NewConfCases")
-df_country = df_country[-15:]
-
 df_cyto_table = df_covid.iloc[:, [0, 2, 5, 9, 10, 11]]
 
 covid_el = []
@@ -911,7 +905,6 @@ for i in range(len(df_covid)):
 #     ]
 # )
 
-# ネットワーク図
 network = html.Div(
     [
         html.Div(
@@ -943,7 +936,7 @@ network = html.Div(
                     fixed_rows={"headers": True},
                     fixed_columns={"headers": True, "data": 1},
                     style_cell={"minWidth": "30px", "textAlign": "left"},
-                    page_size=1000,
+                    page_size=1000
                 ),
             ],
             className="four columns",
@@ -957,91 +950,72 @@ graphs = html.Div(
     [
         html.Div(
             [
-                html.Div(
-                    [
-                        # daq.ToggleSwitch(id="total_graph_toggle", label=["新規", "累計"], value=False, style={"width": "250px", "backgroundColor": "lime", "margin": "auto", "color": "white"}, color="red"),
-                        dcc.Graph(
-                            id="total_graph",
-                            figure=px.bar(
-                                df_date, x="date", y="count", title="感染者数推移（新規）"
-                            ),
-                        )
-                    ],
-                    className="six columns",
-                    style={"height": "55vh"},
-                ),
-                html.Div(
-                    [
-                        dcc.Graph(
-                            id="todofuken",
-                            figure=px.bar(
-                                df_place,
-                                x="count",
-                                y="place",
-                                orientation="h",
-                                title="都道府県別感染者数",
-                            ),
-                        )
-                    ],
-                    className="six columns",
-                    style={"height": "55vh"},
-                ),
+                html.Div([
+                # daq.ToggleSwitch(id="total_graph_toggle", label=["新規", "累計"], value=False, style={"width": "250px", "backgroundColor": "lime", "margin": "auto", "color": "white"}, color="red"),
+                dcc.Graph(
+                    id="total_graph",
+                    figure=px.bar(df_date, x="date", y="count", title="感染者数推移（新規）")
+                )], className="six columns",style={"height": "55vh"}),
+                html.Div([
+                dcc.Graph(
+                    id="todofuken",
+                    figure=px.bar(
+                        df_place,
+                        x="count",
+                        y="place",
+                        orientation="h",
+                        title="都道府県別感染者数",
+                    )
+                )],className="six columns",style={"height": "55vh"})
             ],
             style={"marginBottom": "2%"},
         ),
         html.Div(
             [
-                html.Div(
-                    [
-                        dcc.Graph(
-                            id="ratio_scatter",
-                            figure=px.scatter(
-                                df_covid,
-                                x="contact_num",
-                                y="infection_num",
-                                title="接触者数（x軸）と周囲の患者発生（y軸）",
-                                hover_data=["新No."],
-                            ),
-                        )
-                    ],
-                    className="six columns",
-                    style={"height": "55vh"},
+                html.Div([
+
+                dcc.Graph(
+                    id="ratio_scatter",
+                    figure=px.scatter(
+                        df_covid,
+                        x="contact_num",
+                        y="infection_num",
+                        title="接触者数（x軸）と周囲の患者発生（y軸）",
+                        hover_data=["新No."],
+                    ),
+                )],className="six columns",style={"height": "55vh"}
+                    
                 ),
-                html.Div(
-                    [
-                        dcc.Graph(
-                            id="age-gender",
-                            figure=px.bar(
-                                df_gender,
-                                y="年代",
-                                x="患者数",
-                                color="性別",
-                                barmode="group",
-                                orientation="h",
-                                title="年代・性別患者数",
-                                category_orders={
-                                    "年代": [
-                                        "10代未満",
-                                        "10代",
-                                        "20代",
-                                        "30代",
-                                        "40代",
-                                        "50代",
-                                        "60代",
-                                        "70代",
-                                        "80代",
-                                        "90代",
-                                        "確認中",
-                                        "調査中",
-                                    ],
-                                    "性別": ["男", "女"],
-                                },
-                            ),
-                        )
-                    ],
-                    className="six columns",
-                    style={"height": "55vh"},
-                ),
+                html.Div([
+                dcc.Graph(
+                    id="age-gender",
+                    figure=px.bar(
+                        df_gender,
+                        y="年代",
+                        x="患者数",
+                        color="性別",
+                        barmode="group",
+                        orientation="h",
+                        title="年代・性別患者数",
+                        category_orders={
+                            "年代": [
+                                "10代未満",
+                                "10代",
+                                "20代",
+                                "30代",
+                                "40代",
+                                "50代",
+                                "60代",
+                                "70代",
+                                "80代",
+                                "90代",
+                                "確認中",
+                                "調査中",
+                            ],
+                            "性別": ["男", "女"],
+                        },
+                    ),
+                ),],className="six columns",style={"height": "55vh"} )
             ],
             style={"marginTop": "2%"},
         ),
@@ -1081,7 +1055,10 @@ covid_layout = html.Div(
         html.Div(
             [
                 html.Div(
-                    [html.H4("新型コロナウィルス 感染状況"), html.H6("発表データを基に感染状況を可視化しました。")],
+                    [
+                        html.H4("新型コロナウィルス 国内感染状況"),
+                        html.H6("厚生省発表のデータを基に国内の感染状況を可視化しました。"),
+                    ],
                     style={
                         "width": "80%",
                         "margin": "auto",
@@ -1096,7 +1073,6 @@ covid_layout = html.Div(
         dcc.Tabs(
             value="graph",
             children=[
-                
                 dcc.Tab(
                     label="感染者数グラフ",
                     value="graph",
@@ -1127,7 +1103,6 @@ covid_layout = html.Div(
                     selected_style=tab_selected_style,
                     children=table,
                 ),
-                
             ],
             style=tabs_styles,
         ),
@@ -1143,44 +1118,6 @@ covid_layout = html.Div(
     ],
     style={"backgroundColor": "#E0E3DA", "padding": "5%"},
 )
-
-# @app.callback(Output("world_bar_figure", "figure"), [Input("world_bar_radio", "value")])
-# def update_world_bar_graph(selected_radio_data):
-#     if selected_radio_data == "Linear":
-#         return go.Figure(
-#                 data=[
-#                     go.Bar(
-#                         x=df_country["NewConfCases"],
-#                         y=df_country["CountryExp"],
-#                         orientation="h",
-#                         name="感染者数",
-#                     ),
-#                     go.Bar(
-#                         x=df_country["NewDeaths"],
-#                         y=df_country["CountryExp"],
-#                         orientation="h",
-#                         name="死亡者数",
-#                     ),
-#                 ],
-#             )
-#     else:
-#         return go.Figure(
-#                 data=[
-#                     go.Bar(
-#                         x=df_country["NewConfCases"],
-#                         y=df_country["CountryExp"],
-#                         orientation="h",
-#                         name="感染者数",
-#                     ),
-#                     go.Bar(
-#                         x=df_country["NewDeaths"],
-#                         y=df_country["CountryExp"],
-#                         orientation="h",
-#                         name="死亡者数",
-#                     ),
-#                 ],
-#                 layout=go.Layout(xaxis={"type": "log"}),
-#             )
 
 
 # Page-Router
