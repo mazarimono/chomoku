@@ -21,10 +21,10 @@ import plotly.graph_objs as go
 
 from dash.dependencies import Input, Output, State
 
-from covid_memo import covid_memo 
+from covid_memo import covid_memo
 
 # APP
-#external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
+# external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 external_stylesheets = ["https://codepen.io/ogawahideyuki/pen/LYVzaae.css"]
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
@@ -864,7 +864,7 @@ df_cyto_table = df_covid.iloc[:, [0, 2, 5, 9, 10, 11]]
 
 covid_world_data = pd.read_excel("./src/covid19_worlddata.xls")
 covid_jp = covid_world_data[covid_world_data["CountryExp"] == "Japan"]
-covid_jp=covid_jp.sort_values("DateRep")
+covid_jp = covid_jp.sort_values("DateRep")
 covid_jp["cumsum"] = covid_jp["NewConfCases"].cumsum()
 covid_jp = covid_jp[15:]
 
@@ -951,7 +951,7 @@ network = html.Div(
                     fixed_rows={"headers": True},
                     fixed_columns={"headers": True, "data": 1},
                     style_cell={"minWidth": "30px", "textAlign": "left"},
-                    page_size=1000
+                    page_size=1000,
                 ),
             ],
             className="four columns",
@@ -965,33 +965,66 @@ graphs = html.Div(
     [
         html.Div(
             [
-                html.Div([
-                daq.ToggleSwitch(id="total_graph_toggle", label=["新規", "累計"], value=False, style={"width": "250px", "backgroundColor": "lime", "margin": "auto", "color": "white"}, color="red"),
-                dcc.Graph(
-                    id="total_graph",
-                )], className="six columns",style={"height": "55vh"}),
-                html.Div([
-                dcc.Graph(
-                    id="todofuken",
-                    figure=px.bar(
-                        covid_jp_area,
-                        x="人数（名）",
-                        y="都道府県",
-                        orientation="h",
-                        title="都道府県別感染者数",
-                    )
-                )],className="six columns",style={"height": "55vh", "marginTop": "2%"})
+                html.Div(
+                    [
+                        daq.ToggleSwitch(
+                            id="total_graph_toggle",
+                            label=["新規", "累計"],
+                            value=False,
+                            style={
+                                "width": "250px",
+                                "backgroundColor": "lime",
+                                "margin": "auto",
+                                "color": "white",
+                            },
+                            color="red",
+                        ),
+                        dcc.Graph(id="total_covid_graph"),
+                    ],
+                    className="six columns",
+                    style={"height": "55vh"},
+                ),
+                html.Div(
+                    [
+                        dcc.Graph(
+                            id="todofuken",
+                            figure=px.bar(
+                                covid_jp_area,
+                                x="人数（名）",
+                                y="都道府県",
+                                orientation="h",
+                                title="都道府県別感染者数",
+                            ),
+                        )
+                    ],
+                    className="six columns",
+                    style={"height": "55vh", "marginTop": "2%"},
+                ),
             ],
             style={"marginBottom": "2%"},
-        ),
+        )
     ]
 )
 
-@app.callback(Output("total_graph", "figure"), [Input("total_graph_toggle", "value")])
+
+@app.callback(
+    Output("total_covid_graph", "figure"), [Input("total_graph_toggle", "value")]
+)
 def update_total(selected_value_total):
     if selected_value_total:
-        return px.bar(covid_jp, x="DateRep", y="cumsum", title=f"日本の感染者数推移（累計 最終更新日　{last_update}）")
-    return px.bar(covid_jp, x="DateRep", y="NewConfCases", title=f"日本の感染者数推移（新規 最終更新日　{last_update}）", labels={"DateRep": "日付", "NewConfCases": "新規感染者数"})
+        return px.bar(
+            covid_jp,
+            x="DateRep",
+            y="cumsum",
+            title=f"日本の感染者数推移（累計 最終更新日　{last_update}）",
+        )
+    return px.bar(
+        covid_jp,
+        x="DateRep",
+        y="NewConfCases",
+        title=f"日本の感染者数推移（新規 最終更新日　{last_update}）",
+        labels={"DateRep": "日付", "NewConfCases": "新規感染者数"},
+    )
 
 
 table = html.Div(
@@ -1022,7 +1055,7 @@ covid_layout = html.Div(
                 html.Div(
                     [
                         html.H4("新型コロナウィルス 国内感染状況"),
-                        html.H6("厚生労働省のデータが変更されたため、現在更新停止中（3月5日分まで）", style={"color": "red"}),
+                        
                     ],
                     style={
                         "width": "80%",
@@ -1052,7 +1085,6 @@ covid_layout = html.Div(
                     selected_style=tab_selected_style,
                     children=network,
                 ),
-                
                 # dcc.Tab(
                 #     label="世界の状況",
                 #     value="world",
@@ -1060,7 +1092,6 @@ covid_layout = html.Div(
                 #     selected_style=tab_selected_style,
                 #     children=world,
                 # ),
-
                 dcc.Tab(
                     label="データ",
                     value="table",
