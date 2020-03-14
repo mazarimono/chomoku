@@ -862,16 +862,17 @@ df_cyto_table = df_covid.iloc[:, [0, 2, 5, 9, 10, 11]]
 
 # 世界データ
 
-covid_world_data = pd.read_excel("./src/covid19_worlddata.xls")
+covid_world_data = pd.read_csv("./src/covid_worlddata.csv", index_col=0, parse_dates=["DateRep"])
 covid_jp = covid_world_data[covid_world_data["CountryExp"] == "Japan"]
 covid_jp = covid_jp.sort_values("DateRep")
 covid_jp["cumsum"] = covid_jp["NewConfCases"].cumsum()
 covid_jp = covid_jp[15:]
+last_update = covid_jp.iloc[-1, 0].date()
 
 covid_world_cumsum = covid_world_data.groupby("CountryExp", as_index=False).sum()
 covid_world_cumsum = covid_world_cumsum.sort_values("NewConfCases")
 covid_world_cumsum = covid_world_cumsum[-30:]
-last_update = covid_jp.iloc[-1, 0].date()
+
 
 # 日本地域データ
 
@@ -912,11 +913,22 @@ world = html.Div([
         # 各国の累計の日々の推移（動かす？）
 
         dcc.Graph(id="world_cumsum_graph",
-        figure=px.bar(covid_world_cumsum, x="CountryExp", y="NewConfCases",log_y=True, title="各国の累積感染者数（y軸：ログスケール）")
-        )
+        figure=px.bar(covid_world_cumsum, x="CountryExp", y="NewConfCases",log_y=True, title="各国の累積感染者数（y軸：ログスケール）", labels={"CountryExp": ""})
+        ),
+
+        # html.H1(id="selected_country_graph")
 
     ])
 ])
+
+# コールバックで各国の時系列データを出したい
+
+# @app.callback(Output("selected_coutnry_graph", "children"),
+#     [Input("world_cumsum_graph", "clickData")])
+# def update_graph(clickData):
+#     # selected_country_data = covid_world_data[covid_world_data["CountryExp"] == clickData]
+#     # return px.bar(selected_country_data, x="DateRep", y="NewConfCases")
+#     return json.dumps(clickData)
 
 network = html.Div(
     [
