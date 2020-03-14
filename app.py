@@ -860,6 +860,21 @@ df_gender.columns = ["年代", "性別", "患者数"]
 
 df_cyto_table = df_covid.iloc[:, [0, 2, 5, 9, 10, 11]]
 
+# 世界データ
+
+covid_world_data = pd.read_excel("./src/covid19_worlddata.xls")
+covid_jp = covid_world_data[covid_world_data["CountryExp"] == "Japan"]
+covid_jp=covid_jp.sort_values("DateRep")
+covid_jp["cumsum"] = covid_jp["NewConfCases"].cumsum()
+covid_jp = covid_jp[15:]
+
+last_update = covid_jp.iloc[-1, 0].date()
+
+# 日本地域データ
+
+covid_jp_area = pd.read_csv("./src/area_jp.csv")
+covid_jp_area = covid_jp_area[-15:]
+
 covid_el = []
 
 for i in range(len(df_covid)):
@@ -951,82 +966,32 @@ graphs = html.Div(
         html.Div(
             [
                 html.Div([
-                # daq.ToggleSwitch(id="total_graph_toggle", label=["新規", "累計"], value=False, style={"width": "250px", "backgroundColor": "lime", "margin": "auto", "color": "white"}, color="red"),
+                daq.ToggleSwitch(id="total_graph_toggle", label=["新規", "累計"], value=False, style={"width": "250px", "backgroundColor": "lime", "margin": "auto", "color": "white"}, color="red"),
                 dcc.Graph(
                     id="total_graph",
-                    figure=px.bar(df_date, x="date", y="count", title="感染者数推移（新規）")
                 )], className="six columns",style={"height": "55vh"}),
                 html.Div([
                 dcc.Graph(
                     id="todofuken",
                     figure=px.bar(
-                        df_place,
-                        x="count",
-                        y="place",
+                        covid_jp_area,
+                        x="人数（名）",
+                        y="都道府県",
                         orientation="h",
                         title="都道府県別感染者数",
                     )
-                )],className="six columns",style={"height": "55vh"})
+                )],className="six columns",style={"height": "55vh", "marginTop": "2%"})
             ],
             style={"marginBottom": "2%"},
-        ),
-        html.Div(
-            [
-                html.Div([
-
-                dcc.Graph(
-                    id="ratio_scatter",
-                    figure=px.scatter(
-                        df_covid,
-                        x="contact_num",
-                        y="infection_num",
-                        title="接触者数（x軸）と周囲の患者発生（y軸）",
-                        hover_data=["新No."],
-                    ),
-                )],className="six columns",style={"height": "55vh"}
-                    
-                ),
-                html.Div([
-                dcc.Graph(
-                    id="age-gender",
-                    figure=px.bar(
-                        df_gender,
-                        y="年代",
-                        x="患者数",
-                        color="性別",
-                        barmode="group",
-                        orientation="h",
-                        title="年代・性別患者数",
-                        category_orders={
-                            "年代": [
-                                "10代未満",
-                                "10代",
-                                "20代",
-                                "30代",
-                                "40代",
-                                "50代",
-                                "60代",
-                                "70代",
-                                "80代",
-                                "90代",
-                                "確認中",
-                                "調査中",
-                            ],
-                            "性別": ["男", "女"],
-                        },
-                    ),
-                ),],className="six columns",style={"height": "55vh"} )
-            ],
-            style={"marginTop": "2%"},
         ),
     ]
 )
 
-# @app.callback(Output("total_graph", "figure"), [Input("total_graph_toggle", "value")])
-# def update_total(selected_value_total):
-#     if selected_value_total:
-#         return px.bar(df_date, x="date", y="cumsum", title="感染者数推移（累計）")
-#     return px.bar(df_date, x="date", y="count", title="感染者数推移（新規）")
+@app.callback(Output("total_graph", "figure"), [Input("total_graph_toggle", "value")])
+def update_total(selected_value_total):
+    if selected_value_total:
+        return px.bar(covid_jp, x="DateRep", y="cumsum", title=f"日本の感染者数推移（累計 最終更新日　{last_update}）")
+    return px.bar(covid_jp, x="DateRep", y="NewConfCases", title=f"日本の感染者数推移（新規 最終更新日　{last_update}）", labels={"DateRep": "日付", "NewConfCases": "新規感染者数"})
 
 
 table = html.Div(
