@@ -9,4 +9,4 @@ pandas
 numpy 
 gunicorn 
 lxml
-
+xlrd
