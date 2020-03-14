@@ -921,6 +921,7 @@ world = html.Div([
     ])
 ])
 
+# 表示が遅いのでLoadingでごまかしたい。
 # コールバックで各国の時系列データを出したい
 
 # @app.callback(Output("selected_coutnry_graph", "children"),
@@ -1064,7 +1065,7 @@ covid_layout = html.Div(
             [
                 html.Div(
                     [
-                        html.H4("新型コロナウィルス 国内感染状況"),
+                        html.H4("新型コロナウィルス 感染状況"),
                         
                     ],
                     style={
@@ -1078,9 +1079,11 @@ covid_layout = html.Div(
                 )
             ]
         ),
+
         dcc.Tabs(
             value="world",
             children=[
+                
                 dcc.Tab(
                     label="感染者数グラフ（世界）",
                     value="world",
