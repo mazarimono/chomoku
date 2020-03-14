@@ -868,6 +868,9 @@ covid_jp = covid_jp.sort_values("DateRep")
 covid_jp["cumsum"] = covid_jp["NewConfCases"].cumsum()
 covid_jp = covid_jp[15:]
 
+covid_world_cumsum = covid_world_data.groupby("CountryExp", as_index=False).sum()
+covid_world_cumsum = covid_world_cumsum.sort_values("NewConfCases")
+covid_world_cumsum = covid_world_cumsum[-30:]
 last_update = covid_jp.iloc[-1, 0].date()
 
 # 日本地域データ
@@ -893,32 +896,27 @@ for i in range(len(df_covid)):
                 {"data": {"source": f"No.{df_covid.iloc[i, 0]}", "target": f"{i2}"}}
             )
 
-# 世界
-# world = html.Div(
-#     [
-#         # dcc.RadioItems(id="world_bar_radio", options=[{"value": i, "label": i} for i in ["Log","Linear"]], value="Log"),
-#         dcc.Graph(
-#             id="world_bar_graph",
-#             figure=go.Figure(
-#                 data=[
-#                     go.Bar(
-#                         x=df_country["NewConfCases"],
-#                         y=df_country["CountryExp"],
-#                         orientation="h",
-#                         name="感染者数",
-#                     ),
-#                     go.Bar(
-#                         x=df_country["NewDeaths"],
-#                         y=df_country["CountryExp"],
-#                         orientation="h",
-#                         name="死亡者数",
-#                     ),
-#                 ],
-#                 layout=go.Layout(xaxis={"type": "log"}, title="世界の状況（x軸: ログスケール）"),
-#             )
-#         )
-#     ]
-# )
+world = html.Div([
+    html.Div([
+        html.H4("世界の感染者数データ"),
+        # dcc.RadioItems(id="world_covid_data", 
+        # options=[{"label": i, "value": i} for i in ["棒グラフ", "線グラフ"]],
+        # value="棒グラフ"
+        # ),
+        dcc.Graph(id="world_graph",
+        figure=px.bar(covid_world_data, x="DateRep", y="NewConfCases", color="CountryExp", title="世界の新規感染者数", template={"layout":{"showlegend": False, "hovermode": "closest"}})
+        ),
+
+        # legendをオフにする方法
+        # 各国の日々のデータの推移が見たい。
+        # 各国の累計の日々の推移（動かす？）
+
+        dcc.Graph(id="world_cumsum_graph",
+        figure=px.bar(covid_world_cumsum, x="CountryExp", y="NewConfCases",log_y=True, title="各国の累積感染者数（y軸：ログスケール）")
+        )
+
+    ])
+])
 
 network = html.Div(
     [
@@ -1069,10 +1067,18 @@ covid_layout = html.Div(
             ]
         ),
         dcc.Tabs(
-            value="graph",
+            value="world",
             children=[
                 dcc.Tab(
-                    label="感染者数グラフ",
+                    label="感染者数グラフ（世界）",
+                    value="world",
+                    style=tab_style,
+                    selected_style=tab_selected_style,
+                    children=world,
+                ),
+
+                dcc.Tab(
+                    label="感染者数グラフ（日本）",
                     value="graph",
                     style=tab_style,
                     selected_style=tab_selected_style,
