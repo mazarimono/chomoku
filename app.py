@@ -1027,13 +1027,13 @@ def update_total(selected_value_total):
             covid_jp,
             x="DateRep",
             y="cumsum",
-            title=f"日本の感染者数推移（累計 最終更新日　{last_update}）",
+            title=f"日本の感染者数推移（累計）",
         )
     return px.bar(
         covid_jp,
         x="DateRep",
         y="NewConfCases",
-        title=f"日本の感染者数推移（新規 最終更新日　{last_update}）",
+        title=f"日本の感染者数推移（新規）",
         labels={"DateRep": "日付", "NewConfCases": "新規感染者数"},
     )
 
@@ -1066,6 +1066,7 @@ covid_layout = html.Div(
                 html.Div(
                     [
                         html.H4("新型コロナウィルス 感染状況"),
+                        html.H6(f"最終更新日 {last_update}")
                         
                     ],
                     style={
