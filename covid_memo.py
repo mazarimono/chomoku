@@ -51,7 +51,7 @@ covid_memo = html.Div([
 
     Docxファイル、Pythonでは[python-docx](https://pypi.org/project/python-docx/)を使うと簡単にパース出来そう。
 
-    [http://www.pref.osaka.lg.jp/attach/23711/00346644/03082100.docx](http://www.pref.osaka.lg.jp/attach/23711/00346644/03082100.docx)
+    [http://www.pref.osaka.lg.jp/iryo/osakakansensho/corona.html](http://www.pref.osaka.lg.jp/iryo/osakakansensho/corona.html)
 
     ___ 
 
