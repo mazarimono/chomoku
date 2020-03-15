@@ -8,6 +8,9 @@ from dash.dependencies import Input, Output
 from app1 import covid_memo 
 from app1 import covid_19 
 
+server = app.server
+
+
 app.layout = html.Div([dcc.Location(id="url"), html.Div(id="page-content")])
 
 test = html.H1("TEST")
