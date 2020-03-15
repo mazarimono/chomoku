@@ -214,25 +214,6 @@ graphs = html.Div(
     ]
 )
 
-@app.callback(
-    Output("total_covid_graph", "figure"), [Input("total_graph_toggle", "value")]
-)
-def update_total(selected_value_total):
-    if selected_value_total:
-        return px.bar(
-            covid_jp,
-            x="DateRep",
-            y="cumsum",
-            title=f"日本の感染者数推移（累計）",
-        )
-    return px.bar(
-        covid_jp,
-        x="DateRep",
-        y="NewConfCases",
-        title=f"日本の感染者数推移（新規）",
-        labels={"DateRep": "日付", "NewConfCases": "新規感染者数"},
-    )
-
 
 table = html.Div(
     [
@@ -334,3 +315,22 @@ layout = html.Div(
     style={"backgroundColor": "#E0E3DA", "padding": "5%"},
 )
 
+
+@app.callback(
+    Output("total_covid_graph", "figure"), [Input("total_graph_toggle", "value")]
+)
+def update_total(selected_value_total):
+    if selected_value_total:
+        return px.bar(
+            covid_jp,
+            x="DateRep",
+            y="cumsum",
+            title=f"日本の感染者数推移（累計）",
+        )
+    return px.bar(
+        covid_jp,
+        x="DateRep",
+        y="NewConfCases",
+        title=f"日本の感染者数推移（新規）",
+        labels={"DateRep": "日付", "NewConfCases": "新規感染者数"},
+    )
