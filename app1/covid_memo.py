@@ -3,7 +3,7 @@ import dash_core_components as dcc
 
 memo_style = {"fontFamily": "Arial"}
 
-covid_memo = html.Div([
+layout = html.Div([
     
 
     html.H1("Covid-19の感染データメモ", style={"textAlign":"center", "backgroundColor": "#C5E99B", "padding": "7%", "borderRadius": 20}),
