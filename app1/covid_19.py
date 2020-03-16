@@ -219,18 +219,19 @@ table = html.Div(
     [
         dash_table.DataTable(
             id="covid_table",
-            columns=[{"name": i, "id": i, "deletable": True} for i in df_covid.columns],
-            data=df_covid.to_dict("records"),
+            columns=[{"name": i, "id": i, "deletable": True} for i in covid_world_data.columns],
+            data=covid_world_data.to_dict("records"),
             fixed_rows={"headers": True, "data": 0},
             editable=True,
+            style_cell={"maxWidth": 150, "minWidth": 150,"textAlign": "left"},
+            style_header={"fontWeight":"bold"},
             filter_action="native",
             row_deletable=True,
             sort_action="native",
             export_format="csv",
             fill_width=False,
             virtualization=True,
-            page_size=1000,
-            style_cell={"textAlign": "left"},
+            page_size=5000,
         ),
         html.Img(src="assets/cc.png"),
     ]
