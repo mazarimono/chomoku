@@ -68,14 +68,14 @@ df_cyto_table = df_covid.iloc[:, [0, 2, 5, 9, 10, 11]]
 # 世界データ
 
 covid_world_data = pd.read_csv("./src/covid_worlddata.csv", index_col=0, parse_dates=["DateRep"])
-covid_jp = covid_world_data[covid_world_data["CountryExp"] == "Japan"]
+covid_jp = covid_world_data[covid_world_data["Countries and territories"] == "Japan"]
 covid_jp = covid_jp.sort_values("DateRep")
-covid_jp["cumsum"] = covid_jp["NewConfCases"].cumsum()
+covid_jp["cumsum"] = covid_jp["Cases"].cumsum()
 covid_jp = covid_jp[15:]
 last_update = covid_jp.iloc[-1, 0].date()
 
-covid_world_cumsum = covid_world_data.groupby("CountryExp", as_index=False).sum()
-covid_world_cumsum = covid_world_cumsum.sort_values("NewConfCases")
+covid_world_cumsum = covid_world_data.groupby("Countries and territories", as_index=False).sum()
+covid_world_cumsum = covid_world_cumsum.sort_values("Cases")
 covid_world_cumsum = covid_world_cumsum[-30:]
 
 
@@ -111,7 +111,7 @@ world = html.Div([
         # value="棒グラフ"
         # ),
         dcc.Graph(id="world_graph",
-        figure=px.bar(covid_world_data, x="DateRep", y="NewConfCases", color="CountryExp", title="世界の新規感染者数", template={"layout":{"showlegend": False, "hovermode": "closest"}})
+        figure=px.bar(covid_world_data, x="DateRep", y="Cases", color="Countries and territories", title="世界の新規感染者数", template={"layout":{"showlegend": False, "hovermode": "closest"}})
         ),
 
         # legendをオフにする方法
@@ -119,7 +119,7 @@ world = html.Div([
         # 各国の累計の日々の推移（動かす？）
 
         dcc.Graph(id="world_cumsum_graph",
-        figure=px.bar(covid_world_cumsum, x="CountryExp", y="NewConfCases",log_y=True, title="各国の累積感染者数（y軸：ログスケール）", labels={"CountryExp": "Country"})
+        figure=px.bar(covid_world_cumsum, x="Countries and territories", y="Cases",log_y=True, title="各国の累積感染者数（y軸：ログスケール）", labels={"Countries and territories": "Country"})
         ),
 
         # html.H1(id="selected_country_graph")
@@ -331,7 +331,7 @@ def update_total(selected_value_total):
     return px.bar(
         covid_jp,
         x="DateRep",
-        y="NewConfCases",
+        y="Cases",
         title=f"日本の感染者数推移（新規）",
-        labels={"DateRep": "日付", "NewConfCases": "新規感染者数"},
+        labels={"DateRep": "日付", "Cases": "新規感染者数"},
     )
