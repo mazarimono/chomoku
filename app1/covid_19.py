@@ -82,6 +82,8 @@ covid_world_cumsum = covid_world_cumsum[-30:]
 # 日本地域データ
 
 covid_jp_area = pd.read_csv("./src/area_jp.csv")
+covid_jp_area = covid_jp_area.sort_values("累計感染者数")
+covid_jp_area = covid_jp_area[covid_jp_area["都道府県"] != "総計"]
 covid_jp_area = covid_jp_area[-15:]
 
 covid_el = []
@@ -198,7 +200,7 @@ graphs = html.Div(
                             id="todofuken",
                             figure=px.bar(
                                 covid_jp_area,
-                                x="人数（名）",
+                                x="累計感染者数",
                                 y="都道府県",
                                 orientation="h",
                                 title="都道府県別感染者数",
