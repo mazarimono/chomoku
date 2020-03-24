@@ -247,7 +247,8 @@ layout = html.Div(
                 html.Div(
                     [
                         html.H4("新型コロナウィルス 感染状況"),
-                        html.H6(f"最終更新日 {last_update}")
+                        html.H6(f"最終更新日 {last_update}"),
+                        html.H6("日本の都道府県別データは一日遅れ"),
                         
                     ],
                     style={
