@@ -109,9 +109,12 @@ world = html.Div([
     html.Div([
         html.H4("世界の感染者数データ"),
         
-        dcc.Graph(id="world_graph",
-        figure=px.bar(covid_world_data, x="DateRep", y="Cases", color="Countries and territories", title="世界の新規感染者数（累計）", template={"layout":{"showlegend": False, "hovermode": "closest"}})
-        )
+        dcc.RadioItems(id="world_all_data",
+            options=[{"label": i, "value": i} for i in ["1日", "累計"]],
+            value="1日"
+        ),
+
+        dcc.Graph(id="world_graph")
 
     ]),
 
@@ -137,7 +140,14 @@ world = html.Div([
     ])
 ])
 
-
+@app.callback(Output("world_graph", "figure"), [Input("world_all_data", "value")])
+def switch_all_graph(switch_data):
+    if switch_data == "1日":
+        return px.bar(covid_world_data, x="DateRep", y="Cases", color="Countries and territories", title="世界の新規感染者数", template={"layout":{"showlegend": False, "hovermode": "closest"}})
+    else:
+        cumsum_all = covid_world_data.groupby("DateRep", as_index=False).sum()
+        cumsum_all["cumsum"] = cumsum_all["Cases"].cumsum()
+        return px.bar(cumsum_all, x="DateRep", y="cumsum")
 
 @app.callback(Output("show_world_data", "children"), [Input("world_covid_data", "value")])
 def update_world_data(selected_type):
