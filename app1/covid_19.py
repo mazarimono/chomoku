@@ -166,7 +166,7 @@ def update_world_data(selected_type):
     else:
         last_update1 = pd.Timestamp(last_update)
         new_world_data = covid_world_data[covid_world_data["DateRep"] == last_update1]
-        return dcc.Graph(figure=px.bar(new_world_data, x="Countries and territories", y="Cases", title=f"各国の新規感染者数（{last_update}）"))
+        return dcc.Graph(figure=px.bar(new_world_data, x="GeoId", y="Cases", title=f"各国の新規感染者数（{last_update}）"))
 
 @app.callback(Output("world_data_multiple_Output", "figure"), [Input("world_data_dropdown", "value")])
 def update_countries_graph(selected_countries):
