@@ -110,8 +110,8 @@ world = html.Div([
         html.H4("世界の感染者数データ"),
         
         dcc.RadioItems(id="world_all_data",
-            options=[{"label": i, "value": i} for i in ["1日", "累計"]],
-            value="1日"
+            options=[{"label": i, "value": i} for i in ["累計", "1日"]],
+            value="累計"
         ),
         dcc.Loading([
         dcc.Graph(id="world_graph")
@@ -123,7 +123,7 @@ world = html.Div([
         html.H4("各国感染者数"),
 
         dcc.RadioItems(id="world_covid_data", 
-        options=[{"label": i, "value": i} for i in ["直近1日", "累計", "ヒストリカル"]],
+        options=[{"label": i, "value": i} for i in ["累計", "直近1日", "ヒストリカル"]],
         value="累計"
         ),
 
