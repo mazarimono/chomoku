@@ -108,13 +108,13 @@ for i in range(len(df_covid)):
 world = html.Div([
     html.Div([
         html.H4("世界の感染者数データ"),
-        # dcc.RadioItems(id="world_covid_data", 
-        # options=[{"label": i, "value": i} for i in ["棒グラフ", "線グラフ"]],
-        # value="棒グラフ"
-        # ),
-        dcc.Graph(id="world_graph",
-        figure=px.bar(covid_world_data, x="DateRep", y="Cases", color="Countries and territories", title="世界の新規感染者数", template={"layout":{"showlegend": False, "hovermode": "closest"}})
+        dcc.RadioItems(id="world_covid_data", 
+        options=[{"label": i, "value": i} for i in ["累計", "国別"]],
+        value="累計"
         ),
+        html.Div(id="show_world_data"),
+
+        
 
         # legendをオフにする方法
         # 各国の日々のデータの推移が見たい。
@@ -129,6 +129,26 @@ world = html.Div([
     ])
 ])
 
+@app.callback(Output("show_world_data", "children"), [Input("world_covid_data", "value")])
+def update_world_data(selected_type):
+    if selected_type == "累計":
+        return dcc.Graph(id="world_graph",
+        figure=px.bar(covid_world_data, x="DateRep", y="Cases", color="Countries and territories", title="世界の新規感染者数（累計）", template={"layout":{"showlegend": False, "hovermode": "closest"}})
+        )
+    else:
+        return html.Div([
+            dcc.Dropdown(id="world_data_dropdown",
+            options=[{"value": i, "label": i} for i in covid_world_data["Countries and territories"].unique()],
+            multi=True,
+            value=["Japan", "China", "US"]
+            ),
+            dcc.Graph(id="world_data_multiple_Output")
+        ])
+
+@app.callback(Output("world_data_multiple_Output", "figure"), [Input("world_data_dropdown", "value")])
+def update_countries_graph(selected_countries):
+    covid_world_data_selected = covid_world_data[covid_world_data["Countries and territories"].isin(selected_countries)]
+    return px.line(covid_world_data_selected, x="DateRep", y="Cases", color="Countries and territories")
 
 network = html.Div(
     [
