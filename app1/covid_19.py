@@ -113,9 +113,9 @@ world = html.Div([
             options=[{"label": i, "value": i} for i in ["1日", "累計"]],
             value="1日"
         ),
-
+        dcc.Loading([
         dcc.Graph(id="world_graph")
-
+        ], type="cube", color="red"),
     ]),
 
     html.Div([
@@ -127,13 +127,11 @@ world = html.Div([
         value="累計"
         ),
 
-        html.Div(id="show_world_data")
+        html.Div(id="show_world_data"),
 
         # legendをオフにする方法
         # 各国の日々のデータの推移が見たい。
         # 各国の累計の日々の推移（動かす？）
-
-        ,
 
         # html.H1(id="selected_country_graph")
 
@@ -147,7 +145,7 @@ def switch_all_graph(switch_data):
     else:
         cumsum_all = covid_world_data.groupby("DateRep", as_index=False).sum()
         cumsum_all["cumsum"] = cumsum_all["Cases"].cumsum()
-        return px.bar(cumsum_all, x="DateRep", y="cumsum")
+        return px.bar(cumsum_all, x="DateRep", y="cumsum", title="世界の感染者数（累計）")
 
 @app.callback(Output("show_world_data", "children"), [Input("world_covid_data", "value")])
 def update_world_data(selected_type):
@@ -168,12 +166,12 @@ def update_world_data(selected_type):
     else:
         last_update1 = pd.Timestamp(last_update)
         new_world_data = covid_world_data[covid_world_data["DateRep"] == last_update1]
-        return dcc.Graph(figure=px.bar(new_world_data, x="Countries and territories", y="Cases"))
+        return dcc.Graph(figure=px.bar(new_world_data, x="Countries and territories", y="Cases", title=f"各国の新規感染者数（{last_update}）"))
 
 @app.callback(Output("world_data_multiple_Output", "figure"), [Input("world_data_dropdown", "value")])
 def update_countries_graph(selected_countries):
     covid_world_data_selected = covid_world_data[covid_world_data["Countries and territories"].isin(selected_countries)]
-    return px.line(covid_world_data_selected, x="DateRep", y="Cases", color="Countries and territories")
+    return px.line(covid_world_data_selected, x="DateRep", y="Cases", color="Countries and territories", title="各国の新規感染者数（ヒストリカル）")
 
 network = html.Div(
     [
