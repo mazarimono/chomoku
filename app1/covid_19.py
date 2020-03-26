@@ -112,30 +112,44 @@ world = html.Div([
         options=[{"label": i, "value": i} for i in ["累計", "国別"]],
         value="累計"
         ),
-        html.Div(id="show_world_data"),
+        dcc.Graph(id="world_graph",
+        figure=px.bar(covid_world_data, x="DateRep", y="Cases", color="Countries and territories", title="世界の新規感染者数（累計）", template={"layout":{"showlegend": False, "hovermode": "closest"}})
+        )
 
-        
+    ]),
+
+    html.Div([
+
+        html.H4("各国感染者数"),
+
+        dcc.RadioItems(id="world_covid_data", 
+        options=[{"label": i, "value": i} for i in ["最新", "累計", "国別"]],
+        value="累計"
+        ),
+
+        html.Div(id="show_world_data")
 
         # legendをオフにする方法
         # 各国の日々のデータの推移が見たい。
         # 各国の累計の日々の推移（動かす？）
 
-        dcc.Graph(id="world_cumsum_graph",
-        figure=px.bar(covid_world_cumsum, x="Countries and territories", y="Cases",log_y=True, title="各国の累積感染者数（y軸：ログスケール）", labels={"Countries and territories": "Country"})
-        ),
+        ,
 
         # html.H1(id="selected_country_graph")
 
     ])
 ])
 
+
+
 @app.callback(Output("show_world_data", "children"), [Input("world_covid_data", "value")])
 def update_world_data(selected_type):
+
     if selected_type == "累計":
-        return dcc.Graph(id="world_graph",
-        figure=px.bar(covid_world_data, x="DateRep", y="Cases", color="Countries and territories", title="世界の新規感染者数（累計）", template={"layout":{"showlegend": False, "hovermode": "closest"}})
+        return dcc.Graph(id="world_cumsum_graph",
+        figure=px.bar(covid_world_cumsum, x="Countries and territories", y="Cases",log_y=True, title="各国の累積感染者数（y軸：ログスケール）", labels={"Countries and territories": "Country"})
         )
-    else:
+    elif selected_type == "国別":
         return html.Div([
             dcc.Dropdown(id="world_data_dropdown",
             options=[{"value": i, "label": i} for i in covid_world_data["Countries and territories"].unique()],
@@ -144,6 +158,9 @@ def update_world_data(selected_type):
             ),
             dcc.Graph(id="world_data_multiple_Output")
         ])
+    else:
+        new_world_data = covid_world_data[covid_world_data["DateRep"] == last_update]
+        return dcc.Graph(figure=px.bar(new_world_data, x="Countries and territories", y="Cases"))
 
 @app.callback(Output("world_data_multiple_Output", "figure"), [Input("world_data_dropdown", "value")])
 def update_countries_graph(selected_countries):
