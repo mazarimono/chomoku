@@ -19,7 +19,7 @@ import plotly.express as px
 import plotly.graph_objs as go
 
 from dash.dependencies import Input, Output, State
-from app import app 
+from app import app
 
 
 td_style = {"width": "33%", "margin": "20px"}
@@ -67,14 +67,18 @@ df_cyto_table = df_covid.iloc[:, [0, 2, 5, 9, 10, 11]]
 
 # 世界データ
 
-covid_world_data = pd.read_csv("./src/covid_worlddata.csv", index_col=0, parse_dates=["dateRep"])
+covid_world_data = pd.read_csv(
+    "./src/covid_worlddata.csv", index_col=0, parse_dates=["dateRep"]
+)
 covid_jp = covid_world_data[covid_world_data["countriesAndTerritories"] == "Japan"]
 covid_jp = covid_jp.sort_values("dateRep")
 covid_jp["cumsum"] = covid_jp["cases"].cumsum()
 covid_jp = covid_jp[15:]
 last_update = covid_jp.iloc[-1, 0].date()
 
-covid_world_cumsum = covid_world_data.groupby("countriesAndTerritories", as_index=False).sum()
+covid_world_cumsum = covid_world_data.groupby(
+    "countriesAndTerritories", as_index=False
+).sum()
 covid_world_cumsum = covid_world_cumsum.sort_values("cases")
 covid_world_cumsum = covid_world_cumsum[-30:]
 
@@ -105,73 +109,120 @@ for i in range(len(df_covid)):
             )
 
 
-world = html.Div([
-    html.Div([
-        html.H4("世界の感染者数データ"),
-        
-        dcc.RadioItems(id="world_all_data",
-            options=[{"label": i, "value": i} for i in ["累計", "1日"]],
-            value="累計"
+world = html.Div(
+    [
+        html.Div(
+            [
+                html.H4("世界の感染者数データ"),
+                dcc.RadioItems(
+                    id="world_all_data",
+                    options=[{"label": i, "value": i} for i in ["累計", "1日", ]],
+                    value="累計",
+                ),
+                dcc.Loading([dcc.Graph(id="world_graph")], type="cube", color="red"),
+            ]
         ),
-        dcc.Loading([
-        dcc.Graph(id="world_graph")
-        ], type="cube", color="red"),
-    ]),
-
-    html.Div([
-
-        html.H4("各国感染者数"),
-
-        dcc.RadioItems(id="world_covid_data", 
-        options=[{"label": i, "value": i} for i in ["累計", "直近1日", "ヒストリカル"]],
-        value="累計"
+        html.Div(
+            [
+                html.H4("各国感染者数"),
+                dcc.RadioItems(
+                    id="world_covid_data",
+                    options=[
+                        {"label": i, "value": i} for i in ["累計", "直近1日", "ヒストリカル"]
+                    ],
+                    value="累計",
+                ),
+                html.Div(id="show_world_data"),
+                # legendをオフにする方法
+                # 各国の日々のデータの推移が見たい。
+                # 各国の累計の日々の推移（動かす？）
+                # html.H1(id="selected_country_graph")
+            ]
         ),
+    ]
+)
 
-        html.Div(id="show_world_data"),
-
-        # legendをオフにする方法
-        # 各国の日々のデータの推移が見たい。
-        # 各国の累計の日々の推移（動かす？）
-
-        # html.H1(id="selected_country_graph")
-
-    ])
-])
 
 @app.callback(Output("world_graph", "figure"), [Input("world_all_data", "value")])
 def switch_all_graph(switch_data):
     if switch_data == "1日":
-        return px.bar(covid_world_data, x="dateRep", y="cases", color="countriesAndTerritories", title="世界の新規感染者数", template={"layout":{"showlegend": False, "hovermode": "closest"}})
+        return px.bar(
+            covid_world_data,
+            x="dateRep",
+            y="cases",
+            color="countriesAndTerritories",
+            title="世界の新規感染者数",
+            template={"layout": {"showlegend": False, "hovermode": "closest"}},
+        )
+    
     else:
         cumsum_all = covid_world_data.groupby("dateRep", as_index=False).sum()
         cumsum_all["cumsum"] = cumsum_all["cases"].cumsum()
         return px.bar(cumsum_all, x="dateRep", y="cumsum", title="世界の感染者数（累計）")
 
-@app.callback(Output("show_world_data", "children"), [Input("world_covid_data", "value")])
+
+@app.callback(
+    Output("show_world_data", "children"), [Input("world_covid_data", "value")]
+)
 def update_world_data(selected_type):
 
     if selected_type == "累計":
-        return dcc.Graph(id="world_cumsum_graph",
-        figure=px.bar(covid_world_cumsum, x="countriesAndTerritories", y="cases",log_y=True, title="各国の累積感染者数（y軸：ログスケール）", labels={"countriesAndTerritories": "Country"})
+        return dcc.Graph(
+            id="world_cumsum_graph",
+            figure=px.bar(
+                covid_world_cumsum,
+                x="countriesAndTerritories",
+                y="cases",
+                log_y=True,
+                title="各国の累積感染者数（y軸：ログスケール）",
+                labels={"countriesAndTerritories": "Country"},
+            ),
         )
     elif selected_type == "ヒストリカル":
-        return html.Div([
-            dcc.Dropdown(id="world_data_dropdown",
-            options=[{"value": i, "label": i} for i in covid_world_data["countriesAndTerritories"].unique()],
-            multi=True,
-            value=["Japan", "China", "US"]
-            ),
-            dcc.Graph(id="world_data_multiple_Output")
-        ])
+        return html.Div(
+            [
+                dcc.Dropdown(
+                    id="world_data_dropdown",
+                    options=[
+                        {"value": i, "label": i}
+                        for i in covid_world_data["countriesAndTerritories"].unique()
+                    ],
+                    multi=True,
+                    value=["Japan", "China", "US"],
+                ),
+                dcc.Graph(id="world_data_multiple_Output"),
+            ]
+        )
     else:
         last_update1 = pd.Timestamp(last_update)
         new_world_data = covid_world_data[covid_world_data["dateRep"] == last_update1]
-        return dcc.Graph(figure=px.bar(new_world_data, x="geoId", y="cases", hover_data=["countriesAndTerritories"], title=f"各国の新規感染者数（{last_update}）"))
+        return dcc.Graph(
+            figure=px.bar(
+                new_world_data,
+                x="geoId",
+                y="cases",
+                hover_data=["countriesAndTerritories"],
+                title=f"各国の新規感染者数（{last_update}）",
+            )
+        )
 
-@app.callback(Output("world_data_multiple_Output", "figure"), [Input("world_data_dropdown", "value")])
+
+@app.callback(
+    Output("world_data_multiple_Output", "figure"),
+    [Input("world_data_dropdown", "value")],
+)
 def update_countries_graph(selected_countries):
-    covid_world_data_selected = covid_world_data[covid_world_data["countriesAndTerritories"].isin(selected_countries)]
-    return px.line(covid_world_data_selected, x="dateRep", y="cases", color="countriesAndTerritories", title="各国の新規感染者数（ヒストリカル）")
+    covid_world_data_selected = covid_world_data[
+        covid_world_data["countriesAndTerritories"].isin(selected_countries)
+    ]
+    return px.line(
+        covid_world_data_selected,
+        x="dateRep",
+        y="cases",
+        color="countriesAndTerritories",
+        title="各国の新規感染者数（ヒストリカル）",
+    )
+
 
 network = html.Div(
     [
@@ -264,12 +315,15 @@ table = html.Div(
     [
         dash_table.DataTable(
             id="covid_table",
-            columns=[{"name": i, "id": i, "deletable": True} for i in covid_world_data.columns],
+            columns=[
+                {"name": i, "id": i, "deletable": True}
+                for i in covid_world_data.columns
+            ],
             data=covid_world_data.to_dict("records"),
             fixed_rows={"headers": True, "data": 0},
             editable=True,
-            style_cell={"maxWidth": 150, "minWidth": 150,"textAlign": "left"},
-            style_header={"fontWeight":"bold"},
+            style_cell={"maxWidth": 150, "minWidth": 150, "textAlign": "left"},
+            style_header={"fontWeight": "bold"},
             filter_action="native",
             row_deletable=True,
             sort_action="native",
@@ -292,7 +346,6 @@ layout = html.Div(
                         html.H4("新型コロナウィルス 感染状況"),
                         html.H6(f"最終更新日 {last_update}"),
                         html.H6("日本の都道府県別データは一日遅れ"),
-                        
                     ],
                     style={
                         "width": "80%",
@@ -305,11 +358,9 @@ layout = html.Div(
                 )
             ]
         ),
-
         dcc.Tabs(
             value="world",
             children=[
-                
                 dcc.Tab(
                     label="感染者数グラフ（世界）",
                     value="world",
@@ -317,7 +368,6 @@ layout = html.Div(
                     selected_style=tab_selected_style,
                     children=world,
                 ),
-
                 dcc.Tab(
                     label="感染者数グラフ（日本）",
                     value="graph",
@@ -368,12 +418,7 @@ layout = html.Div(
 )
 def update_total(selected_value_total):
     if selected_value_total:
-        return px.bar(
-            covid_jp,
-            x="dateRep",
-            y="cumsum",
-            title=f"日本の感染者数推移（累計）",
-        )
+        return px.bar(covid_jp, x="dateRep", y="cumsum", title=f"日本の感染者数推移（累計）")
     return px.bar(
         covid_jp,
         x="dateRep",
