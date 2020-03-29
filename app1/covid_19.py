@@ -188,7 +188,7 @@ def update_world_data(selected_type):
                         for i in covid_world_data["countriesAndTerritories"].unique()
                     ],
                     multi=True,
-                    value=["Japan", "China", "US"],
+                    value=["Japan", "China", "US", "Italy", "Spain", "Germany", "France", "Iran", "United_Kingdom"],
                 ),
                 dcc.Graph(id="world_data_multiple_Output"),
             ]
@@ -402,10 +402,10 @@ layout = html.Div(
         dcc.Markdown(
             """
             データ元 :      
-            [厚生労働省](https://www.mhlw.go.jp/stf/houdou/index.html)      
+            [ジャッグジャパン株式会社](https://gis.jag-japan.com/covid19jp/)      
                        [European Centre for Disease Prevention and Control](https://www.ecdc.europa.eu/en/geographical-distribution-2019-ncov-cases)
 
-            [データ源メモ](https://chomoku.herokuapp.com/covid-memo)
+            [データ源メモ](https://chomoku.herokuapp.com/memo)
             """
         ),
     ],

@@ -26,6 +26,11 @@ layout = html.Div([
 
     ### 各都道府県の感染データURL
 
+    ### 全国データ
+    ジャッグジャパン株式会社
+    [可視化サイト](https://gis.jag-japan.com/covid19jp/)
+    CSVとGeoJsonがある。
+
     #### 東京都
 
     [オープンデータサイト](https://catalog.data.metro.tokyo.lg.jp/dataset/t000010d0000000068/resource/c2d997db-1450-43fa-8037-ebb11ec28d4c)
