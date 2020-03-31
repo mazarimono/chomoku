@@ -317,7 +317,7 @@ def update_jp_cumsum(check_value, check_log):
 @app.callback(Output("todofuken-betsu", "figure"), [Input("todofuken-dropdown", "value")])
 def update_todofuken_betsu(selected_value):
     dff = jp_todofuken_betsu[jp_todofuken_betsu["受診都道府県"].isin(selected_value)]
-    return px.line(dff, x="確定日", y="人数", color="受診都道府県", render_mode="webgl")
+    return px.line(dff, x="確定日", y="人数", color="受診都道府県")
 
 
 
@@ -355,7 +355,6 @@ layout = html.Div(
                     [
                         html.H4("新型コロナウィルス 感染状況"),
                         html.H6(f"最終更新日 {last_update}"),
-                        html.H6("日本の都道府県別データは一日遅れ"),
                     ],
                     style={
                         "width": "80%",
