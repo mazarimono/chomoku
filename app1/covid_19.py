@@ -82,6 +82,12 @@ covid_world_cumsum = covid_world_data.groupby(
 covid_world_cumsum = covid_world_cumsum.sort_values("cases")
 covid_world_cumsum = covid_world_cumsum[-30:]
 
+# Jag JP データ
+
+jag_df = pd.read_csv("src/jp_data.csv", index_col=0,parse_dates=["確定日", "発症日"])
+jp_cumsum = jag_df.groupby("確定日", as_index=False).sum()
+jp_todo = jag_df.groupby("受診都道府県", as_index=False).sum().sort_values("人数")[-20:]
+jp_todofuken_betsu = jag_df.groupby(["受診都道府県", "確定日"], as_index=False).sum()
 
 # 日本地域データ
 
@@ -228,7 +234,7 @@ network = html.Div(
     [
         html.Div(
             [
-                html.H4("周囲の患者発生のネットワーク図"),
+                html.H4("周囲の患者発生のネットワーク図(更新停止中)"),
                 cyto.Cytoscape(
                     id="covid_cyto",
                     layout={"name": "cose"},
@@ -265,50 +271,54 @@ network = html.Div(
     style={"margin": "2%"},
 )
 
-graphs = html.Div(
-    [
-        html.Div(
-            [
-                html.Div(
-                    [
-                        daq.ToggleSwitch(
-                            id="total_graph_toggle",
-                            label=["新規", "累計"],
-                            value=False,
-                            style={
-                                "width": "250px",
-                                "backgroundColor": "lime",
-                                "margin": "auto",
-                                "color": "white",
-                            },
-                            color="red",
-                        ),
-                        dcc.Graph(id="total_covid_graph"),
-                    ],
-                    className="six columns",
-                    style={"height": "55vh"},
-                ),
-                html.Div(
-                    [
-                        dcc.Graph(
-                            id="todofuken",
-                            figure=px.bar(
-                                covid_jp_area,
-                                x="累計感染者数",
-                                y="都道府県",
-                                orientation="h",
-                                title="都道府県別感染者数",
-                            ),
-                        )
-                    ],
-                    className="six columns",
-                    style={"height": "55vh", "marginTop": "2%"},
-                ),
-            ],
-            style={"marginBottom": "2%"},
+graphs = html.Div([
+    html.Div([
+        html.Div([
+            html.Div([
+            html.P("数値データ選択"),
+            dcc.RadioItems(id="jp_check", options=[{"value": i, "label": i} for i in ["新規", "累計"]], value="新規", labelStyle={"display": "inline-block"}),
+            ], style={"width": "50%", "display":"inline-block"}),
+            html.Div([
+            html.P("y軸データ表示選択"),
+            dcc.RadioItems(id="jp_check_log", options=[{"value": i, "label": i} for i in ["数値", "ログ"]], value="数値", labelStyle={"display": "inline-block"}),
+            ], style={"width": "50%", "display":"inline-block"}),
+            dcc.Graph(id="test_graph")
+    ], className="six columns", style={"height": "65vh"}),
+
+    html.Div([
+        dcc.Graph(
+            figure=px.bar(jp_todo, y="受診都道府県", x="人数", orientation="h", height=550)
         )
-    ]
-)
+    ], className="six columns", style={"height": "65vh", "marginBottom": "10%"}),
+
+    ]),
+
+    html.Div([
+        dcc.Dropdown(id="todofuken-dropdown", options=[{"value": i, "label": i} for i in jp_todofuken_betsu["受診都道府県"].unique()], value=["東京都", "大阪府", "北海道", "愛知県", "千葉県"], multi=True),
+        dcc.Graph(id="todofuken-betsu")
+    ], style={"margin": "3%"})
+
+
+])
+
+@app.callback(Output("test_graph", "figure"), [Input("jp_check", "value"), Input("jp_check_log", "value")])
+def update_jp_cumsum(check_value, check_log):
+    if check_value=="新規":
+        if check_log=="ログ":
+            return px.bar(jp_cumsum, x="確定日", y="人数", log_y=True)
+        else:
+            return px.bar(jp_cumsum, x="確定日", y="人数")
+    else:
+        if check_log=="ログ":
+            return px.bar(jp_cumsum, x="確定日", y="累計", log_y=True)
+        else:
+            return px.bar(jp_cumsum, x="確定日", y="累計")
+
+@app.callback(Output("todofuken-betsu", "figure"), [Input("todofuken-dropdown", "value")])
+def update_todofuken_betsu(selected_value):
+    dff = jp_todofuken_betsu[jp_todofuken_betsu["受診都道府県"].isin(selected_value)]
+    return px.line(dff, x="確定日", y="人数", color="受診都道府県", render_mode="webgl")
+
 
 
 table = html.Div(
