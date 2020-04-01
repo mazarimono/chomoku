@@ -276,7 +276,7 @@ graphs = html.Div([
         html.Div([
             html.Div([
             html.P("数値データ選択"),
-            dcc.RadioItems(id="jp_check", options=[{"value": i, "label": i} for i in ["新規", "累計"]], value="新規", labelStyle={"display": "inline-block"}),
+            dcc.RadioItems(id="jp_check", options=[{"value": i, "label": i,} for i in ["新規", "累計"]], value="新規", labelStyle={"display": "inline-block"}),
             ], style={"width": "50%", "display":"inline-block"}),
             html.Div([
             html.P("y軸データ表示選択"),
