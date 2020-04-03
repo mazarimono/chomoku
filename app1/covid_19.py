@@ -93,6 +93,10 @@ jp_cumsum = jag_df.groupby("確定日", as_index=False).sum()
 jp_todo = jag_df.groupby("受診都道府県", as_index=False).sum().sort_values("人数")[-20:]
 jp_todofuken_betsu = jag_df.groupby(["受診都道府県", "確定日"], as_index=False).sum()
 
+# 日本の検査データ
+
+jp_testing_data = pd.read_csv("src/j-testing.csv", index_col=0)
+
 # 日本地域データ
 
 covid_jp_area = pd.read_csv("./src/area_jp.csv")
@@ -365,6 +369,7 @@ graphs = html.Div(
                 ),
                 html.Div(
                     [
+                        
                         dcc.Graph(
                             figure=px.bar(
                                 jp_todo, y="受診都道府県", x="人数", orientation="h", height=550
@@ -378,6 +383,7 @@ graphs = html.Div(
         ),
         html.Div(
             [
+                html.H3("都道府県別新規感染者数"),
                 dcc.Dropdown(
                     id="todofuken-dropdown",
                     options=[
@@ -391,6 +397,13 @@ graphs = html.Div(
             ],
             style={"margin": "3%"},
         ),
+
+        html.Div([
+            html.H3("都道府県別検査数と感染者数"),
+            dcc.Graph(
+                figure=px.scatter(jp_testing_data[:-2], x="検査人数", y="陽性者数", hover_data=["都道府県名", "date"])
+            )
+        ])
     ]
 )
 
