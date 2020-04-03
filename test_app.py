@@ -862,7 +862,9 @@ df_cyto_table = df_covid.iloc[:, [0, 2, 5, 9, 10, 11]]
 
 # 世界データ
 
-covid_world_data = pd.read_csv("./src/covid_worlddata.csv", index_col=0, parse_dates=["DateRep"])
+covid_world_data = pd.read_csv(
+    "./src/covid_worlddata.csv", index_col=0, parse_dates=["DateRep"]
+)
 covid_jp = covid_world_data[covid_world_data["CountryExp"] == "Japan"]
 covid_jp = covid_jp.sort_values("DateRep")
 covid_jp["cumsum"] = covid_jp["NewConfCases"].cumsum()
@@ -897,29 +899,47 @@ for i in range(len(df_covid)):
                 {"data": {"source": f"No.{df_covid.iloc[i, 0]}", "target": f"{i2}"}}
             )
 
-world = html.Div([
-    html.Div([
-        html.H4("世界の感染者数データ"),
-        # dcc.RadioItems(id="world_covid_data", 
-        # options=[{"label": i, "value": i} for i in ["棒グラフ", "線グラフ"]],
-        # value="棒グラフ"
-        # ),
-        dcc.Graph(id="world_graph",
-        figure=px.bar(covid_world_data, x="DateRep", y="NewConfCases", color="CountryExp", title="世界の新規感染者数", template={"layout":{"showlegend": False, "hovermode": "closest"}})
-        ),
-
-        # legendをオフにする方法
-        # 各国の日々のデータの推移が見たい。
-        # 各国の累計の日々の推移（動かす？）
-
-        dcc.Graph(id="world_cumsum_graph",
-        figure=px.bar(covid_world_cumsum, x="CountryExp", y="NewConfCases",log_y=True, title="各国の累積感染者数（y軸：ログスケール）", labels={"CountryExp": ""})
-        ),
-
-        # html.H1(id="selected_country_graph")
-
-    ])
-])
+world = html.Div(
+    [
+        html.Div(
+            [
+                html.H4("世界の感染者数データ"),
+                # dcc.RadioItems(id="world_covid_data",
+                # options=[{"label": i, "value": i} for i in ["棒グラフ", "線グラフ"]],
+                # value="棒グラフ"
+                # ),
+                dcc.Graph(
+                    id="world_graph",
+                    figure=px.bar(
+                        covid_world_data,
+                        x="DateRep",
+                        y="NewConfCases",
+                        color="CountryExp",
+                        title="世界の新規感染者数",
+                        template={
+                            "layout": {"showlegend": False, "hovermode": "closest"}
+                        },
+                    ),
+                ),
+                # legendをオフにする方法
+                # 各国の日々のデータの推移が見たい。
+                # 各国の累計の日々の推移（動かす？）
+                dcc.Graph(
+                    id="world_cumsum_graph",
+                    figure=px.bar(
+                        covid_world_cumsum,
+                        x="CountryExp",
+                        y="NewConfCases",
+                        log_y=True,
+                        title="各国の累積感染者数（y軸：ログスケール）",
+                        labels={"CountryExp": ""},
+                    ),
+                ),
+                # html.H1(id="selected_country_graph")
+            ]
+        )
+    ]
+)
 
 # 表示が遅いのでLoadingでごまかしたい。
 # コールバックで各国の時系列データを出したい
@@ -1023,12 +1043,7 @@ graphs = html.Div(
 )
 def update_total(selected_value_total):
     if selected_value_total:
-        return px.bar(
-            covid_jp,
-            x="DateRep",
-            y="cumsum",
-            title=f"日本の感染者数推移（累計）",
-        )
+        return px.bar(covid_jp, x="DateRep", y="cumsum", title=f"日本の感染者数推移（累計）")
     return px.bar(
         covid_jp,
         x="DateRep",
@@ -1064,11 +1079,7 @@ covid_layout = html.Div(
         html.Div(
             [
                 html.Div(
-                    [
-                        html.H4("新型コロナウィルス 感染状況"),
-                        html.H6(f"最終更新日 {last_update}")
-                        
-                    ],
+                    [html.H4("新型コロナウィルス 感染状況"), html.H6(f"最終更新日 {last_update}")],
                     style={
                         "width": "80%",
                         "margin": "auto",
@@ -1080,11 +1091,9 @@ covid_layout = html.Div(
                 )
             ]
         ),
-
         dcc.Tabs(
             value="world",
             children=[
-                
                 dcc.Tab(
                     label="感染者数グラフ（世界）",
                     value="world",
@@ -1092,7 +1101,6 @@ covid_layout = html.Div(
                     selected_style=tab_selected_style,
                     children=world,
                 ),
-
                 dcc.Tab(
                     label="感染者数グラフ（日本）",
                     value="graph",
