@@ -522,7 +522,8 @@ layout = html.Div(
             データ元 :      
             [ジャッグジャパン株式会社](https://gis.jag-japan.com/covid19jp/)      
                        [European Centre for Disease Prevention and Control](https://www.ecdc.europa.eu/en/geographical-distribution-2019-ncov-cases)      
-                       [Wikipedia COVID-19 testing](https://en.wikipedia.org/wiki/COVID-19_testing)
+                       [Wikipedia COVID-19 testing](https://en.wikipedia.org/wiki/COVID-19_testing)      
+                       [厚生労働省](https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/topics_shingata_09444.html)      
 
             [データ源メモ](https://chomoku.herokuapp.com/memo)
             """
