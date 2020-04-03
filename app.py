@@ -1,4 +1,4 @@
-import dash  
+import dash
 
 
 external_stylesheets = ["https://codepen.io/ogawahideyuki/pen/LYVzaae.css"]
@@ -25,4 +25,3 @@ app.index_string = """
     </body>
 </html>
 """
-

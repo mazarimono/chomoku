@@ -82,9 +82,13 @@ covid_world_cumsum = covid_world_data.groupby(
 covid_world_cumsum = covid_world_cumsum.sort_values("cases")
 covid_world_cumsum = covid_world_cumsum[-30:]
 
+# 検査データ
+
+covid_testing = pd.read_csv("src/covid19-testing.csv", index_col=0)
+
 # Jag JP データ
 
-jag_df = pd.read_csv("src/jp_data.csv", index_col=0,parse_dates=["確定日", "発症日"])
+jag_df = pd.read_csv("src/jp_data.csv", index_col=0, parse_dates=["確定日", "発症日"])
 jp_cumsum = jag_df.groupby("確定日", as_index=False).sum()
 jp_todo = jag_df.groupby("受診都道府県", as_index=False).sum().sort_values("人数")[-20:]
 jp_todofuken_betsu = jag_df.groupby(["受診都道府県", "確定日"], as_index=False).sum()
@@ -122,7 +126,7 @@ world = html.Div(
                 html.H4("世界の感染者数データ"),
                 dcc.RadioItems(
                     id="world_all_data",
-                    options=[{"label": i, "value": i} for i in ["累計", "1日", ]],
+                    options=[{"label": i, "value": i} for i in ["累計", "1日"]],
                     value="累計",
                 ),
                 dcc.Loading([dcc.Graph(id="world_graph")], type="cube", color="red"),
@@ -145,6 +149,23 @@ world = html.Div(
                 # html.H1(id="selected_country_graph")
             ]
         ),
+        html.Div(
+            [
+                html.H4("各国地域検査数とポジティブ数"),
+                dcc.RadioItems(
+                    id="testing-radio",
+                    options=[{"label": i, "value": i} for i in ["実数", "ログ"]],
+                    value="実数",
+                ),
+                dcc.Graph(id="testing-graph"),
+            ]
+        ),
+        html.Div([
+            html.H4("ポジティブ割合、人口当たり検査数"),
+            dcc.Graph(
+                figure=px.scatter(covid_testing, x="Tests\u2009/millionpeople", y="Positive\u2009/thousandtests", log_y=True,log_x=True,hover_data=["Country or region", "As of"])
+            )
+        ])
     ]
 )
 
@@ -160,7 +181,7 @@ def switch_all_graph(switch_data):
             title="世界の新規感染者数",
             template={"layout": {"showlegend": False, "hovermode": "closest"}},
         )
-    
+
     else:
         cumsum_all = covid_world_data.groupby("dateRep", as_index=False).sum()
         cumsum_all["cumsum"] = cumsum_all["cases"].cumsum()
@@ -194,7 +215,17 @@ def update_world_data(selected_type):
                         for i in covid_world_data["countriesAndTerritories"].unique()
                     ],
                     multi=True,
-                    value=["Japan", "China", "US", "Italy", "Spain", "Germany", "France", "Iran", "United_Kingdom"],
+                    value=[
+                        "Japan",
+                        "China",
+                        "US",
+                        "Italy",
+                        "Spain",
+                        "Germany",
+                        "France",
+                        "Iran",
+                        "United_Kingdom",
+                    ],
                 ),
                 dcc.Graph(id="world_data_multiple_Output"),
             ]
@@ -228,6 +259,28 @@ def update_countries_graph(selected_countries):
         color="countriesAndTerritories",
         title="各国の新規感染者数（ヒストリカル）",
     )
+
+
+@app.callback(Output("testing-graph", "figure"), [Input("testing-radio", "value")])
+def update_testing_graph(testing_value):
+    if testing_value == "実数":
+        return px.scatter(
+            covid_testing,
+            x="Tests",
+            y="Positive",
+            hover_data=["Country or region", "As of"],
+            color="Positive\u2009/thousandtests",
+        )
+    else:
+        return px.scatter(
+            covid_testing,
+            x="Tests",
+            y="Positive",
+            hover_data=["Country or region", "As of"],
+            log_x=True,
+            log_y=True,
+            color="Positive\u2009/thousandtests",
+        )
 
 
 network = html.Div(
@@ -271,54 +324,100 @@ network = html.Div(
     style={"margin": "2%"},
 )
 
-graphs = html.Div([
-    html.Div([
-        html.Div([
-            html.Div([
-            html.P("数値データ選択"),
-            dcc.RadioItems(id="jp_check", options=[{"value": i, "label": i,} for i in ["新規", "累計"]], value="新規", labelStyle={"display": "inline-block"}),
-            ], style={"width": "50%", "display":"inline-block"}),
-            html.Div([
-            html.P("y軸データ表示選択"),
-            dcc.RadioItems(id="jp_check_log", options=[{"value": i, "label": i} for i in ["数値", "ログ"]], value="数値", labelStyle={"display": "inline-block"}),
-            ], style={"width": "50%", "display":"inline-block"}),
-            dcc.Graph(id="test_graph")
-    ], className="six columns", style={"height": "65vh"}),
+graphs = html.Div(
+    [
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.Div(
+                            [
+                                html.P("数値データ選択"),
+                                dcc.RadioItems(
+                                    id="jp_check",
+                                    options=[
+                                        {"value": i, "label": i} for i in ["新規", "累計"]
+                                    ],
+                                    value="新規",
+                                    labelStyle={"display": "inline-block"},
+                                ),
+                            ],
+                            style={"width": "50%", "display": "inline-block"},
+                        ),
+                        html.Div(
+                            [
+                                html.P("y軸データ表示選択"),
+                                dcc.RadioItems(
+                                    id="jp_check_log",
+                                    options=[
+                                        {"value": i, "label": i} for i in ["数値", "ログ"]
+                                    ],
+                                    value="数値",
+                                    labelStyle={"display": "inline-block"},
+                                ),
+                            ],
+                            style={"width": "50%", "display": "inline-block"},
+                        ),
+                        dcc.Graph(id="test_graph"),
+                    ],
+                    className="six columns",
+                    style={"height": "65vh"},
+                ),
+                html.Div(
+                    [
+                        dcc.Graph(
+                            figure=px.bar(
+                                jp_todo, y="受診都道府県", x="人数", orientation="h", height=550
+                            )
+                        )
+                    ],
+                    className="six columns",
+                    style={"height": "65vh", "marginBottom": "10%"},
+                ),
+            ]
+        ),
+        html.Div(
+            [
+                dcc.Dropdown(
+                    id="todofuken-dropdown",
+                    options=[
+                        {"value": i, "label": i}
+                        for i in jp_todofuken_betsu["受診都道府県"].unique()
+                    ],
+                    value=["東京都", "大阪府", "北海道", "愛知県", "千葉県"],
+                    multi=True,
+                ),
+                dcc.Graph(id="todofuken-betsu"),
+            ],
+            style={"margin": "3%"},
+        ),
+    ]
+)
 
-    html.Div([
-        dcc.Graph(
-            figure=px.bar(jp_todo, y="受診都道府県", x="人数", orientation="h", height=550)
-        )
-    ], className="six columns", style={"height": "65vh", "marginBottom": "10%"}),
 
-    ]),
-
-    html.Div([
-        dcc.Dropdown(id="todofuken-dropdown", options=[{"value": i, "label": i} for i in jp_todofuken_betsu["受診都道府県"].unique()], value=["東京都", "大阪府", "北海道", "愛知県", "千葉県"], multi=True),
-        dcc.Graph(id="todofuken-betsu")
-    ], style={"margin": "3%"})
-
-
-])
-
-@app.callback(Output("test_graph", "figure"), [Input("jp_check", "value"), Input("jp_check_log", "value")])
+@app.callback(
+    Output("test_graph", "figure"),
+    [Input("jp_check", "value"), Input("jp_check_log", "value")],
+)
 def update_jp_cumsum(check_value, check_log):
-    if check_value=="新規":
-        if check_log=="ログ":
+    if check_value == "新規":
+        if check_log == "ログ":
             return px.bar(jp_cumsum, x="確定日", y="人数", log_y=True)
         else:
             return px.bar(jp_cumsum, x="確定日", y="人数")
     else:
-        if check_log=="ログ":
+        if check_log == "ログ":
             return px.bar(jp_cumsum, x="確定日", y="累計", log_y=True)
         else:
             return px.bar(jp_cumsum, x="確定日", y="累計")
 
-@app.callback(Output("todofuken-betsu", "figure"), [Input("todofuken-dropdown", "value")])
+
+@app.callback(
+    Output("todofuken-betsu", "figure"), [Input("todofuken-dropdown", "value")]
+)
 def update_todofuken_betsu(selected_value):
     dff = jp_todofuken_betsu[jp_todofuken_betsu["受診都道府県"].isin(selected_value)]
     return px.line(dff, x="確定日", y="人数", color="受診都道府県")
-
 
 
 table = html.Div(
@@ -352,10 +451,7 @@ layout = html.Div(
         html.Div(
             [
                 html.Div(
-                    [
-                        html.H4("新型コロナウィルス 感染状況"),
-                        html.H6(f"最終更新日 {last_update}"),
-                    ],
+                    [html.H4("新型コロナウィルス 感染状況"), html.H6(f"最終更新日 {last_update}")],
                     style={
                         "width": "80%",
                         "margin": "auto",
@@ -412,7 +508,8 @@ layout = html.Div(
             """
             データ元 :      
             [ジャッグジャパン株式会社](https://gis.jag-japan.com/covid19jp/)      
-                       [European Centre for Disease Prevention and Control](https://www.ecdc.europa.eu/en/geographical-distribution-2019-ncov-cases)
+                       [European Centre for Disease Prevention and Control](https://www.ecdc.europa.eu/en/geographical-distribution-2019-ncov-cases)      
+                       [Wikipedia COVID-19 testing](https://en.wikipedia.org/wiki/COVID-19_testing)
 
             [データ源メモ](https://chomoku.herokuapp.com/memo)
             """

@@ -146,5 +146,3 @@ layout = html.Div(
     ],
     style={"backgroundColor": "#FFEEE4", "padding": "2%"},
 )
-
-

@@ -1,18 +1,29 @@
-import dash_html_components as html 
-import dash_core_components as dcc 
+import dash_html_components as html
+import dash_core_components as dcc
 
 memo_style = {"fontFamily": "Arial"}
 
-layout = html.Div([
-    
-
-    html.H1("Covid-19の感染データメモ", style={"textAlign":"center", "backgroundColor": "#C5E99B", "padding": "7%", "borderRadius": 20}),
-    
-
-
-    dcc.Markdown(
-    """
+layout = html.Div(
+    [
+        html.H1(
+            "Covid-19の感染データメモ",
+            style={
+                "textAlign": "center",
+                "backgroundColor": "#C5E99B",
+                "padding": "7%",
+                "borderRadius": 20,
+            },
+        ),
+        dcc.Markdown(
+            """
     ___
+    ### 情報
+
+    [山中伸弥による新型コロナウイルス情報発信](https://www.covid19-yamanaka.com/index.html)
+
+    ### 世界のcovid-19 検査件数
+
+    [Wikipedia](https://en.wikipedia.org/wiki/COVID-19_testing)
 
     ### 世界の感染データ
 
@@ -66,11 +77,9 @@ layout = html.Div([
 
     [https://www.pref.kyoto.jp/kentai/news/novelcoronavirus.html](https://www.pref.kyoto.jp/kentai/news/novelcoronavirus.html)
 
-    """
-    , style={"fontSize": 20, "padding": "5%", "paddingTop": 0}
+    """,
+            style={"fontSize": 20, "padding": "5%", "paddingTop": 0},
+        ),
+    ],
+    style=memo_style,
 )
-
-], style=memo_style)
-
-
-
