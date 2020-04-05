@@ -19,8 +19,11 @@ layout = html.Div(
     ___
     ### 情報
 
-    [山中伸弥による新型コロナウイルス情報発信](https://www.covid19-yamanaka.com/index.html)
+    [山中伸弥による新型コロナウイルス情報発信](https://www.covid19-yamanaka.com/index.html)     
+     
 
+    [COVID-19情報共有 - COVID19-Information sharing](https://www.fttsus.jp/covinfo/)     
+          
     ### 世界のcovid-19 検査件数
 
     [Wikipedia](https://en.wikipedia.org/wiki/COVID-19_testing)
