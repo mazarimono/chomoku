@@ -103,6 +103,7 @@ layout = html.Div([
             'backgroundColor': 'rgb(248, 248, 248)'
         }
     ],
+    filter_action="native",
     sort_action="native",
     sort_mode="multi",
     export_format="csv",
