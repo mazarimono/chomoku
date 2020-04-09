@@ -167,7 +167,7 @@ world = html.Div(
         html.Div([
             html.H4("ポジティブ割合、人口当たり検査数"),
             dcc.Graph(
-                figure=px.scatter(covid_testing, x="Tests\u2009/millionpeople", y="Positive\u2009/thousandtests", log_y=True,log_x=True,hover_data=["Country or region", "As of"])
+                figure=px.scatter(covid_testing, x="Tests\u2009/millionpeople", y="Positiveas\xa0% oftests", log_y=True,log_x=True,hover_data=["Country or region", "As of"])
             )
         ])
     ]
@@ -243,7 +243,8 @@ def update_world_data(selected_type):
                 x="geoId",
                 y="cases",
                 hover_data=["countriesAndTerritories"],
-                title=f"各国の新規感染者数（{last_update}）",
+                title=f"各国の新規感染者数（{last_update}, y軸：log）",
+                log_y=True,
             )
         )
 
@@ -273,7 +274,7 @@ def update_testing_graph(testing_value):
             x="Tests",
             y="Positive",
             hover_data=["Country or region", "As of"],
-            color="Positive\u2009/thousandtests",
+            color="Positiveas\xa0% oftests",
         )
     else:
         return px.scatter(
@@ -283,7 +284,7 @@ def update_testing_graph(testing_value):
             hover_data=["Country or region", "As of"],
             log_x=True,
             log_y=True,
-            color="Positive\u2009/thousandtests",
+            color="Positiveas\xa0% oftests",
         )
 
 
