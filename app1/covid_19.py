@@ -89,9 +89,14 @@ covid_testing = pd.read_csv("src/covid19-testing.csv", index_col=0)
 # Jag JP データ
 
 jag_df = pd.read_csv("src/jp_data.csv", index_col=0, parse_dates=["確定日", "発症日"])
+# 都道府県別累計データ
 jp_cumsum = jag_df.groupby("確定日", as_index=False).sum()
 jp_todo = jag_df.groupby("受診都道府県", as_index=False).sum().sort_values("人数")[-20:]
 jp_todofuken_betsu = jag_df.groupby(["受診都道府県", "確定日"], as_index=False).sum()
+# 都道府県別当日データ
+first_todo = jag_df.iloc[1, 7]
+today_todo = jag_df.iloc[-1, 7]
+
 
 # 日本の検査データ
 
@@ -167,7 +172,7 @@ world = html.Div(
         html.Div([
             html.H4("ポジティブ割合、人口当たり検査数"),
             dcc.Graph(
-                figure=px.scatter(covid_testing, x="Tests\u2009/millionpeople", y="Positiveas\xa0% oftests", log_y=True,log_x=True,hover_data=["Country or region", "As of"])
+                figure=px.scatter(covid_testing, x="Tests\u2009/millionpeople", y="Positive\u2009/millionpeople", log_y=True,log_x=True,hover_data=["Country or region", "As of"])
             )
         ])
     ]
@@ -274,7 +279,7 @@ def update_testing_graph(testing_value):
             x="Tests",
             y="Positive",
             hover_data=["Country or region", "As of"],
-            color="Positiveas\xa0% oftests",
+            color="Positive\u2009/millionpeople",
         )
     else:
         return px.scatter(
@@ -284,7 +289,7 @@ def update_testing_graph(testing_value):
             hover_data=["Country or region", "As of"],
             log_x=True,
             log_y=True,
-            color="Positiveas\xa0% oftests",
+            color="Positive\u2009/millionpeople",
         )
 
 
@@ -363,28 +368,45 @@ graphs = html.Div(
                             ],
                             style={"width": "50%", "display": "inline-block"},
                         ),
-                        dcc.Graph(id="test_graph"),
+                        dcc.Graph(id="test_graph", style={"height": 520}),
                     ],
                     className="six columns",
-                    style={"height": "65vh"},
+                    style={"height": "70vh"},
                 ),
                 html.Div(
                     [
-                        
+                        html.Div([
+                        html.P("数値データ選択"),
+                        dcc.RadioItems(id="todo_fuken_radio",
+                        options=[{"label": i, "value": i} for i in ["当日", "累計"]],
+                        value="当日",
+                        labelStyle={"display": "inline-block"},
+                        ),
+                        ], style={"display": "inline-block", "marginRight": 30}),
+                        dcc.DatePickerSingle(
+                    id="todo_fuken_picker",
+                    date=today_todo,
+                    display_format="YYYY MM DD",
+                    min_date_allowed= first_todo,
+                    max_date_allowed= today_todo,
+                    style={"display": "inline-block"}
+                ),
                         dcc.Graph(
-                            figure=px.bar(
-                                jp_todo, y="受診都道府県", x="人数", orientation="h", height=550
-                            )
+                            id="todo_fuken_graph",
+                            style={"height": 520}
                         )
                     ],
                     className="six columns",
-                    style={"height": "65vh", "marginBottom": "10%"},
+                    style={"marginBottom": "5%"},
                 ),
             ]
         ),
+        html.Div([
+            html.H3("都道府県別新規感染者数"),
+        ], style={"margin": 30}),
         html.Div(
             [
-                html.H3("都道府県別新規感染者数"),
+                
                 dcc.Dropdown(
                     id="todofuken-dropdown",
                     options=[
@@ -394,6 +416,7 @@ graphs = html.Div(
                     value=["東京都", "大阪府", "北海道", "愛知県", "千葉県"],
                     multi=True,
                 ),
+                
                 dcc.Graph(id="todofuken-betsu"),
             ],
             style={"margin": "3%"},
@@ -433,6 +456,15 @@ def update_todofuken_betsu(selected_value):
     dff = jp_todofuken_betsu[jp_todofuken_betsu["受診都道府県"].isin(selected_value)]
     return px.line(dff, x="確定日", y="人数", color="受診都道府県")
 
+@app.callback(Output("todo_fuken_graph", "figure"), [Input("todo_fuken_radio", "value"), Input("todo_fuken_picker", "date")])
+def todofuken_update(todofuken_value, selected_date):
+    if todofuken_value == "累計":
+        return px.bar(jp_todo, y="受診都道府県", x="人数", orientation="h", text="人数",title="都道府県別累計感染者数")
+    else:
+        today_todo_df = jag_df[jag_df["確定日"]==selected_date]
+        today_todo_df = today_todo_df.groupby("受診都道府県", as_index=False).sum().sort_values("人数")[-20:]
+        return px.bar(today_todo_df, y ="受診都道府県", x="人数", orientation="h", text="人数", title=f"都道府県別当日感染者（{selected_date}）")
+
 
 table = html.Div(
     [
@@ -458,7 +490,6 @@ table = html.Div(
         html.Img(src="assets/cc.png"),
     ]
 )
-
 
 layout = html.Div(
     [
