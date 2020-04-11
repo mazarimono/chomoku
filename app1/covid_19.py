@@ -90,8 +90,9 @@ covid_testing = pd.read_csv("src/covid19-testing.csv", index_col=0)
 
 jag_df = pd.read_csv("src/jp_data.csv", index_col=0, parse_dates=["確定日", "発症日"])
 # 都道府県別累計データ
-jp_cumsum = jag_df.groupby("確定日", as_index=False).sum()
-jp_todo = jag_df.groupby("受診都道府県", as_index=False).sum().sort_values("人数")[-20:]
+jp_cumsum = jag_df.groupby("確定日", as_index=False).sum()[["確定日", "人数"]]
+jp_cumsum["cumsum"] = jp_cumsum["人数"].cumsum()
+jp_todo = jag_df.groupby("受診都道府県", as_index=False).sum().sort_values("人数")[-15:]
 jp_todofuken_betsu = jag_df.groupby(["受診都道府県", "確定日"], as_index=False).sum()
 # 都道府県別当日データ
 first_todo = jag_df.iloc[1, 7]
@@ -444,9 +445,9 @@ def update_jp_cumsum(check_value, check_log):
             return px.bar(jp_cumsum, x="確定日", y="人数")
     else:
         if check_log == "ログ":
-            return px.bar(jp_cumsum, x="確定日", y="累計", log_y=True)
+            return px.bar(jp_cumsum, x="確定日", y="cumsum", log_y=True)
         else:
-            return px.bar(jp_cumsum, x="確定日", y="累計")
+            return px.bar(jp_cumsum, x="確定日", y="cumsum")
 
 
 @app.callback(
@@ -459,10 +460,12 @@ def update_todofuken_betsu(selected_value):
 @app.callback(Output("todo_fuken_graph", "figure"), [Input("todo_fuken_radio", "value"), Input("todo_fuken_picker", "date")])
 def todofuken_update(todofuken_value, selected_date):
     if todofuken_value == "累計":
+        jp_todo = jag_df[jag_df["確定日"] <= selected_date]
+        jp_todo = jp_todo.groupby("受診都道府県", as_index=False).sum().sort_values("人数")[-15:]
         return px.bar(jp_todo, y="受診都道府県", x="人数", orientation="h", text="人数",title="都道府県別累計感染者数")
     else:
         today_todo_df = jag_df[jag_df["確定日"]==selected_date]
-        today_todo_df = today_todo_df.groupby("受診都道府県", as_index=False).sum().sort_values("人数")[-20:]
+        today_todo_df = today_todo_df.groupby("受診都道府県", as_index=False).sum().sort_values("人数")[-15:]
         return px.bar(today_todo_df, y ="受診都道府県", x="人数", orientation="h", text="人数", title=f"都道府県別当日感染者（{selected_date}）")
 
 
