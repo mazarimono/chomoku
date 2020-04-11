@@ -1,6 +1,7 @@
 # COVID-DATA-VISUALIZATION 
 
 - Covid-data visualization application [https://chomoku.herokuapp.com/covid-19](https://chomoku.herokuapp.com/covid-19)
+- Covid-data visualization application ver. KYOTO [https://chomoku.herokuapp.com/kyoto-covid](https://chomoku.herokuapp.com/kyoto-covid)
 
 ## Data From
 
