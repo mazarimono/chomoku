@@ -36,6 +36,9 @@ layout = html.Div(
 
     [https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide](https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide)
 
+    Johms-hopkins-university 
+
+    [Github](https://github.com/CSSEGISandData/COVID-19)
     ___
 
     ### 各都道府県の感染データURL
