@@ -8,6 +8,7 @@ from dash.dependencies import Input, Output
 from app1 import covid_memo
 from app1 import covid_19
 from app1 import hands_on_02
+from app1 import hands_on_03 
 from app1 import kyoto_covid 
 
 
@@ -25,6 +26,8 @@ def display_page(pathname):
         return covid_memo.layout
     elif pathname == "/hands-on-02":
         return hands_on_02.layout
+    elif pathname == "/hands-on-03":
+        return hands_on_03.layout 
     elif pathname == "/kyoto-covid":
         return kyoto_covid.layout
     else:
