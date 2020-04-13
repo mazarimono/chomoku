@@ -96,7 +96,8 @@ jp_todo = jag_df.groupby("受診都道府県", as_index=False).sum().sort_values
 jp_todofuken_betsu = jag_df.groupby(["受診都道府県", "確定日"], as_index=False).sum()
 # 都道府県別当日データ
 first_todo = jag_df.iloc[1, 7]
-today_todo = jag_df.iloc[-1, 7]
+today_todo = datetime.now() - timedelta(1)
+today_todo = today_todo.date()
 
 
 # 日本の検査データ
