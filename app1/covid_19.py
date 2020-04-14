@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone 
 from pathlib import Path
 import ast
 
@@ -21,6 +21,7 @@ import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
 from app import app
 
+JST = timezone(timedelta(hours=+9), "JST")
 
 td_style = {"width": "33%", "margin": "20px"}
 two_style = {"width": "50%", "display": "inline-block"}
@@ -96,7 +97,7 @@ jp_todo = jag_df.groupby("受診都道府県", as_index=False).sum().sort_values
 jp_todofuken_betsu = jag_df.groupby(["受診都道府県", "確定日"], as_index=False).sum()
 # 都道府県別当日データ
 first_todo = jag_df.iloc[1, 7]
-today_todo = datetime.now() - timedelta(1)
+today_todo = datetime.now(JST) - timedelta(1)
 today_todo = today_todo.date()
 
 
