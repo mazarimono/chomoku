@@ -113,7 +113,7 @@ layout = html.Div(
                         ),
                         html.H4(f"前日比 +{today_number}", style={"textAlign": "center"}),
                     ],
-                    style=box_style,
+                    className="kyoto_box",
                 ),
                 html.Div(
                     [
@@ -121,7 +121,7 @@ layout = html.Div(
                         html.H1(f"{taiin_number}名", style={"textAlign": "center"}),
                         html.H4(f"前日比 +{today_taiin}", style={"textAlign": "center"}),
                     ],
-                    style=box_style,
+                    className="kyoto_box",
                 ),
                 html.Div(
                     [
@@ -135,7 +135,7 @@ layout = html.Div(
                             style={"textAlign": "center", "padding": 0},
                         ),
                     ],
-                    style=box_style,
+                    className="kyoto_box",
                 ),
             ]
         ),
@@ -145,24 +145,12 @@ layout = html.Div(
                     [
                         dcc.Graph(
                             figure=kyoto_tree,
-                            style={
-                                "width": "56%",
-                                "display": "inline-block",
-                                "backgroundColor": "aqua",
-                                "borderRadius": 20,
-                                "padding": "2%",
-                            },
-                            className="kyoto_sep",
+                            
+                            className="kyoto_sep kyoto_chart",
                         ),
                         dcc.Graph(
                             figure=sex_pie,
-                            style={
-                                "width": "36%",
-                                "display": "inline-block",
-                                "backgroundColor": "aqua",
-                                "borderRadius": 20,
-                                "padding": "2%",
-                            },
+                            className="kyoto_sep kyoto_table",
                         ),
                     ]
                 ),
@@ -175,13 +163,7 @@ layout = html.Div(
                         ),
                         dcc.Graph(id="kyoto_bar_graph"),
                     ],
-                    style={
-                        "width": "56%",
-                        "backgroundColor": "aqua",
-                        "borderRadius": 20,
-                        "padding": "2%",
-                        "display": "inline-block",
-                    },
+                    className="kyoto_sep kyoto_chart"
                 ),
                 html.Div(
                     [
@@ -194,14 +176,7 @@ layout = html.Div(
                         ),
                         html.Div(id="kyoto_table_show"),
                     ],
-                    style={
-                        "width": "34%",
-                        "margin": "2%",
-                        "display": "inline-block",
-                        "backgroundColor": "aqua",
-                        "padding": "1%",
-                        "borderRadius": 20,
-                    },
+                    className="kyoto_sep kyoto_table"
                 ),
                 html.Div(
                     [
@@ -226,12 +201,12 @@ layout = html.Div(
                             virtualization=True,
                         ),
                     ],
-                    style={"margin": "2%", "padding": "1%"},
+                    style={"margin": "2%", "padding": "1%"}, className="kyoto_sep"
                 ),
             ]
         ),
     ],
-    style={"padding": "1%"},
+    style={"padding": "1%"}
 )
 
 
