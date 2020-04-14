@@ -108,6 +108,9 @@ h6 {
     vertical-align: top;
 }
 
+
+/* kyoto CSS */
+
 @media screen and (min-width: 0px) {
     .kyoto_box {
         width: 30%;
