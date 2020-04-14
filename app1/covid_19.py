@@ -177,11 +177,11 @@ world = html.Div(
                 dcc.Graph(
                     figure=px.scatter(
                         covid_testing,
-                        x="Tests\u2009/millionpeople",
-                        y="Positive\u2009/millionpeople",
+                        x="Tests per million",
+                        y="Positive per million",
                         log_y=True,
                         log_x=True,
-                        hover_data=["Country or region", "As of"],
+                        hover_data=["Country or region", "Positive Percentage"],
                     )
                 ),
             ]
@@ -289,18 +289,18 @@ def update_testing_graph(testing_value):
             covid_testing,
             x="Tests",
             y="Positive",
-            hover_data=["Country or region", "As of"],
-            color="Positive\u2009/millionpeople",
+            hover_data=["Country or region", "Positive Percentage"],
+            color="Positive per million",
         )
     else:
         return px.scatter(
             covid_testing,
             x="Tests",
             y="Positive",
-            hover_data=["Country or region", "As of"],
+            hover_data=["Country or region", "Positive Percentage"],
             log_x=True,
             log_y=True,
-            color="Positive\u2009/millionpeople",
+            color="Positive per million",
         )
 
 
