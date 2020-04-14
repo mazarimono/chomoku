@@ -85,3 +85,79 @@ h6 {
     border-radius: 20px;
     background-color: aqua;
 }
+
+.kyoto_chart {
+    width: 56%;
+    display: inline-block;
+    padding: 2%;
+}
+
+.kyoto_table {
+    width: 36%;
+    display: inline-block;
+    padding: 2%;
+}
+
+.kyoto_box {
+    width: 20%;
+    display: inline-block;
+    background-color: aqua;
+    padding: 1%;
+    margin: 2%;
+    border-radius: 20px;
+    vertical-align: top;
+}
+
+@media screen and (min-width: 0px) {
+    .kyoto_box {
+        width: 30%;
+        display: inline-block;
+        background-color: aqua;
+        padding: 1%;
+        margin: 2%;
+        border-radius: 20px;
+        vertical-align: top;
+    }
+    .kyoto_sep {
+        border-radius: 20px;
+        background-color: aqua;
+    }
+    .kyoto_chart {
+        width: 90%;
+        display: inline-block;
+        padding: 2%;
+        margin: 2% auto;
+    }
+    .kyoto_table {
+        width: 90%;
+        display: inline-block;
+        padding: 2%;
+        margin: 2% auto;
+    }
+}
+
+@media screen and (min-width: 900px) {
+    .kyoto_box {
+        width: 20%;
+        display: inline-block;
+        background-color: aqua;
+        padding: 1%;
+        margin: 2%;
+        border-radius: 20px;
+        vertical-align: top;
+    }
+    .kyoto_sep {
+        border-radius: 20px;
+        background-color: aqua;
+    }
+    .kyoto_chart {
+        width: 56%;
+        display: inline-block;
+        padding: 2%;
+    }
+    .kyoto_table {
+        width: 36%;
+        display: inline-block;
+        padding: 2%;
+    }
+}

@@ -2,3 +2,21 @@
     border-radius: 20px;
     background-color: aqua;
 }
+
+@media screen and (min-width: 0px) {
+    body {
+        background-color: blue;
+    }
+}
+
+@media screen and (min-width: 600px) {
+    container {
+        background-color: black;
+    }
+}
+
+@media screen and (min-width: 900px) {
+    container {
+        background-color: green;
+    }
+}
