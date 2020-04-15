@@ -89,20 +89,20 @@ h6 {
 .kyoto_chart {
     width: 56%;
     display: inline-block;
-    padding: 2%;
+    padding: 5%;
 }
 
 .kyoto_table {
     width: 36%;
     display: inline-block;
-    padding: 2%;
+    padding: 5%;
 }
 
 .kyoto_box {
     width: 20%;
     display: inline-block;
     background-color: aqua;
-    padding: 1%;
+    padding: 5%;
     margin: 2%;
     border-radius: 20px;
     vertical-align: top;
@@ -116,7 +116,7 @@ h6 {
         width: 30%;
         display: inline-block;
         background-color: aqua;
-        padding: 1%;
+        padding: 5%;
         margin: 5%;
         border-radius: 20px;
         vertical-align: top;
@@ -128,13 +128,13 @@ h6 {
     .kyoto_chart {
         width: 90%;
         display: inline-block;
-        padding: 2%;
+        padding: 5%;
         margin: 5% auto;
     }
     .kyoto_table {
         width: 90%;
         display: inline-block;
-        padding: 2%;
+        padding: 5%;
         margin: 5% auto;
     }
 }
