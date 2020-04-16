@@ -27,7 +27,7 @@ td_style = {"width": "33%", "margin": "20px"}
 two_style = {"width": "50%", "display": "inline-block"}
 
 
-tabs_styles = {"height": "44px"}
+tabs_styles = {"height": "55px", "margin": "3%"}
 tab_style = {
     "borderBottom": "1px solid #d6d6d6",
     "padding": "6px",
@@ -365,6 +365,7 @@ graphs = html.Div(
                                 ),
                             ],
                             style={"width": "50%", "display": "inline-block"},
+                            
                         ),
                         html.Div(
                             [
@@ -382,7 +383,7 @@ graphs = html.Div(
                         ),
                         dcc.Graph(id="test_graph", style={"height": 520}),
                     ],
-                    className="six columns",
+                    className="japan_total",
                     style={"height": "70vh"},
                 ),
                 html.Div(
@@ -411,7 +412,7 @@ graphs = html.Div(
                         ),
                         dcc.Graph(id="todo_fuken_graph", style={"height": 520}),
                     ],
-                    className="six columns",
+                    className="japan_total",
                     style={"marginBottom": "5%"},
                 ),
             ]

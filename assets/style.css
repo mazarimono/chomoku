@@ -137,6 +137,9 @@ h6 {
         padding: 5%;
         margin: 5% auto;
     }
+    .japan_total {
+        width: 100%;
+    }
 }
 
 @media screen and (min-width: 900px) {
@@ -162,5 +165,10 @@ h6 {
         width: 36%;
         display: inline-block;
         padding: 2%;
+    }
+    .japan_total {
+        width: 46%;
+        display: inline-block;
+        margin: 2%;
     }
 }
