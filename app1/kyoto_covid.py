@@ -62,8 +62,9 @@ kyoto_tree = px.treemap(
     values="count",
     labels="count",
     title="陽性者内訳（年代別、性別）",
+    template={"layout":{"margin":{"l": 20, "r": 20, "t": 50, "b": 20}}}
 )
-sex_pie = px.pie(kyoto_sex, names="sex", values="count", hole=0.4, title="陽性者男女比")
+sex_pie = px.pie(kyoto_sex, names="sex", values="count", hole=0.4, title="陽性者男女比",template={"layout":{"margin":{"l": 20, "r": 20, "t": 50, "b": 20}}})
 
 bar_daily = px.bar(
     kyoto_announce_sex, x="announce_date", y="count", color="sex", title="京都府の新規感染者数"
