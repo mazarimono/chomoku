@@ -94,7 +94,7 @@ layout = html.Div(
                     style={"display": "inline-block", "marginRight": 40},
                 ),
                 html.P(
-                    f"最終更新日 {update_date.date()}", style={"display": "inline-block"}
+                    f"最終更新日 {update_date.date()}", style={"display": "inline-block"}, className="update_date",
                 ),
             ],
             style={"backgroundColor": "aqua", "borderRadius": 20, "padding": "2%"},
@@ -111,16 +111,17 @@ layout = html.Div(
                         html.H1(
                             f"{total_number}名",
                             style={"textAlign": "center", "padding": 0},
+                            className="total_num"
                         ),
-                        html.H4(f"前日比 +{today_number}", style={"textAlign": "center"}),
+                        html.H4(f"前日比 +{today_number}", style={"textAlign": "center"}, className="total_num_dod"),
                     ],
                     className="kyoto_box",
                 ),
                 html.Div(
                     [
                         html.H6("退院者数", style={"textAlign": "center", "padding": 0}),
-                        html.H1(f"{taiin_number}名", style={"textAlign": "center"}),
-                        html.H4(f"前日比 +{today_taiin}", style={"textAlign": "center"}),
+                        html.H1(f"{taiin_number}名", style={"textAlign": "center"}, className="leave_hosp_num"),
+                        html.H4(f"前日比 +{today_taiin}", style={"textAlign": "center"}, className="leave_hosp_num_dod"),
                     ],
                     className="kyoto_box",
                 ),
@@ -130,10 +131,12 @@ layout = html.Div(
                         html.H1(
                             f"{d_number_cumsum}名",
                             style={"textAlign": "center", "padding": 0},
+                            className="death_num"
                         ),
                         html.H4(
                             f"前日比 +{d_number_today}",
                             style={"textAlign": "center", "padding": 0},
+                            className="death_num_dod"
                         ),
                     ],
                     className="kyoto_box",
