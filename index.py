@@ -10,6 +10,7 @@ from app1 import covid_19
 from app1 import hands_on_02
 from app1 import hands_on_03 
 from app1 import kyoto_covid 
+from app1 import world_index 
 
 
 server = app.server
@@ -30,6 +31,8 @@ def display_page(pathname):
         return hands_on_03.layout 
     elif pathname == "/kyoto-covid":
         return kyoto_covid.layout
+    elif pathname == "/world-index":
+        return world_index.layout 
     else:
         return covid_19.layout
 
