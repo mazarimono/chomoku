@@ -6,6 +6,7 @@ dash_cytoscape
 dash_daq
 plotly
 pandas
+pandas_datareader 
 numpy 
 gunicorn 
 lxml
