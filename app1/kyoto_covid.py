@@ -41,6 +41,13 @@ today_taiin = kyoto_data[
     kyoto_data.leave_hospital == update_date
 ].leave_hospital.count()
 
+patient_num = total_number - d_number_cumsum - taiin_number
+
+recent_condition = pd.DataFrame(
+    {"状態": ["患者数", "退院者数", "死亡者数"],
+     "人数": [patient_num, taiin_number, d_number_cumsum]}
+)
+
 
 # SET STYLE
 
@@ -64,6 +71,19 @@ kyoto_tree = px.treemap(
     title="陽性者内訳（年代別、性別）",
     template={"layout":{"margin":{"l": 20, "r": 20, "t": 50, "b": 20}}}
 )
+
+
+condition_pie = px.pie(
+    recent_condition,
+    names="状態",
+    values="人数",
+    hole=0.4,
+    title="感染者の状態",
+    template={"layout":{"margin":{"l": 50, "r": 20, "t": 50, "b": 20}},
+    }
+)
+
+
 sex_pie = px.pie(kyoto_sex, names="sex", values="count", hole=0.4, title="陽性者男女比",template={"layout":{"margin":{"l": 20, "r": 20, "t": 50, "b": 20}}})
 
 bar_daily = px.bar(
@@ -147,14 +167,23 @@ layout = html.Div(
             [
                 html.Div(
                     [
+                        
+                        html.Div([
+                        dcc.RadioItems(
+                            id="pie_selector",
+                            options=[{"label": i, "value": i} for i in ["感染者状況", "陽性者男女比"]],
+                            value="感染者状況"
+                        ),
+                        dcc.Graph(
+                            id="pie_area",
+                            
+                        ),
+                        ], className="kyoto_sep kyoto_table", style={"verticalAlign": "top"}),
+
                         dcc.Graph(
                             figure=kyoto_tree,
                             
                             className="kyoto_sep kyoto_chart",
-                        ),
-                        dcc.Graph(
-                            figure=sex_pie,
-                            className="kyoto_sep kyoto_table",
                         ),
                     ]
                 ),
@@ -220,6 +249,12 @@ def kyoto_bar_update(kyoto_radio_value):
         return bar_cumsum
     else:
         return bar_daily
+
+@app.callback(Output("pie_area", "figure"), [Input("pie_selector", "value")])
+def update_pie_chart(pie_value):
+    if pie_value == "陽性者男女比":
+        return sex_pie
+    return condition_pie
 
 
 @app.callback(
