@@ -27,6 +27,7 @@ kyoto_announce_sex["cumsum"] = kyoto_announce_sex["count"].cumsum()
 kyoto_sex = kyoto_data.groupby("sex", as_index=False).sum()
 kyoto_area = kyoto_data.groupby("area", as_index=False).sum()
 kyoto_area = kyoto_area.sort_values("count", ascending=False)
+kyoto_area.columns = ["地域", "感染者数", "退院者数", "死亡者数"]
 kyoto_table_age = kyoto_data.groupby("age", as_index=False).sum()
 kyoto_table_age = kyoto_table_age.sort_values("count", ascending=False)
 kyoto_table_age.columns = ["年齢", "感染者数", "退院者数", "死亡者数"]
