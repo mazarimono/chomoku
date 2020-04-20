@@ -22,6 +22,7 @@ kyoto_announce_sex = kyoto_data.groupby(
     ["announce_date", "sex"], as_index=False
 ).count()
 kyoto_announce_sex["cumsum"] = kyoto_announce_sex["count"].cumsum()
+kyoto_d = kyoto_announce.groupby("d_date").count()
 
 kyoto_sex = kyoto_data.groupby("sex", as_index=False).sum()
 kyoto_area = kyoto_data.groupby("area", as_index=False).sum()
@@ -35,7 +36,7 @@ total_number = kyoto_announce.iloc[-1, -2]
 today_number = kyoto_announce.iloc[-1, -3]
 update_date = kyoto_announce.iloc[-1, 0]
 d_number_cumsum = kyoto_announce.iloc[-1, -1]
-d_number_today = kyoto_announce.iloc[-1, -7]
+d_number_today = kyoto_d.iloc[-1, -1]
 taiin_number = kyoto_data.leave_hospital.count()
 today_taiin = kyoto_data[
     kyoto_data.leave_hospital == update_date
