@@ -11,8 +11,7 @@ from app import app
 ## READ DATA
 
 kyoto_data = pd.read_csv(
-    "./src/kyoto-covid.csv",
-    parse_dates=["announce_date", "leave_hospital", "d_date"],
+    "./src/kyoto-covid.csv", parse_dates=["announce_date", "leave_hospital", "d_date"]
 )
 
 kyoto_age = kyoto_data.groupby(["age", "sex"], as_index=False).count()
@@ -45,8 +44,7 @@ today_taiin = kyoto_data[
 patient_num = total_number - d_number_cumsum - taiin_number
 
 recent_condition = pd.DataFrame(
-    {"状態": ["患者数", "退院者数", "死亡者数"],
-     "人数": [patient_num, taiin_number, d_number_cumsum]}
+    {"状態": ["患者数", "退院者数", "死亡者数"], "人数": [patient_num, taiin_number, d_number_cumsum]}
 )
 
 
@@ -70,7 +68,7 @@ kyoto_tree = px.treemap(
     values="count",
     labels="count",
     title="陽性者内訳（年代別、性別）",
-    template={"layout":{"margin":{"l": 20, "r": 20, "t": 50, "b": 20}}}
+    template={"layout": {"margin": {"l": 20, "r": 20, "t": 50, "b": 20}}},
 )
 
 
@@ -80,12 +78,18 @@ condition_pie = px.pie(
     values="人数",
     hole=0.4,
     title="感染者の状態",
-    template={"layout":{"margin":{"l": 50, "r": 20, "t": 50, "b": 20}},
-    }
+    template={"layout": {"margin": {"l": 50, "r": 20, "t": 50, "b": 20}}},
 )
 
 
-sex_pie = px.pie(kyoto_sex, names="sex", values="count", hole=0.4, title="陽性者男女比",template={"layout":{"margin":{"l": 20, "r": 20, "t": 50, "b": 20}}})
+sex_pie = px.pie(
+    kyoto_sex,
+    names="sex",
+    values="count",
+    hole=0.4,
+    title="陽性者男女比",
+    template={"layout": {"margin": {"l": 20, "r": 20, "t": 50, "b": 20}}},
+)
 
 bar_daily = px.bar(
     kyoto_announce_sex, x="announce_date", y="count", color="sex", title="京都府の新規感染者数"
@@ -115,9 +119,15 @@ layout = html.Div(
                     style={"display": "inline-block", "marginRight": 40},
                 ),
                 html.P(
-                    f"最終更新日 {update_date.date()}", style={"display": "inline-block"}, className="update_date",
+                    f"最終更新日 {update_date.date()}",
+                    style={"display": "inline-block"},
+                    className="update_date",
                 ),
-                html.A("データ出所: 京都府ウェブページ", href="https://www.pref.kyoto.jp/kentai/news/novelcoronavirus.html#F", style={"display": "block"}),
+                html.A(
+                    "データ出所: 京都府ウェブページ",
+                    href="https://www.pref.kyoto.jp/kentai/news/novelcoronavirus.html#F",
+                    style={"display": "block"},
+                ),
             ],
             style={"backgroundColor": "aqua", "borderRadius": 20, "padding": "2%"},
         ),
@@ -133,17 +143,29 @@ layout = html.Div(
                         html.H1(
                             f"{total_number}名",
                             style={"textAlign": "center", "padding": 0},
-                            className="total_num"
+                            className="total_num",
                         ),
-                        html.H4(f"前日比 +{today_number}", style={"textAlign": "center"}, className="total_num_dod"),
+                        html.H4(
+                            f"前日比 +{today_number}",
+                            style={"textAlign": "center"},
+                            className="total_num_dod",
+                        ),
                     ],
                     className="kyoto_box",
                 ),
                 html.Div(
                     [
                         html.H6("退院者数", style={"textAlign": "center", "padding": 0}),
-                        html.H1(f"{taiin_number}名", style={"textAlign": "center"}, className="leave_hosp_num"),
-                        html.H4(f"前日比 +{today_taiin}", style={"textAlign": "center"}, className="leave_hosp_num_dod"),
+                        html.H1(
+                            f"{taiin_number}名",
+                            style={"textAlign": "center"},
+                            className="leave_hosp_num",
+                        ),
+                        html.H4(
+                            f"前日比 +{today_taiin}",
+                            style={"textAlign": "center"},
+                            className="leave_hosp_num_dod",
+                        ),
                     ],
                     className="kyoto_box",
                 ),
@@ -153,12 +175,12 @@ layout = html.Div(
                         html.H1(
                             f"{d_number_cumsum}名",
                             style={"textAlign": "center", "padding": 0},
-                            className="death_num"
+                            className="death_num",
                         ),
                         html.H4(
                             f"前日比 +{d_number_today}",
                             style={"textAlign": "center", "padding": 0},
-                            className="death_num_dod"
+                            className="death_num_dod",
                         ),
                     ],
                     className="kyoto_box",
@@ -169,24 +191,22 @@ layout = html.Div(
             [
                 html.Div(
                     [
-                        
-                        html.Div([
-                        dcc.RadioItems(
-                            id="pie_selector",
-                            options=[{"label": i, "value": i} for i in ["感染者状況", "陽性者男女比"]],
-                            value="感染者状況"
+                        html.Div(
+                            [
+                                dcc.RadioItems(
+                                    id="pie_selector",
+                                    options=[
+                                        {"label": i, "value": i}
+                                        for i in ["感染者状況", "陽性者男女比"]
+                                    ],
+                                    value="感染者状況",
+                                ),
+                                dcc.Graph(id="pie_area"),
+                            ],
+                            className="kyoto_sep kyoto_table",
+                            style={"verticalAlign": "top"},
                         ),
-                        dcc.Graph(
-                            id="pie_area",
-                            
-                        ),
-                        ], className="kyoto_sep kyoto_table", style={"verticalAlign": "top"}),
-
-                        dcc.Graph(
-                            figure=kyoto_tree,
-                            
-                            className="kyoto_sep kyoto_chart",
-                        ),
+                        dcc.Graph(figure=kyoto_tree, className="kyoto_sep kyoto_chart"),
                     ]
                 ),
                 html.Div(
@@ -198,7 +218,7 @@ layout = html.Div(
                         ),
                         dcc.Graph(id="kyoto_bar_graph"),
                     ],
-                    className="kyoto_sep kyoto_chart"
+                    className="kyoto_sep kyoto_chart",
                 ),
                 html.Div(
                     [
@@ -211,7 +231,7 @@ layout = html.Div(
                         ),
                         html.Div(id="kyoto_table_show"),
                     ],
-                    className="kyoto_sep kyoto_table"
+                    className="kyoto_sep kyoto_table",
                 ),
                 html.Div(
                     [
@@ -236,12 +256,13 @@ layout = html.Div(
                             virtualization=True,
                         ),
                     ],
-                    style={"margin": "2%", "padding": "1%"}, className="kyoto_sep"
+                    style={"margin": "2%", "padding": "1%"},
+                    className="kyoto_sep",
                 ),
             ]
         ),
     ],
-    style={"padding": "1%"}
+    style={"padding": "1%"},
 )
 
 
@@ -251,6 +272,7 @@ def kyoto_bar_update(kyoto_radio_value):
         return bar_cumsum
     else:
         return bar_daily
+
 
 @app.callback(Output("pie_area", "figure"), [Input("pie_selector", "value")])
 def update_pie_chart(pie_value):
