@@ -12,10 +12,9 @@ from app import app
 
 kyoto_data = pd.read_csv(
     "./src/kyoto-covid.csv",
-    parse_dates=["announce_date", "leave_hospital"],
-    na_values=np.nan,
+    parse_dates=["announce_date", "leave_hospital", "d_date"],
 )
-kyoto_data["count"] = 1
+
 kyoto_age = kyoto_data.groupby(["age", "sex"], as_index=False).count()
 kyoto_announce = kyoto_data.groupby(["announce_date"], as_index=False).count()
 kyoto_announce["cumsum"] = kyoto_announce["count"].cumsum()
@@ -30,6 +29,7 @@ kyoto_area = kyoto_data.groupby("area", as_index=False).sum()
 kyoto_area = kyoto_area.sort_values("count", ascending=False)
 kyoto_table_age = kyoto_data.groupby("age", as_index=False).sum()
 kyoto_table_age = kyoto_table_age.sort_values("count", ascending=False)
+kyoto_table_age.columns = ["年齢", "感染者数", "退院者数", "死亡者数"]
 
 total_number = kyoto_announce.iloc[-1, -2]
 today_number = kyoto_announce.iloc[-1, -3]
@@ -116,6 +116,7 @@ layout = html.Div(
                 html.P(
                     f"最終更新日 {update_date.date()}", style={"display": "inline-block"}, className="update_date",
                 ),
+                html.A("データ出所: 京都府ウェブページ", href="https://www.pref.kyoto.jp/kentai/news/novelcoronavirus.html#F", style={"display": "block"}),
             ],
             style={"backgroundColor": "aqua", "borderRadius": 20, "padding": "2%"},
         ),
