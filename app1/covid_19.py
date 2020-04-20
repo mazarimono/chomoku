@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime, timedelta, timezone 
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import ast
 
@@ -365,7 +365,6 @@ graphs = html.Div(
                                 ),
                             ],
                             style={"width": "50%", "display": "inline-block"},
-                            
                         ),
                         html.Div(
                             [
