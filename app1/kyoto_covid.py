@@ -35,7 +35,7 @@ total_number = kyoto_announce.iloc[-1, -2]
 today_number = kyoto_announce.iloc[-1, -3]
 update_date = kyoto_announce.iloc[-1, 0]
 d_number_cumsum = kyoto_announce.iloc[-1, -1]
-d_number_today = kyoto_announce.iloc[-1, -5]
+d_number_today = kyoto_announce.iloc[-1, -7]
 taiin_number = kyoto_data.leave_hospital.count()
 today_taiin = kyoto_data[
     kyoto_data.leave_hospital == update_date
