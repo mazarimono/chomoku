@@ -22,7 +22,7 @@ kyoto_announce_sex = kyoto_data.groupby(
     ["announce_date", "sex"], as_index=False
 ).count()
 kyoto_announce_sex["cumsum"] = kyoto_announce_sex["count"].cumsum()
-kyoto_d = kyoto_announce.groupby("d_date").count()
+kyoto_d = kyoto_data.groupby("d_date").count()
 
 kyoto_sex = kyoto_data.groupby("sex", as_index=False).sum()
 kyoto_area = kyoto_data.groupby("area", as_index=False).sum()
