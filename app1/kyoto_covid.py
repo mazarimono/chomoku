@@ -42,15 +42,11 @@ total_number = kyoto_announce.iloc[-1, -2]
 today_number = kyoto_announce.iloc[-1, -3]
 update_date = kyoto_announce.iloc[-1, 0]
 d_number_cumsum = kyoto_announce.iloc[-1, -1]
-d_number_today = kyoto_d.iloc[-1, -1]
+d_number_today = len(kyoto_data[kyoto_data.d_date==update_date])
 taiin_number = kyoto_data.leave_hospital.count()
-today_taiin = kyoto_data[
-    kyoto_data.leave_hospital == update_date
-].leave_hospital.count()
+today_taiin = len(kyoto_data[kyoto_data.leave_hospital==update_date])
 kaizyo_num = kyoto_data.kaizyo_count.sum()
-today_kaizyo = kyoto_data[
-    kyoto_data.leave_hospital == update_date
-].kaizyo_date.count()
+today_kaizyo = len(kyoto_data[kyoto_data.kaizyo_date == update_date])
 recovery_num = taiin_number + kaizyo_num
 recovery_today = today_taiin + today_kaizyo
 
