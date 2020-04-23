@@ -11,3 +11,4 @@ numpy
 gunicorn 
 lxml
 xlrd
+requests

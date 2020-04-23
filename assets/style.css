@@ -99,10 +99,10 @@ h6 {
 }
 
 .kyoto_box {
-    width: 20%;
+    width: 19%;
     display: inline-block;
     background-color: aqua;
-    padding: 5%;
+    padding: 3%;
     margin: 2%;
     border-radius: 20px;
     vertical-align: top;
@@ -144,7 +144,7 @@ h6 {
 
 @media screen and (min-width: 900px) {
     .kyoto_box {
-        width: 20%;
+        width: 18%;
         display: inline-block;
         background-color: aqua;
         padding: 1%;
