@@ -4,6 +4,7 @@ import plotly.express as px
 import dash_table
 import numpy as np
 import pandas as pd
+import requests
 
 from dash.dependencies import Input, Output
 from app import app
@@ -28,9 +29,13 @@ kyoto_sex = kyoto_data.groupby("sex", as_index=False).sum()
 kyoto_area = kyoto_data.groupby("area", as_index=False).sum()
 kyoto_area = kyoto_area.sort_values("count", ascending=False)
 kyoto_area.columns = ["地域", "感染者数", "退院者数", "解除者数","死亡者数"]
+kyoto_area["回復者数"] = kyoto_area["退院者数"] + kyoto_area["解除者数"]
+kyoto_area_table = kyoto_area[["地域", "感染者数", "回復者数", "死亡者数"]]
 kyoto_table_age = kyoto_data.groupby("age", as_index=False).sum()
 kyoto_table_age = kyoto_table_age.sort_values("count", ascending=False)
 kyoto_table_age.columns = ["年齢", "感染者数", "退院者数", "解除者数", "死亡者数"]
+kyoto_table_age["回復者数"] = kyoto_table_age["退院者数"] + kyoto_table_age["解除者数"]
+kyoto_table_age_add = kyoto_table_age[["年齢", "感染者数","回復者数", "死亡者数"]]
 
 # 状態各数値
 total_number = kyoto_announce.iloc[-1, -2]
@@ -56,6 +61,16 @@ patient_num = total_number - d_number_cumsum - recovery_num
 recent_condition = pd.DataFrame(
     {"状態": ["患者数", "回復者数", "死亡者数"], "人数": [patient_num, recovery_num, d_number_cumsum]}
 )
+
+# data from API 
+
+jp_data = requests.get("https://covid19-japan-web-api.now.sh/api/v1/prefectures")
+kyoto_pcr = jp_data.json()[25]
+kyoto_pcr_num = kyoto_pcr["pcr"]
+kyoto_pcr_update = str(kyoto_pcr["last_updated"]["pcr_date"])
+pcr_year = str(kyoto_pcr_update)[:4]
+pcr_month = str(kyoto_pcr_update)[4:5] # 月が2桁になると問題が起こりそう
+pcr_day = str(kyoto_pcr_update)[-2:]
 
 
 # SET STYLE
@@ -107,14 +122,14 @@ bar_daily = px.bar(
 bar_cumsum = px.bar(kyoto_announce, x="announce_date", y="cumsum", title="京都府の累計感染者数")
 
 kyoto_table_area = dash_table.DataTable(
-    columns=[{"name": i, "id": i} for i in kyoto_area.columns],
-    data=kyoto_area.to_dict("records"),
+    columns=[{"name": i, "id": i} for i in kyoto_area_table.columns],
+    data=kyoto_area_table.to_dict("records"),
     style_cell={"textAlign": "center", "fontSize": 20},
 )
 
-kyoto_table_age = dash_table.DataTable(
-    columns=[{"name": i, "id": i} for i in kyoto_table_age.columns],
-    data=kyoto_table_age.to_dict("records"),
+kyoto_table_age_table = dash_table.DataTable(
+    columns=[{"name": i, "id": i} for i in kyoto_table_age_add.columns],
+    data=kyoto_table_age_add.to_dict("records"),
     style_cell={"textAlign": "center", "fontSize": 20},
 )
 
@@ -189,6 +204,22 @@ layout = html.Div(
                         ),
                         html.H4(
                             f"前日比 +{d_number_today}",
+                            style={"textAlign": "center", "padding": 0},
+                            className="death_num_dod",
+                        ),
+                    ],
+                    className="kyoto_box",
+                ),
+                html.Div(
+                    [
+                        html.H6("PCR検査数", style={"textAlign": "center", "padding": 0}),
+                        html.H1(
+                            f"{kyoto_pcr_num}件",
+                            style={"textAlign": "center", "padding": 0},
+                            className="death_num",
+                        ),
+                        html.H4(
+                            f"{pcr_year}/{pcr_month}/{pcr_day}",
                             style={"textAlign": "center", "padding": 0},
                             className="death_num_dod",
                         ),
@@ -296,6 +327,6 @@ def update_pie_chart(pie_value):
 )
 def kyoto_table_update(kyoto_table_switch):
     if kyoto_table_switch == "年代別感染者数":
-        return kyoto_table_age
+        return kyoto_table_age_table
     else:
         return kyoto_table_area
