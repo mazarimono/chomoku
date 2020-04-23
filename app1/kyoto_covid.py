@@ -27,11 +27,12 @@ kyoto_d = kyoto_data.groupby("d_date").count()
 kyoto_sex = kyoto_data.groupby("sex", as_index=False).sum()
 kyoto_area = kyoto_data.groupby("area", as_index=False).sum()
 kyoto_area = kyoto_area.sort_values("count", ascending=False)
-kyoto_area.columns = ["地域", "感染者数", "退院者数", "死亡者数"]
+kyoto_area.columns = ["地域", "感染者数", "退院者数", "解除者数","死亡者数"]
 kyoto_table_age = kyoto_data.groupby("age", as_index=False).sum()
 kyoto_table_age = kyoto_table_age.sort_values("count", ascending=False)
-kyoto_table_age.columns = ["年齢", "感染者数", "退院者数", "死亡者数"]
+kyoto_table_age.columns = ["年齢", "感染者数", "退院者数", "解除者数", "死亡者数"]
 
+# 状態各数値
 total_number = kyoto_announce.iloc[-1, -2]
 today_number = kyoto_announce.iloc[-1, -3]
 update_date = kyoto_announce.iloc[-1, 0]
@@ -41,11 +42,19 @@ taiin_number = kyoto_data.leave_hospital.count()
 today_taiin = kyoto_data[
     kyoto_data.leave_hospital == update_date
 ].leave_hospital.count()
+kaizyo_num = kyoto_data.kaizyo_count.sum()
+today_kaizyo = kyoto_data[
+    kyoto_data.leave_hospital == update_date
+].kaizyo_date.count()
+recovery_num = taiin_number + kaizyo_num
+recovery_today = today_taiin + today_kaizyo
 
-patient_num = total_number - d_number_cumsum - taiin_number
+
+
+patient_num = total_number - d_number_cumsum - recovery_num 
 
 recent_condition = pd.DataFrame(
-    {"状態": ["患者数", "退院者数", "死亡者数"], "人数": [patient_num, taiin_number, d_number_cumsum]}
+    {"状態": ["患者数", "回復者数", "死亡者数"], "人数": [patient_num, recovery_num, d_number_cumsum]}
 )
 
 
@@ -156,14 +165,14 @@ layout = html.Div(
                 ),
                 html.Div(
                     [
-                        html.H6("退院者数", style={"textAlign": "center", "padding": 0}),
+                        html.H6("回復者数", style={"textAlign": "center", "padding": 0}),
                         html.H1(
-                            f"{taiin_number}名",
+                            f"{recovery_num}名",
                             style={"textAlign": "center"},
                             className="leave_hosp_num",
                         ),
                         html.H4(
-                            f"前日比 +{today_taiin}",
+                            f"前日比 +{recovery_today}",
                             style={"textAlign": "center"},
                             className="leave_hosp_num_dod",
                         ),
