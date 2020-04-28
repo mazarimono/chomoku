@@ -1,7 +1,7 @@
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.express as px
-import plotly.graph_objects as go 
+import plotly.graph_objects as go
 import dash_table
 import numpy as np
 import pandas as pd
@@ -30,44 +30,43 @@ kyoto_announce_date = kyoto_data.groupby(["age", "announce_date"], as_index=Fals
 kyoto_sex = kyoto_data.groupby("sex", as_index=False).sum()
 kyoto_area = kyoto_data.groupby("area", as_index=False).sum()
 kyoto_area = kyoto_area.sort_values("count", ascending=False)
-kyoto_area.columns = ["地域", "感染者数", "退院者数", "解除者数","死亡者数"]
+kyoto_area.columns = ["地域", "感染者数", "退院者数", "解除者数", "死亡者数"]
 kyoto_area["回復者数"] = kyoto_area["退院者数"] + kyoto_area["解除者数"]
 kyoto_area_table = kyoto_area[["地域", "感染者数", "回復者数", "死亡者数"]]
 kyoto_table_age = kyoto_data.groupby("age", as_index=False).sum()
 kyoto_table_age = kyoto_table_age.sort_values("count", ascending=False)
 kyoto_table_age.columns = ["年齢", "感染者数", "退院者数", "解除者数", "死亡者数"]
 kyoto_table_age["回復者数"] = kyoto_table_age["退院者数"] + kyoto_table_age["解除者数"]
-kyoto_table_age_add = kyoto_table_age[["年齢", "感染者数","回復者数", "死亡者数"]]
+kyoto_table_age_add = kyoto_table_age[["年齢", "感染者数", "回復者数", "死亡者数"]]
 
 # 状態各数値
 total_number = kyoto_announce.iloc[-1, -2]
 today_number = kyoto_announce.iloc[-1, -3]
 update_date = kyoto_announce.iloc[-1, 0]
 d_number_cumsum = kyoto_announce.iloc[-1, -1]
-d_number_today = len(kyoto_data[kyoto_data.d_date==update_date])
+d_number_today = len(kyoto_data[kyoto_data.d_date == update_date])
 taiin_number = kyoto_data.leave_hospital.count()
-today_taiin = len(kyoto_data[kyoto_data.leave_hospital==update_date])
+today_taiin = len(kyoto_data[kyoto_data.leave_hospital == update_date])
 kaizyo_num = kyoto_data.kaizyo_count.sum()
 today_kaizyo = len(kyoto_data[kyoto_data.kaizyo_date == update_date])
 recovery_num = taiin_number + kaizyo_num
 recovery_today = today_taiin + today_kaizyo
 
 
-
-patient_num = total_number - d_number_cumsum - recovery_num 
+patient_num = total_number - d_number_cumsum - recovery_num
 
 recent_condition = pd.DataFrame(
     {"状態": ["患者数", "回復者数", "死亡者数"], "人数": [patient_num, recovery_num, d_number_cumsum]}
 )
 
-# data from API 
+# data from API
 
 jp_data = requests.get("https://covid19-japan-web-api.now.sh/api/v1/prefectures")
 kyoto_pcr = jp_data.json()[25]
 kyoto_pcr_num = kyoto_pcr["pcr"]
 kyoto_pcr_update = str(kyoto_pcr["last_updated"]["pcr_date"])
 pcr_year = str(kyoto_pcr_update)[:4]
-pcr_month = str(kyoto_pcr_update)[4:5] # 月が2桁になると問題が起こりそう
+pcr_month = str(kyoto_pcr_update)[4:5]  # 月が2桁になると問題が起こりそう
 pcr_day = str(kyoto_pcr_update)[-2:]
 
 
@@ -119,14 +118,22 @@ bar_daily = px.bar(
 )
 bar_cumsum = px.bar(kyoto_announce, x="announce_date", y="cumsum", title="京都府の累計感染者数")
 
-heatmap_age_day = go.Figure(data=go.Heatmap(z=kyoto_announce_date["count"], y=kyoto_announce_date["age"], x=kyoto_announce_date["announce_date"],
-colorscale=[[0, "rgb(166,206,227)"],
-                [0.25, "rgb(31,120,180)"],
-                [0.45, "rgb(178,223,138)"],
-                [0.65, "rgb(51,160,44)"],
-                [0.85, "rgb(251,154,153)"],
-                [1, "rgb(227,26,28)"]]
-))
+heatmap_age_day = go.Figure(
+    data=go.Heatmap(
+        z=kyoto_announce_date["count"],
+        y=kyoto_announce_date["age"],
+        x=kyoto_announce_date["announce_date"],
+        colorscale=[
+            [0, "rgb(166,206,227)"],
+            [0.25, "rgb(31,120,180)"],
+            [0.45, "rgb(178,223,138)"],
+            [0.65, "rgb(51,160,44)"],
+            [0.85, "rgb(251,154,153)"],
+            [1, "rgb(227,26,28)"],
+        ],
+    )
+)
+heatmap_age_day = heatmap_age_day.update_layout(title="年齢別新規感染者数")
 
 kyoto_table_area = dash_table.DataTable(
     columns=[{"name": i, "id": i} for i in kyoto_area_table.columns],
@@ -261,7 +268,10 @@ layout = html.Div(
                     [
                         dcc.RadioItems(
                             id="kyoto_bar_radio",
-                            options=[{"label": i, "value": i} for i in ["新規感染数", "年齢別新規感染者数", "累計"]],
+                            options=[
+                                {"label": i, "value": i}
+                                for i in ["新規感染数", "年齢別新規感染者数", "累計"]
+                            ],
                             value="新規感染数",
                         ),
                         dcc.Graph(id="kyoto_bar_graph"),
@@ -280,6 +290,7 @@ layout = html.Div(
                         html.Div(id="kyoto_table_show"),
                     ],
                     className="kyoto_sep kyoto_table",
+                    style={"verticalAlign": "top"},
                 ),
                 html.Div(
                     [
