@@ -1,6 +1,7 @@
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.express as px
+import plotly.graph_objects as go 
 import dash_table
 import numpy as np
 import pandas as pd
@@ -24,6 +25,7 @@ kyoto_announce_sex = kyoto_data.groupby(
 ).count()
 kyoto_announce_sex["cumsum"] = kyoto_announce_sex["count"].cumsum()
 kyoto_d = kyoto_data.groupby("d_date").count()
+kyoto_announce_date = kyoto_data.groupby(["age", "announce_date"], as_index=False).sum()
 
 kyoto_sex = kyoto_data.groupby("sex", as_index=False).sum()
 kyoto_area = kyoto_data.groupby("area", as_index=False).sum()
@@ -116,6 +118,15 @@ bar_daily = px.bar(
     kyoto_announce_sex, x="announce_date", y="count", color="sex", title="京都府の新規感染者数"
 )
 bar_cumsum = px.bar(kyoto_announce, x="announce_date", y="cumsum", title="京都府の累計感染者数")
+
+heatmap_age_day = go.Figure(data=go.Heatmap(z=kyoto_announce_date["count"], y=kyoto_announce_date["age"], x=kyoto_announce_date["announce_date"],
+colorscale=[[0, "rgb(166,206,227)"],
+                [0.25, "rgb(31,120,180)"],
+                [0.45, "rgb(178,223,138)"],
+                [0.65, "rgb(51,160,44)"],
+                [0.85, "rgb(251,154,153)"],
+                [1, "rgb(227,26,28)"]]
+))
 
 kyoto_table_area = dash_table.DataTable(
     columns=[{"name": i, "id": i} for i in kyoto_area_table.columns],
@@ -250,7 +261,7 @@ layout = html.Div(
                     [
                         dcc.RadioItems(
                             id="kyoto_bar_radio",
-                            options=[{"label": i, "value": i} for i in ["新規感染数", "累計"]],
+                            options=[{"label": i, "value": i} for i in ["新規感染数", "年齢別新規感染者数", "累計"]],
                             value="新規感染数",
                         ),
                         dcc.Graph(id="kyoto_bar_graph"),
@@ -307,6 +318,8 @@ layout = html.Div(
 def kyoto_bar_update(kyoto_radio_value):
     if kyoto_radio_value == "累計":
         return bar_cumsum
+    elif kyoto_radio_value == "年齢別新規感染者数":
+        return heatmap_age_day
     else:
         return bar_daily
 
