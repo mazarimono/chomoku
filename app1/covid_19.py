@@ -161,17 +161,17 @@ world = html.Div(
                 # html.H1(id="selected_country_graph")
             ]
         ),
-        html.Div(
-            [
-                html.H4("各国地域検査数とポジティブ数"),
-                dcc.RadioItems(
-                    id="testing-radio",
-                    options=[{"label": i, "value": i} for i in ["実数", "ログ"]],
-                    value="実数",
-                ),
-                dcc.Graph(id="testing-graph"),
-            ]
-        ),
+        # html.Div(
+        #     [
+        #         html.H4("各国地域検査数とポジティブ数"),
+        #         dcc.RadioItems(
+        #             id="testing-radio",
+        #             options=[{"label": i, "value": i} for i in ["実数", "ログ"]],
+        #             value="実数",
+        #         ),
+        #         dcc.Graph(id="testing-graph"),
+        #     ]
+        # ),
         html.Div(
             [
                 html.H4("ポジティブ割合、人口当たり検査数"),
