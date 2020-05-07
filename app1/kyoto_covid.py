@@ -67,7 +67,7 @@ kyoto_pcr_num = kyoto_pcr["pcr"]
 kyoto_pcr_update = str(kyoto_pcr["last_updated"]["pcr_date"])
 pcr_year = str(kyoto_pcr_update)[:4]
 pcr_month = str(kyoto_pcr_update)[4:5]  # 月が2桁になると問題が起こりそう
-pcr_day = str(kyoto_pcr_update)[-2:]
+pcr_day = str(kyoto_pcr_update)[-1] # 日にちが1ケタ2ケタで切り替えないといけない。。。
 
 
 # SET STYLE
