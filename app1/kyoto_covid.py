@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import dash_table
 import numpy as np
 import pandas as pd
-import requests
+from datetime import datetime 
 
 from dash.dependencies import Input, Output
 from app import app
@@ -61,13 +61,11 @@ recent_condition = pd.DataFrame(
 
 # data from API
 
-jp_data = requests.get("https://covid19-japan-web-api.now.sh/api/v1/prefectures")
-kyoto_pcr = jp_data.json()[25]
-kyoto_pcr_num = kyoto_pcr["pcr"]
-kyoto_pcr_update = str(kyoto_pcr["last_updated"]["pcr_date"])
-pcr_year = str(kyoto_pcr_update)[:4]
-pcr_month = str(kyoto_pcr_update)[4:5]  # 月が2桁になると問題が起こりそう
-pcr_day = str(kyoto_pcr_update)[-1] # 日にちが1ケタ2ケタで切り替えないといけない。。。
+kyoto_pcr_num = 6285
+kyoto_pcr_update = datetime(2020,5,14).date()
+pcr_year = kyoto_pcr_update.year
+pcr_month = kyoto_pcr_update.month
+pcr_day = kyoto_pcr_update.day 
 
 
 # SET STYLE
