@@ -89,7 +89,7 @@ covid_testing = pd.read_csv("src/covid19-testing.csv", index_col=0)
 
 # Jag JP データ
 
-jag_df = pd.read_csv("src/jp_data.csv", index_col=0, parse_dates=["確定日", "発症日"])
+jag_df = pd.read_csv("src/jp_data.csv", index_col=0, parse_dates=["確定日", "発症日"], low_memory=False)
 # 都道府県別累計データ
 jp_cumsum = jag_df.groupby("確定日", as_index=False).sum()[["確定日", "人数"]]
 jp_cumsum["cumsum"] = jp_cumsum["人数"].cumsum()
