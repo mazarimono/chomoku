@@ -29,8 +29,12 @@ layout = html.Div([
             [Input("stress_selector", "value")])
 def update_stress_graph(selected_value):
     if selected_value == "st_stress":
-        return px.line(st_stress, x="Date", y="STLFSI2")
+        fig = px.line(st_stress, x="Date", y="STLFSI2")
+        fig.update_xaxes(rangeslider_visible=True)
+        return fig
     else:
-        return px.line(high_yeild, x="Date", y="BAMLH0A0HYM2")
+        fig = px.line(high_yeild, x="Date", y="BAMLH0A0HYM2")
+        fig.update_xaxes(rangeslider_visible=True)
+        return fig 
 
 
