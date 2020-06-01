@@ -61,8 +61,8 @@ recent_condition = pd.DataFrame(
 
 # data from API
 
-kyoto_pcr_num = 6285
-kyoto_pcr_update = datetime(2020,5,14).date()
+kyoto_pcr_num = 8068
+kyoto_pcr_update = datetime(2020,5,30).date()
 pcr_year = kyoto_pcr_update.year
 pcr_month = kyoto_pcr_update.month
 pcr_day = kyoto_pcr_update.day 
