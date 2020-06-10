@@ -114,7 +114,7 @@ sex_pie = px.pie(
 bar_daily = px.bar(
     kyoto_announce_sex, x="announce_date", y="count", color="sex", title="京都府の新規感染者数"
 )
-bar_cumsum = px.bar(kyoto_announce, x="announce_date", y="cumsum", title="京都府の累計感染者数")
+bar_cumsum = px.area(kyoto_announce, x="announce_date", y="cumsum", title="京都府の累計感染者数")
 
 heatmap_age_day = go.Figure(
     data=go.Heatmap(
