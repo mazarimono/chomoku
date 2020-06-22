@@ -246,6 +246,9 @@ def update_world_data(selected_type):
                         "France",
                         "Iran",
                         "United_Kingdom",
+                        'Brazil',
+                        'Russia',
+                        'India'
                     ],
                 ),
                 dcc.Graph(id="world_data_multiple_Output"),
