@@ -12,3 +12,4 @@ gunicorn
 lxml
 xlrd
 requests
+requests_html 
