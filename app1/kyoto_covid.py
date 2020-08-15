@@ -61,11 +61,12 @@ def get_data(table_num, p_state):
 
 df_patient = get_data(0, "入院・療養")
 df_exit = get_data(1, "退院等")
+total_number = int(df_patient.iloc[0, 0].replace('例目', ''))
 
 dff = pd.concat([df_patient, df_exit]) 
 dfg = dff.groupby(["announce_date"], as_index=False).count()
 dfg["cumsum"] = dfg["発表日"].cumsum()
-kyoto_age = dff.groupby(["年代", "性別"], as_index=False).count()
+kyoto_age = df_patient.groupby(["年代", "性別"], as_index=False).count()
 kyoto_age["area"] = "京都府"
 kyoto_sex = dff.groupby(["性別"], as_index=False).count()
 kyoto_announce_sex = dff.groupby(["announce_date", "性別"], as_index=False).count()
@@ -80,12 +81,22 @@ table = r.html.find("table", containing="死亡")
 text_num = re.search("死亡", table[0].text)
 death_num = int(table[0].text[text_num.end():].split("）")[0].replace("名", "")) # 死亡者数
 
+# pdf掲載数
+
+session = HTMLSession()
+r = session.get('https://www.pref.kyoto.jp/kentai/corona/hassei1-50.html')
+target_ul = r.html.find('ul')[6]
+split_note = target_ul.text.split('から')
+pdf_num = int(split_note[1].split('例目')[0]) 
+
+
 # 状態各数値
-total_number = dfg.iloc[-1, -1]
+#total_number = dfg.iloc[-1, -1]
 today_number = dfg.iloc[-1, 3]
 #update_date = dfg.iloc[-1, 1]
+nyuin_num = len(df_patient)
 
-out_num = len(df_exit)
+out_num = total_number - nyuin_num - death_num 
 
 
 taiin_number = out_num - death_num 
@@ -101,14 +112,6 @@ patient_num = len(df_patient)
 recent_condition = pd.DataFrame(
     {"状態": ["患者数", "回復者数", "死亡者数"], "人数": [patient_num, recovery_num, death_num]}
 )
-
-# data from API
-
-kyoto_pcr_num = 8953
-kyoto_pcr_update = datetime(2020,6,11).date()
-pcr_year = kyoto_pcr_update.year
-pcr_month = kyoto_pcr_update.month
-pcr_day = kyoto_pcr_update.day 
 
 
 # SET STYLE
@@ -130,7 +133,7 @@ kyoto_tree = px.treemap(
     path=["area","年代", "性別"],
     values="announce_date",
     labels="announce_date",
-    title="陽性者内訳（年代別、性別）",
+    title="現在の入院・療養者内訳（年代別、性別）",
     template={"layout": {"margin": {"l": 20, "r": 20, "t": 50, "b": 20}}},
 )
 
@@ -157,7 +160,8 @@ sex_pie = px.pie(
 bar_daily = px.bar(
     kyoto_announce_sex, x="announce_date", y="発表日", color="性別", title="京都府の新規感染者数"
 )
-bar_cumsum = px.area(dfg, x="announce_date", y="cumsum", title="京都府の累計感染者数")
+dfg['pdf_cumsum'] = dfg['cumsum'] + pdf_num
+bar_cumsum = px.area(dfg, x="announce_date", y="pdf_cumsum", title="京都府の累計感染者数")
 
 # heatmap_age_day = go.Figure(
 #     data=go.Heatmap(
