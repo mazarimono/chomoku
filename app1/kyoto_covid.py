@@ -61,7 +61,6 @@ def get_data(table_num, p_state):
 
 df_patient = get_data(0, "入院・療養")
 df_exit = get_data(1, "退院等")
-total_number = int(df_patient.iloc[0, 0].replace('例目', ''))
 
 dff = pd.concat([df_patient, df_exit]) 
 dfg = dff.groupby(["announce_date"], as_index=False).count()
@@ -91,7 +90,7 @@ pdf_num = int(split_note[1].split('例目')[0])
 
 
 # 状態各数値
-#total_number = dfg.iloc[-1, -1]
+total_number = pdf_num + len(df_patient) + len(df_exit)
 today_number = dfg.iloc[-1, 3]
 #update_date = dfg.iloc[-1, 1]
 nyuin_num = len(df_patient)
