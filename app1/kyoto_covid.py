@@ -79,7 +79,9 @@ session = HTMLSession()
 r = session.get("https://www.pref.kyoto.jp/index.html")
 table = r.html.find("table", containing="死亡")
 text_num = re.search("死亡", table[0].text)
-death_num = int(table[0].text[text_num.end():].split("）")[0].replace("名", "")) # 死亡者数
+text_start_num = text_num.end()+1
+text_end_num = text_start_num + 5
+death_num = int(table[0].text[text_start_num:text_end_num].split("（")[0].replace("名", "")) # 死亡者数
 
 # pdf掲載数
 
