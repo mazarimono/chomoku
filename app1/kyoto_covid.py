@@ -210,6 +210,7 @@ layout = html.Div(
                     style={"display": "inline-block"},
                     className="update_date",
                 ),
+                html.H4('本アプリケーションは集計の都合で再感染者も総感染者に含んでおります'),
                 html.A(
                     "データ出所: 京都府ウェブページ",
                     href="https://www.pref.kyoto.jp/kentai/news/novelcoronavirus.html#F",
