@@ -9,6 +9,7 @@ from app1 import toyo
 from app1 import covid_memo
 from app1 import hands_on_02
 from app1 import hands_on_03
+from app1 import why_interactive 
 # from app1 import kyoto_covid
 # from app1 import world_index
 # from app1 import stress_check
@@ -34,6 +35,9 @@ def display_page(pathname):
     #    return kyoto_covid.layout
     elif pathname == "/toyo":
         return toyo.layout 
+    elif pathname == '/qiita-20201212':
+        return why_interactive.layout 
+
     # elif pathname == "/world-index":
     #     return world_index.layout
     # elif pathname == "/stress-check":
