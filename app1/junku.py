@@ -80,9 +80,6 @@ death_map['data_type'] = 'death'
 recovery_map['data_type'] = 'recovery'
 all_data = pd.concat([cases_map, death_map, recovery_map])
 
-external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
-
-
 layout = html.Div(
     [
         html.Div(
@@ -310,7 +307,7 @@ def update_layout(n_clicks, layout_children):
         value='Linear'
         ),
         dcc.Graph(id={'type': 'count_select_graph', 'index': n_clicks})
-    ],style={'width': '50%', 'display': 'inline-block'})
+    ],style={'width': '46%', 'padding': '2%', 'display': 'inline-block'})
     layout_children.append(append_layout)
     return layout_children
 
