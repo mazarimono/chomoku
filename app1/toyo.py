@@ -9,9 +9,9 @@ import pandas as pd
 
 from app import app 
 
-map = os.getenv("MAPBOX_TOKEN")
+map_token = os.getenv("MAPBOX_TOKEN")
 
-px.set_mapbox_access_token(map)
+px.set_mapbox_access_token(map_token)
 
 toyo_cropnavi = pd.read_csv("src/toyohashi_crop_ame.csv", index_col=0)
 fire_rain = pd.read_csv("src/toyohashi_2020_01-03_all.csv", index_col=0)
