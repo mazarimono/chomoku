@@ -96,7 +96,7 @@ layout = html.Div(
                     href="https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series",
                 ),
             ],
-            style={"marginBottom": "2%"},
+            style={"marginBottom": "2%", 'backgroundColor': '#5feb4d', 'padding': '3%', 'borderRadius': '20px'},
         ),
         html.Div(
             [
@@ -131,7 +131,7 @@ layout = html.Div(
                 dcc.Graph(id="map_graph", style={'width': '65%', 'display': 'inline-block'}),
                 dcc.Graph(id="callback_graph", style={'width': '35%', 'display': 'inline-block'}),
                 html.H1(id="test"),
-            ]
+            ], style={"marginBottom": "2%", 'backgroundColor': '#5feb4d', 'padding': '3%', 'borderRadius': '20px'}
         ),
         html.Div([
             html.Div([
@@ -139,9 +139,9 @@ layout = html.Div(
                 html.Button(id='junku_button', children='PUSHME', n_clicks=0),
                 html.Div(id='add_layout', children=[]),
             ])
-        ]),
+        ], style={'backgroundColor': '#5feb4d', 'padding': '3%', 'borderRadius': '20px'}),
     ],
-    style={"padding": "5%"},
+    style={"padding": "5%", 'backgroundColor': '#17be06'},
 )
 
 
