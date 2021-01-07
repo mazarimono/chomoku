@@ -69,9 +69,9 @@ def mapdata(df):
     return data
 
 
-cases = read_john_data(data_urls["cases"])
-death = read_john_data(data_urls["death"])
-recovery = read_john_data(data_urls["recovery"])
+cases = read_john_data('src/cases.csv')
+death = read_john_data('src/death.csv')
+recovery = read_john_data('src/recovery.csv')
 cases_map = mapdata(cases)
 death_map = mapdata(death)
 recovery_map = mapdata(recovery)
